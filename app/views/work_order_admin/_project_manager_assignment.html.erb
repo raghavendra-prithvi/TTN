@@ -1,0 +1,38 @@
+<p>Dear <span class="pmName">(Manager's Name)</span>, </p><br /> <br />				<%w = @work_order%>				
+
+								<p>You have been assigned to manage <%=w.project_name%>
+								<div class="addPMessage"><textarea class="addedPMessage"></textarea></div></p>
+								
+							<p><u>Project Details</u> <br />
+							Project Name: <%=w.project_name%> <br />
+							Start Date: <%=w.ULL_start_date%> <br />
+							Due Date: <%=w.due_date%><br />
+							Development End Date: <%=w.development_end_date%><br />
+							Close Date: <%= w.close_date%><br />
+							Summary: <%=w.summary%><br />
+							Deliverables: <%=w.deliverables%><br />
+							Comments: <%=w.comments%><br />
+							ULL Contact: <%=w.ULL_contact%><br />
+							Program Office: <%=w.program_office%><br />
+							Business Owner: <%=w.business_owner%><br />
+							Project Type: <%=w.work_order_type%> <br /><br /></p>
+							
+						
+						<p> The following employees have been assigned to work on this project:
+						<div class="addEmployees"></div>
+						</p>
+						
+						<p> The following GA's have been assigned to work on this project:
+						<div class="addGAs"></div>
+						</p>
+						
+							
+							
+							
+
+									
+							<p>	Thank you. <br/> <br/>
+                              Sincerely, <br/>
+                              <%=User.find(session[:user_id]).name%> </p>
+                             
+

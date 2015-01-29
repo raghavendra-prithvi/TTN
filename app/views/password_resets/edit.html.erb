@@ -1,0 +1,43 @@
+<fieldset class="scheduler-border" style="width:50%">
+<div class="panel-heading"> <legend>Reset Password</legend></div>
+  <div class="panel-body">
+  	<div class="col-xs-8">
+      <fieldset>
+<%= form_for @user,:html => {:class => "well form-inline"}, :url => password_reset_path(params[:id]) do |f| %>
+  <% if @user.errors.any? %>
+    <div class="error_messages">
+      <h2>Form is invalid</h2>
+      <ul>
+        <% for message in @user.errors.full_messages %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>  
+        <%= f.label :password %>
+        <%= f.password_field :password,{class: 'input-sm'} %><br/>
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation,{class: 'input-sm'} %><br/>
+    <%= f.submit "Update Password" %>    
+  </div>
+  
+<% end %>
+        </fieldset>
+</div>
+</div>
+</div>
+<style>
+  fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+}
+
+legend.scheduler-border {
+   width:inherit; /* Or auto */
+    padding:0 10px; /* To give a bit of padding on the left and right */
+    border-bottom:none;
+}
+</style>  

@@ -1,0 +1,303 @@
+<div class="span2">
+
+	<% if (current_page? items_path) || (current_page? home_path) || (current_page? fitness_path) || (current_page? food_path) || (current_page? fun_path) || (current_page? books_path) %>
+	<!--
+	<div id="unstyled">
+		<div id="sidebarbar"></div>
+		<div>
+			<% if current_page? items_path %>
+			<div class="greys">
+				<div class="middle">
+				<%= link_to "All Items", items_path %>	
+				</div>
+			</div>
+			<% else %>
+			<div class="greys2">
+				<div class="middle">
+				<%= link_to "All Items", items_path %>	
+				</div>
+			</div>		
+			<% end %>
+			
+			<div id="sidebarbar"></div>
+			
+			<% if current_page? home_path %>
+			<div class="greys">
+				<div class="middle">
+				<%= link_to "Home", home_path%>
+				</div>
+			</div>
+			<% else %>
+			<div class="greys2">
+				<div class="middle">
+				<%= link_to "Home", home_path%>
+				</div>
+			</div>	
+			<% end %>
+			
+			<div id="sidebarbar"></div>
+			
+			<% if current_page? fitness_path %>
+			<div class="greys">
+				<div class="middle">
+				<%= link_to "Fitness", fitness_path%>
+				</div>
+			</div>
+			<% else %>
+			<div class="greys2">
+				<div class="middle">
+				<%= link_to "Fitness", fitness_path%>
+				</div>
+			</div>	
+			<% end %>
+
+			<div id="sidebarbar"></div>
+			
+			<% if current_page? food_path %>
+			<div class="greys">
+				<div class="middle">
+				<%= link_to "Food", food_path%>
+				</div>
+			</div>
+			<% else %>
+			<div class="greys2">
+				<div class="middle">
+				<%= link_to "Food", food_path%>
+				</div>
+			</div>	
+			<% end %>
+			
+			<div id="sidebarbar"></div>
+			
+			<% if current_page? fun_path %>
+			<div class="greys">
+				<div class="middle">
+				<%= link_to "Fun", fun_path%>
+				</div>
+			</div>
+			<% else %>
+			<div class="greys2">
+				<div class="middle">
+				<%= link_to "Fun", fun_path%>
+				</div>
+			</div>	
+			<% end %>
+			
+			<div id="sidebarbar"></div>
+							
+			<% if current_page? books_path %>
+			<div class="greys">
+				<div class="middle">
+				<%= link_to "Books", books_path%>
+				</div>
+			</div>
+			<% else %>
+			<div class="greys2">
+				<div class="middle">
+				<%= link_to "Books", books_path%>
+				</div>
+			</div>	
+			<% end %>
+		</div>		
+	</div>		
+	--!>
+
+	<%else%>
+	<div id="unstyled">
+			<div id="sidebarbar"></div>
+			<div>
+				<% if signed_in? %>
+					<% if current_user.votesleft == 0  %>
+						<% if (current_page? petitions_path) || (current_page?(edit_petition_path(2..99))) %>
+							<div class="greys">
+								<div class="middle">
+								<%= link_to "3", petitions_path, class: "yellow", id:"lefts" %>
+								<%= link_to "Votes", petitions_path%>	
+								<img src="/images/check2.png", id="tag" />
+								</div>
+							</div>	
+						<% else %>
+							<div class="greys2">
+							<div class="middle">
+							<%= link_to "3", petitions_path, class: "yellow", id:"lefts" %>
+							<%= link_to "Votes", petitions_path%>
+							<img src="/images/check2.png", id="tag" />
+							</div>
+							</div>
+						<% end %>		
+					<% else %>
+						<% if current_page? petitions_path %>
+							<div class="greys">
+								<div class="middle">
+								<%= link_to "3", petitions_path, class: "yellow", id:"lefts" %>
+								<%= link_to "Votes", petitions_path%>	
+								<img src="/images/xmark2.png", id="tag" />
+								</div>
+							</div>	
+						<% else %>
+							<div class="greys2">
+							<div class="middle">
+							<%= link_to "3", petitions_path, class: "yellow", id:"lefts" %>
+							<%= link_to "Votes", petitions_path%>
+							<img src="/images/xmark2.png", id="tag" />
+							</div>
+							</div>
+						<% end %>				
+					<% end %>	
+				<% else %>	
+					<% if current_page? petitions_path %>
+					<div class="greys">
+						<div class="middle2">
+						<%= link_to "3", petitions_path, class: "yellow", id:"lefts" %>
+						<%= link_to "Votes", petitions_path%>
+						</div>
+					</div>	
+					<% else %>
+						<div class="greys2">
+						<div class="middle2">
+						<%= link_to "3", petitions_path, class: "yellow", id:"lefts" %>
+						<%= link_to "Votes", petitions_path%>
+						</div>
+						</div>
+					<% end %>
+				<% end %>
+			</div>
+			
+			<div id="sidebarbar"></div>
+			
+			<div>
+				<% if signed_in? %>
+					<% if current_user.signer == "yes" %>
+						<% if current_page? petitionnow_path %>
+						<div class="greys">
+							<div class="middle">
+								<%= link_to "1", petitionnow_path, class: "orange", id:"lefts" %>
+								<%= link_to "Campaign", petitionnow_path %>		
+								<img src="/images/check2.png", id="tag" />
+							</div>
+						</div>	
+						<% else %>
+							<div class="greys2">
+							<div class="middle">	
+							<%= link_to "1", petitionnow_path, class: "orange", id:"lefts" %>
+							<%= link_to "Campaign", petitionnow_path %>	
+							<img src="/images/check2.png", id="tag" />
+							</div>
+							</div>
+						<% end %>		
+					<% else %>
+						<% if current_page? petitionnow_path %>
+						<div class="greys">
+							<div class="middle">
+								<%= link_to "1", petitionnow_path, class: "orange", id:"lefts" %>
+								<%= link_to "Campaign", petitionnow_path %>	
+								<img src="/images/xmark2.png", id="tag" />
+							</div>	
+						</div>	
+						<% else %>
+							<div class="greys2">
+							<div class="middle">
+							<%= link_to "1", petitionnow_path, class: "orange", id:"lefts" %>
+							<%= link_to "Campaign", petitionnow_path %>	
+							<img src="/images/xmark2.png", id="tag" />
+							</div>
+							</div>
+						<% end %>				
+					<% end %>	
+				<% else %>	
+					<% if current_page? petitionnow_path %>
+					<div class="greys">
+						<div class="middle2">
+						<%= link_to "1", petitionnow_path, class: "orange", id:"lefts" %>
+						<%= link_to "Campaign", petitionnow_path %>	
+						</div>	
+						</div>
+					<% else %>
+						<div class="greys2">
+						<div class="middle2">
+						<%= link_to "1", petitionnow_path, class: "orange", id:"lefts" %>
+						<%= link_to "Campaign", petitionnow_path %>	
+						</div>
+						</div>
+					<% end %>
+				<% end %>
+			</div>		
+
+			<div id="sidebarbar"></div>
+			
+			<div>
+				<% if signed_in? %>
+					<% if current_user.shares.to_i > 4 %>
+						<% if current_page? share_path %>
+						<div class="greys">
+								<div class="middle">
+								<%= link_to "5", share_path, class: "red", id:"lefts" %>		
+								<%= link_to "Friends", share_path %>	
+								<img src="/images/check2.png", id="tag" />
+								</div>
+						</div>		
+						<% else %>
+							<div class="greys2">
+							<div class="middle">
+							<%= link_to "5", share_path, class: "red", id:"lefts" %>		
+							<%= link_to "Friends", share_path %>
+							<img src="/images/check2.png", id="tag" />
+							</div>
+							</div>
+						<% end %>		
+					<% else %>
+						<% if current_page? share_path %>
+						<div class="greys">
+								<div class="middle">
+								<%= link_to "5", share_path, class: "red", id:"lefts" %>		
+								<%= link_to "Friends", share_path %>
+								<img src="/images/xmark2.png", id="tag" />
+								</div>
+						</div>		
+						<% else %>
+							<div class="greys2">
+							<div class="middle">
+							<%= link_to "5", share_path, class: "red", id:"lefts" %>		
+							<%= link_to "Friends", share_path %>
+							<img src="/images/xmark2.png", id="tag" />
+							</div>
+							</div>
+						<% end %>				
+					<% end %>	
+				<% else %>	
+					<% if current_page? share_path %>
+					<div class="greys">
+						<div class="middle2">
+						<%= link_to "5", share_path, class: "red", id:"lefts" %>		
+						<%= link_to "Friends", share_path %>
+						</div>
+					</div>	
+					<% else %>
+						<div class="greys2">
+						<div class="middle2">
+						<%= link_to "5", share_path, class: "red", id:"lefts" %>		
+						<%= link_to "Friends", share_path %>	
+						</div>
+						</div>
+					<% end %>
+				<% end %>
+			</div>			
+	</div>
+	<%end%>
+</div>
+
+
+
+
+<div id="unstyled2">
+		<%if signed_in? %>
+		<%if cart current_user.itempairs %>
+
+				<div>
+					<%= link_to image_tag("/images/cart.jpg"), carts_path, class:"middle3" %>
+				</div>
+
+		<% else %>
+		<% end %>	
+		<% end %>	
+</div>	

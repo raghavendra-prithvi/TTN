@@ -1,0 +1,213 @@
+        		<% flash.each do |key, value| %>
+		    <div class="flash <%= flash_class(key)%> pull-right"> 
+                          <div class="hideThis"><%= value %> <a id="close">[close]</a></div>
+              </div> 
+              <% end %>
+            <div style="display:none" id="email_login"></div> <!-- email_login -->
+			<div class="row">
+				<div class="col-xs-7">
+				<div class="panel panel-default">
+  <div class="panel-heading"> <div class="panel-title">EffortTracker</div></div>
+  <div class="panel-body">
+  	<div class="col-xs-8">
+			
+			<div id="login_form_div">
+				<p>Testing Users: Select option and login. Options list username then user role.</p>
+				<select class="testing_login_select">
+				<option value="|">Please Select</option>
+				<%User.where(:client => [nil, false]).each do |u|%>
+					<option value="<%=u.email%>|abcdef|<%=u.id%>"><%=u.name + ', ' + u.role %></option>
+				<%end%>
+				</select>
+				<%= form_tag "/auth/identity/callback" do %>
+				    <%= label_tag :auth_key, "Email" %><br />
+            <%= text_field_tag :auth_key,'', :class=>'focusCursor'%> @louisiana.edu <br />
+				  <%= label_tag :password %> <br />
+				    <%= password_field_tag :password,'', class: 'input-sm'%> <br />
+				  	<%= submit_tag "Login"%> <br />
+            <%= link_to "forgotten password?", new_password_reset_path %><br />
+						<%= link_to " Create Account", "#", :onclick => "$('#login_form_div').hide();$('#signup_form_div').show();", :class => "enroll"%> 
+				<% end %>
+			</div><!-- login_form_div -->
+			<div id="signup_form_div">
+				  <%= form_tag "/auth/identity/register" do %>
+			      <% if @identity && @identity.errors.any? %>
+			        <div class="error_messages">
+			          <h2><%= pluralize(@identity.errors.count, "error") %> prohibited this account from being saved:</h2>
+			          <ul>
+			          <% @identity.errors.full_messages.each do |msg| %>
+			            <li><%= msg %></li>
+			          <% end %>
+			          </ul>
+			        </div>
+			      <% end %>
+              <div id="errorMsgDiv" style="color:red">
+              </div>
+			        <%= label_tag :first_name %><br />
+			        <%= text_field_tag :first_name, @identity.try(:first_name)%> <br />
+              <%= label_tag :last_name %><br />              
+			        <%= text_field_tag :last_name, @identity.try(:last_name)%> <br />
+			        <%= hidden_field_tag :name,"xxx"%> <br />
+			        <%= label_tag :email %><br />
+			        <%= text_field_tag :email, @identity.try(:email)%> @louisiana.edu <br />
+			        <%= label_tag :password %><br />
+        <%= password_field_tag :password,'', :id => "password_signup"%> <br />
+			        <%= label_tag :password_confirmation %><br />
+			        <%= password_field_tag :password_confirmation,''%><br />
+        <label>Role</label><br/>
+              <% selectArray = ["","GA","Classified","Unclassified"] %>
+        <%= select_tag :role, options_for_select(selectArray) , :onchange => "if($(this).val() == 'GA'){ $('#reporter_div').show(); } else{ $('#reporter_div').hide();  }" , :class => 'project'%>    <br/>
+        <div id="reporter_div" style="display:none;">
+          <br/>
+          <label>Reporter</label><br/>
+        <%selectArray = [["Please Select", ""]] %>
+        <%User.where(:manager => true).alpha.each do |p|%>          
+            <%selectArray << [p.last_name.to_s + ', ' + p.first_name.to_s, p.id]%>          
+        <%end%>
+        <%= select_tag 'reporter', options_for_select(selectArray), :class => "project" %><br/>
+          </div>
+        <br/>
+        <%= submit_tag "Sign Up", :id => "signupBtn" %> <br />
+						Returning User? <%= link_to " login here", "#", :onclick => "$('#signup_form_div').hide();$('#login_form_div').show();"%> <br />
+					<% end %>
+			</div><!-- signup_form_div -->
+			<br />
+			<br />
+									UL Client? <%= link_to " Visit our Client Login Page", "/Client"%>		
+
+		</div>
+			<div class="col-xs-4"><%= image_tag("brand.png", :class => 'brand') %></div>
+  </div>
+		</div>
+		</div>
+			<!-- ROLE INFO FOR TEST PURPOSES --!>
+			
+<div class="col-xs-5">
+	 <div class="panel panel-default">
+		  <div class="panel-heading"> 
+		  	<div class="panel-title">Role Info For Testing</div>
+		  </div>
+  		<div class="panel-body">
+		<div class="render_role_info"></div>
+		</div>
+	</div>
+</div>		
+			<!-- END OF ROLE INFO --!>
+			
+			<style> 
+.login-container{
+position: relative;
+background: rgba(240, 248, 255, 0.5);
+width: 600px;
+ margin:0px auto;
+}
+
+.error_messages{
+    color:red;
+ }
+
+.project {
+	height: 25px !important;
+}
+
+input {
+	height: 25px !important;
+	padding: 0px !important;
+}
+
+	.brand {
+		height: 200px;
+		width: 200px;
+	
+	}
+	
+</style>
+
+
+<script>
+
+$(document).ready(function(){
+
+	$('.testing_login_select').change( function() {
+		var value = $(this).val();
+		var email = value.split('|')[0];
+		email = email.split('@')[0];
+		var password = value.split('|')[1];
+		var id = value.split('|')[2];
+		$('#auth_key').val(email);
+		$('#password').val(password);
+		
+		$.ajax({
+			url: '/renderRoleInfo',
+			type: 'GET',
+			data: {'id' : id},
+			success: function(htmlElem) {
+				$('.render_role_info').html(htmlElem);
+			}
+		
+		});
+		
+		
+	});
+	
+  if(window.location.href.split("/")[3] == 'auth'){
+    $("#signup_form_div").show();
+    $("#login_form_div").hide();
+  } 
+  else{
+      $("#signup_form_div").hide();  
+  }
+                    
+	$('.enroll').on('click', function() {
+		$('.alert').hide();
+	});
+   
+    $("#signupBtn").click(function(){
+          $("#errorMsgDiv").html("");
+          errors = false;
+          errorMsg = "";
+          if($("#first_name").val() == '' && $("#last_name").val() == '' ){
+            errorMsg += "Either First Name or Last Name must be entered.<br/>";
+            errors = true;
+          }
+          if($("#email").val() == ''){
+              errorMsg += "Email can't be blank.<br/>";
+              errors = true;
+          }
+          if($("#password_signup").val() == ''){          
+              errorMsg += "Password can't be blank.<br/>";            
+              errors = true;
+          }
+          else if($("#password_signup").val().length < 6){
+              errorMsg += "Password is too short (minimum is 6 characters).<br/>";            
+              errors = true;
+          }
+          if($("#password_confirmation").val() == ''){          
+              errorMsg += "Password Confirmation can't be blank.<br/>";            
+              errors = true;
+          }
+          if($("#password_confirmation").val() != $("#password_signup").val() ){          
+              errorMsg += "Password and Password Confirmation didn't match.<br/>";            
+              errors = true;
+          }
+          if($("#role").val() == ''){          
+              errorMsg += "Role can't be blank.<br/>";            
+              errors = true;
+          }
+          if(errors == true){
+            $("#errorMsgDiv").html(errorMsg);        
+            return false;
+          }
+    });
+    
+    $(".focusCursor").focus();
+   
+//	$('.flash').show().delay(2000).hide();
+ 
+});
+
+
+</script>
+
+
+

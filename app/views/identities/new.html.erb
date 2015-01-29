@@ -1,0 +1,63 @@
+<div id="signup_form_div">
+				  <%= form_tag "/auth/identity/register" do %>
+			      <% if @identity && @identity.errors.any? %>
+			        <div class="error_messages">
+			          <h2><%= pluralize(@identity.errors.count, "error") %> prohibited this account from being saved:</h2>
+			          <ul>
+			          <% @identity.errors.full_messages.each do |msg| %>
+			            <li><%= msg %></li>
+			          <% end %>
+			          </ul>
+			        </div>
+			      <% end %>
+			        <%= label_tag :first_name %><br />
+			        <%= text_field_tag :first_name, @identity.try(:first_name)%> <br />
+              <%= label_tag :last_name %><br />              
+			        <%= text_field_tag :last_name, @identity.try(:last_name)%> <br />
+			        <%= hidden_field_tag :name,"xxx"%> <br />
+			        <%= label_tag :email %><br />
+			        <%= text_field_tag :email, @identity.try(:email)%> @louisiana.edu <br />
+			        <%= label_tag :password %><br />
+			        <%= password_field_tag :password,''%> <br />
+			        <%= label_tag :password_confirmation %><br />
+			        <%= password_field_tag :password_confirmation,''%><br />
+        <label>Role</label><br/>
+              <% selectArray = ["","GA","Classified","Unclassified"] %>
+        <%= select_tag 'role', options_for_select(selectArray) , :onchange => "if($(this).val() == 'GA'){ $('#reporter_div').show(); } else{ $('#reporter_div').hide();  }" , :class => 'project'%>    <br/>
+        <div id="reporter_div" style="display:none;">
+          <br/>
+          <label>Reporter</label><br/>
+        <%selectArray = [["Please Select", ""]] %>
+        <%User.where(:manager => true).alpha.each do |p|%>          
+            <%selectArray << [p.last_name.to_s + ', ' + p.first_name.to_s, p.id]%>          
+        <%end%>
+        <%= select_tag 'reporter', options_for_select(selectArray), :class => "project" %><br/>
+          </div>
+        <br/>
+				  		<%= submit_tag "Sign Up"%> <br />
+						Returning User? <%= link_to " login here", "#", :onclick => "$('#signup_form_div').hide();$('#login_form_div').show();"%> <br />
+			    <% end %>
+			</div><!-- signup_form_div -->
+<style> 
+.login-container{
+    position: relative;
+    background: rgba(240, 248, 255, 0.5);
+    width: 600px;
+     margin:0px auto;
+}
+
+
+.project {
+	  height: 25px !important;
+}
+
+input {
+	height: 25px !important;
+}
+</style>
+
+
+
+
+
+

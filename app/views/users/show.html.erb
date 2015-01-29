@@ -1,0 +1,24 @@
+<% provide(:title, @user.name) %>
+
+<h1><%= @user.name %></h1>
+
+
+
+<div class="row">
+	<aside class="span4">
+		<section>
+			<h1>
+				<%= gravatar_for @user %>
+				<%= @user.name %>	
+				<% if signed_in? %>
+					<%= form_for(@user) do |f| %>
+					<%= render 'shared/error_messages' %> 
+					<%= f.submit "Change vote!", class: "btn btn-large btn-primary" %>
+				<% end %>
+				<% else %>
+					<%= link_to "Sign in to vote!", signin_path, class: "btn btn-large btn-primary" %>
+				<% end %>
+			</h1>
+		</section>
+	</aside>
+</div>

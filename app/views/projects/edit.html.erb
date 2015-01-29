@@ -1,0 +1,349 @@
+<div class="row">
+<div class="col-xs-7">
+
+<div class="col-xs-4">
+<div class="hidden project_data_id"><%=@project.id%></div>
+<label><%if @wo %> Work Order Project Name <%else%>
+Internal Project Name <%end%></label>
+</div>
+<div class="col-xs-8">
+<input type='text' class="ip_title" value="<%=@project.name%>" <%if !@permissions['create_projects']%>disabled <%end%>/>
+</div>
+<div class="col-xs-4">
+<label>Project Description</label>
+</div>
+<div class="col-xs-8">
+<input type='text' class="descript" value="<%=@project.description%>"/>
+</div>
+<div class="col-xs-4">
+<label>Account Number Hours Clocked To: </label>
+</div>
+
+<%if @permissions['create_projects']%>
+<div class="col-xs-8">
+<select class="accountSelect" disabled>
+<option value="">Please Select</option>
+<option value='' disabled><b>External Project Acct Numbers </b></option>
+<%Project.all.each do |p|%>
+<option class="external" value="<%=p.id%>" <%if @internal == false && @project.project.id == p.id%> selected <%end%>><%=p.acct_number%></option>
+<%end%>
+<option value='' disabled><b>Internal Project Acct Numbers </b></option>
+<%@internalAcct.each do |p, a|%>
+ <option class="internal" value="<%=p%>" <%if @internal == true && @acct_number== a%> selected <%end%>><%=a%></option>
+<%end%>
+</select>
+<input class="customAcct" val = '' />
+<button class="acctEdit">Edit</button>
+<button class="acctLock">Lock</button>
+</div>
+<div class="col-xs-4"></div>
+<div class="col-xs-8">
+<button class="btn btn-sm btn-default createAcct pull-left" disabled>Create Internal Account Number</button> 
+<button class="btn btn-sm btn-default chooseAcct pull-left">Choose Account Number</button></div>
+<%else%>
+<div class="col-xs-8">
+	<p><%if @acct_number == ''%>No account number assigned. <%else%><%=@acct_number%><%end%></p>
+</div>
+<%end%>
+<div class="col-xs-12 buffer"></div>
+<div class="select_collection">
+<div class="col-xs-4">
+<label>Assign User(s) to Project</label>
+</div>
+<div class="col-xs-8 selectReplace">
+	<select class="ip_manager pull-left" multiple>
+	<option value='' disabled><b>Assign Manager(s)</b></option>
+	<option value='' disabled></option>
+
+	<%@managers.each do |p|%>          
+	  <option value="<%=p.id%>" class="managerOption" <%if @projectManagers.include?(p.id)%> selected <%end%>><%=p.last_name + ', ' +  p.first_name%></option>
+	<%end%>
+	
+	<option value='' disabled></option>
+	<option value='' disabled><b>Assign Employee(s)</b></option>
+	<option value='' disabled></option>
+	<%@employees.each do  |p|%>          
+	<option value="<%=p.id%>" class="employeeOption" <%if @projectEmployees.include?(p.id)%> selected <%end%>><%=p.last_name + ', ' +  p.first_name%></option>
+	<%end%>
+	
+	<option value='' disabled></option>
+	<option value='' disabled><b>Assign GA(s)</b></option>
+	<option value='' disabled></option>
+
+	<%@gas.each do |p|%>          
+	<option value="<%=p.id%>" class="gaOption" <%if @projectGas.include?(p.id)%> selected <%end%>><%=p.last_name + ', ' +  p.first_name%></option>
+	<%end%>
+
+</select>
+</div>
+<div class="col-xs-4 buffer"></div>
+<div class="col-xs-8">
+    <button class="backBtn btn btn-sm btn-primary">Back</button>
+    <button type="button" class="btn btn-sm btn-success submitForm">Save Project</button>
+    <button type="button" class="btn btn-sm btn-default revert">Revert Assignments</button>
+
+</div>
+</div>
+
+
+</div> <!-- end col 8 -->
+<div class="col-xs-5"> 
+<div class="scrollT">
+<div class="load_user_info"></div>
+
+</div>
+
+</div>
+
+
+</div>
+
+<style>
+
+.buffer {
+	height: 5px !important;
+}
+input {
+	height: 25px !important;
+	padding: 0px !important;
+	width: 100%;
+}
+
+select, .createAcct, .chooseAcct {
+	width: 100% !important;
+}
+
+select {
+	height: 22 px !important;
+}
+
+.createAcct, .chooseAcct{
+	text-align: center !important;
+	padding: 1px !important;
+}
+
+a.btn:visited{
+	color: white !important;
+}
+
+.submitForm {
+	margin-right: 20px !important;
+}
+
+.ip_manager {
+	height: 300px !important;
+
+}
+
+.scrollT {
+overflow:auto;
+height:450px !important;
+padding-bottom:5px;
+margin-top:0px;
+}
+
+.panel{
+	height: auto !important;
+
+}
+
+legend {
+	font-size: 16px;
+}
+</style>
+<script>
+var managerIds;
+var employeeIds;
+var gaIds;
+var dataHash;
+var selectedValues = [];
+var managerIds;
+var employeeIds;
+var gaIds;
+
+function loadSelectValues() {
+	 var pid = $('.project_data_id').html();
+
+	managerIds = [];
+	employeeIds = [];
+	gaIds = [];
+
+
+	
+	$('.managerOption:selected').each(function() {
+		managerIds.push($(this).val());
+		if ($.inArray($(this).val(), employeeIds) != -1) {
+			$(this).prop("selected", false)
+			alert('User may not be assigned as Project Manager and Employee');
+		}
+	});
+
+	$('.employeeOption:selected').each(function() {
+	
+		if ($.inArray($(this).val(), managerIds) != -1) {
+			$(this).prop("selected", false)
+			alert('User may not be assigned as Project Manager and Employee');
+		}
+		else {
+			employeeIds.push($(this).val());
+		}
+	});
+	
+	$('.gaOption:selected').each(function() {
+			gaIds.push($(this).val());
+	});
+	
+	$.ajax({	
+			data: {'pid': pid, 'managerIds':managerIds, 'employeeIds': employeeIds, 'gaIds': gaIds},
+    		url: '/load_user_info',
+    		method: 'GET',
+    		success: function(htmlElement) {
+    			$('.load_user_info').empty();
+				$('.load_user_info').append(htmlElement);
+    			}
+    });	
+}
+
+$('.submitForm').click(function() {
+
+	 var name = $('.ip_title').val();
+	 var selectedAcct = $('.accountSelect').val();
+	 var createdAcct = $('.customAcct').val();
+	 var descript = $('.descript').val();
+	 var pid = $('.project_data_id').html();
+	 
+	 if (selectedAcct != '') {
+	 	var acct = selectedAcct;
+	 	var newA = false;
+	 }
+	 else if (createdAcct != '') {
+	 	var acct = createdAcct;
+	 	var newA = true;
+	 }
+	 else {
+	 	var acct = '';
+	 }
+	 
+	 if ($('.accountSelect option:selected').hasClass('internal')) {
+	 	var internal = true;
+	 }
+	 else {
+		var internal = false;
+	}
+/*	$('.ip_manager option:selected').each(function() {
+		className = $(this).attr('class');
+		if (className == 'employeeOption') {
+			employees.push($(this).val());
+		}
+		else if (className == 'gaOption') {
+			gas.push($(this).val());
+		}
+		else if (className == 'managerOption'){
+			managers.push($(this).val());
+		}
+		
+	
+	}); */
+	
+	 dataHash = {'project_data_id':pid, 'descript' :descript, 'name': name, 
+	 'acct': acct, 'new': newA, 'internal': internal, 'managers': managerIds, 'employees': employeeIds, 'gas': gaIds}
+	 
+		console.log(dataHash);
+	 $.ajax({
+	 	url: '/saveProject',
+	 	method: 'GET',
+	 	data: dataHash,
+	 	success: function(data) {      
+        if(data == 'success'){
+            alert('Project successfully updated.');
+            window.location.href = '/admin/projects';
+        }
+        else{
+            data = $.parseJSON(data);
+            $(".alert").html("");
+            for (var i in data) {
+                $(".alert").show();
+                $(".alert").append(data[i] +"<br/>");
+            }        
+        }
+	 	}
+	 }); 
+});
+
+	$('.customAcct').hide();
+	$('.chooseAcct').hide();
+
+
+$('.createAcct').click(function() {
+	$('.accountSelect').hide();
+	$('.accountSelect').val('');
+	$('.customAcct').show();
+	$('.chooseAcct').show();
+	$(this).hide();
+});
+
+$('.chooseAcct').click(function() {
+	$('.accountSelect').show();
+	$('.customAcct').hide();
+	$('.createAcct').show();
+	$('.customAcct').val('')
+	$(this).hide();
+	
+
+});
+
+$('.acctLock').hide();
+$('.acctLock').click(function() {
+	$(this).hide();
+	$('.acctEdit').show();
+	$('.accountSelect, .createAcct, .customAcct, .chooseAcct').prop('disabled', true);
+});
+
+$('.acctEdit').click(function() {
+	if ($('.accountSelect').prop('disabled') == true) {
+	if (confirm('Are you sure you want to edit this projects Account Number?')){
+		$('.accountSelect, .createAcct, .customAcct, .chooseAcct').prop('disabled', false);
+		$(this).hide();
+		$('.acctLock').show();
+	}
+	}
+});
+
+$('.backBtn').click(function() {
+	   var referrer =  document.referrer;
+	   window.location.href = referrer;
+});
+
+$('body').on('click','.select_collection select',  function(e) {
+	// If select value is in previous selectedValues, remove from selected Values and run.
+	// If selected value is not in previous selectValues, add to selected Values and run.
+	// (Case where multiple entered means pressed control.) Selected Values = new values
+
+	
+	loadSelectValues();
+
+	
+
+});
+
+$('.revert').click(function() {
+	 var pid = $('.project_data_id').html();
+	$.ajax({
+		url: '/reload_assigned_users',
+		type: 'GET',
+		data: {'id' : pid},
+		success: function(select) {
+			$('.selectReplace').html(select);
+			}
+	});
+
+});
+
+
+	loadSelectValues();
+
+
+
+
+
+</script>

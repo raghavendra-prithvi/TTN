@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width"/>
+	<style>
+
+#outlook a { 
+  padding:0; 
+} 
+
+body{ 
+  width:100% !important; 
+  min-width: 100%;
+  -webkit-text-size-adjust:100%; 
+  -ms-text-size-adjust:100%; 
+  margin:0; 
+  padding:0;
+}
+
+
+
+#backgroundTable { 
+  margin:0; 
+  padding:0; 
+  width:100% !important; 
+  line-height: 100% !important; 
+}
+
+img { 
+  outline:none; 
+  text-decoration:none; 
+  -ms-interpolation-mode: bicubic;
+  width: auto;
+  max-width: 100%; 
+  float: left; 
+  clear: both; 
+  display: block;
+}
+
+center {
+  width: 100%;
+  min-width: 580px;
+}
+
+a img { 
+  border: none;
+}
+
+p {
+  margin: 0 0 0 10px;
+}
+.btn { 
+
+}
+
+    
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+td { 
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+  border-collapse: collapse !important; 
+}
+
+table, tr, td {
+  padding: 0;
+  vertical-align: top;
+  text-align: left;
+}
+
+hr {
+  color: #d9d9d9; 
+  background-color: #d9d9d9; 
+  height: 1px; 
+  border: none;
+}
+
+/* Responsive Grid */
+
+table.body {
+  height: 100%;
+  width: 100%;
+}
+
+table.container {
+  width: 580px;
+  margin: 0 auto;
+  text-align: inherit;
+}
+
+table.row { 
+  padding: 0px; 
+  width: 100%;
+  position: relative;
+}
+
+table.container table.row {
+  display: block;
+}
+
+td.wrapper {
+  padding: 10px 20px 0px 0px;
+  position: relative;
+}
+
+table.columns,
+table.column {
+  margin: 0 auto;
+}
+
+table.columns td,
+table.column td {
+  padding: 0px 0px 10px; 
+}
+
+table.columns td.sub-columns,
+table.column td.sub-columns,
+table.columns td.sub-column,
+table.column td.sub-column {
+  padding-right: 10px;
+}
+
+td.sub-column, td.sub-columns {
+  min-width: 0px;
+}
+
+table.row td.last,
+table.container td.last {
+  padding-right: 0px;
+}
+
+
+
+  </style>
+  
+</head>
+<body>
+	<table class="body">
+		<tr>
+			<td class="center" align="center" valign="top">
+        <center>
+          <table class="row header">
+            <tr>
+              <td class="center" align="center">
+                <center>
+                  <table class="container">
+                    <tr>
+                      <td class="wrapper last">
+                        <table class="twelve columns">
+                          <tr>
+                            <td class="six sub-columns">
+                              <!-- <img src="http://placehold.it/200x50"> -->
+                            </td>
+                            <td class="six sub-columns last" align="right" style="text-align:right; vertical-align:middle;">
+                              <span class="template-label"> <h2>Effort Tracker</h2></span>
+                            </td>
+                            <td class="expander"></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </center>
+              </td>
+            </tr>
+          </table>
+          <br>
+          <table class="container">
+            <tr>
+              <td>
+                <!-- content start -->
+                <table class="row">
+                  <tr>
+                    <td class="wrapper last">
+                      <table class="twelve columns">
+                        <tr>
+                          <td>
+                            <h2>Dear <span><%= @ru.first_name %></span>&nbsp<span><%= @ru.last_name %>,</span> </h2>
+                						<p class="lead">Your Timesheet Report for the month <%= @sr.month %> has been approved by <%= %> <span><%= @mu.first_name %></span>&nbsp<span><%= @mu.last_name %></span> <br/>
+                              Thank you. <br/> <br/>
+                              Sincerely, <br/>
+                              The EffortTracker Team
+                              </p>
+                						
+                          </td>
+                          <td class="expander"></td>
+                        </tr>
+                      </table>
+
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </center>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
+

@@ -1,0 +1,177 @@
+MusicFeedApp::Application.routes.draw do
+  get "admin/index"
+  # The priority is based upon order of creation: first created -> highest priority.
+  # See how all your routes lay out with "rake routes".
+
+  #Resources
+  	root 'sessions#new'
+    resources :sessions, only: [:new, :create, :destroy]
+    resources :users
+    resources :work_orders
+    resources :attachments
+    resources :ull_team_members
+    
+    scope "/admin" do
+      resources :projects do
+        collection do
+          get 'assign'
+        end
+      end
+    end
+    
+    resources :projects do
+    	member do
+     		 get 'project_managers'
+    	end
+  	end
+  # You can have the root of your site routed with "root"
+  #Login
+  
+
+    get '/registration', to: 'registrations#new'
+  get '/view_report', to: 'welcome#view_report'
+  get '/send_mail', to: 'welcome#send_mail' 
+    get '/activate_user', to: "welcome#activate_user"
+  get '/time_sheet_reports', to: "welcome#time_sheet_reports"
+    match '/auth/:provider/callback' => 'sessions#create' , via: [:get, :post]
+    match "/auth/failure" => "sessions#failure", via: [:get, :post]
+    get '/signin',  to: 'sessions#new'
+    get '/signout', to: 'sessions#destroy'
+    get '/signup', to: 'users#new'
+    get '/new_client', to: 'sessions#new_client'
+
+  #Effort Tracker Home
+  get 'welcome/index', to: 'welcome#index'
+      get '/load_today_data', to: 'welcome#loadToDay'
+    post '/saveTimeSheets', to: 'welcome#saveTime'
+    post '/saveDayTimesheets', to: 'welcome#saveDayTime'
+    get 'welcome/weekFunc', to: 'welcome#weekFunc'
+    get '/createPieChart', to: 'welcome#createPieChart'
+  get '/checkPrevTimeSheets', to: 'welcome#checkPrevTimeSheets'
+  match '/deleteDayTimesheets', :to => 'welcome#deleteDayTimesheets', via: [:get, :post]
+
+
+
+  #Report Data
+    get "/project_colors", to: 'report#project_colors'
+    get '/createReportPieChart', to: 'report#createReportPieChart'
+    get '/createCustomReport', to: 'report#createCustomReport'
+    get '/report', to: 'welcome#report'
+    get '/projectReport', to: 'report#projectReport'
+
+  #Report Handling
+      get '/send_report', to: "welcome#send_report"
+        get '/submit_report', to: 'welcome#submit_report'
+    get '/verify_report', to: 'welcome#verify_report'
+    get '/approve_report', to: 'welcome#approve_report'
+  get '/reject_report', to: 'welcome#reject_report'
+  post '/rejectReport', to: 'welcome#reject_report'
+
+
+
+  #Work Order Maintence/Handling
+      get 'work_orders/index', to: 'work_orders#index'
+      get '/work_order_admin', to: 'work_order_admin#index'
+      get'/processReport', to: 'work_order_admin#process_report'
+      get '/work_order_assignment/:id', to: 'work_order_admin#assignment'
+      get '/work_order_review/:id', to: 'work_order_admin#review'
+	  get '/work_order_submit', to: 'work_orders#submit'
+	  get '/work_order_approve', to: 'work_order_admin#approve'
+	  get '/deleteAttachment', to: 'work_orders#delete_attachment'
+	  get '/buildAttachment', to: 'work_orders#build_attachment'
+	  get '/WorkOrderTracking', to: 'work_order_admin#work_order_tracking'
+	  get '/getAttachments', to: 'work_orders#get_attachments'
+	  get '/clearAllAttachments', to: 'work_orders#clear_all_attachments'	
+	  get '/checkAttachment', to: 'work_orders#check_attachment'
+<<<<<<< HEAD
+	  post '/dropzone', to: 'work_orders#dropzone'
+	  get '/getWOData', to: 'work_order_admin#get_WO_data'
+	  get '/getEmails', to: 'work_order_admin#get_emails'
+=======
+	    post '/dropzone', to: 'work_orders#dropzone'
+	    get '/getWOData', to: 'work_order_admin#get_WO_data'
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+	    
+
+  #Admin Controls
+    get "/admin", to: 'admin#index'
+    get "/admin/users", to: 'admin#users'
+    post "/updateUser", to: 'admin#updateUser'
+    post "/deleteUser", to: 'admin#deleteUser'
+    get "/reportingusers", to: "admin#assign_users" 
+    post "/assignProjects", to: "admin#assignProjects"
+  post "/removeProjects", to: "admin#removeProjects"
+    post "/activateProject", to: "projects#activate"
+    post "/deactivateProject", to: "projects#deactivate"
+  get "/archived_projects", to: "projects#archived"
+  get "/archivedProjectdetails", to: "projects#archivedProjectDetails"
+ 
+ #Manager 
+      get '/verify_report', to: 'welcome#verify_report'
+    get '/approve_report', to: 'welcome#approve_report'
+    get "/manager", to: "admin#manager"
+  get "/manageReports", to: "admin#manageReports"
+  get "/classifiedReport", to: "admin#classifiedReport"
+  get "/unclassifiedReport", to: "admin#unclassifiedReport"
+  
+  
+  #timesheet Managers
+  post '/saveModifiedHours', to: "admin#saveModifiedHours"
+  get '/newReport', to: "admin#newReportEmployee"
+  get '/employeeReportUpdated', to: "admin#employeeReportUpdated"
+  #resources :identities  
+
+  
+    
+  
+    
+    #resources :projects, :path => "admin/projects"
+# Example of regular route:
+  #   get 'products/:id' => 'catalog#view'
+
+  # Example of named route that can be invoked with purchase_url(id: product.id)
+  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
+
+  # Example resource route (maps HTTP verbs to controller actions automatically):
+  #   resources :products
+
+  # Example resource route with options:
+  #   resources :products do
+  #     member do
+  #       get 'short'
+  #       post 'toggle'
+  #     end
+  #
+  #     collection do
+  #       get 'sold'
+  #     end
+  #   end
+
+  # Example resource route with sub-resources:
+  #   resources :products do
+  #     resources :comments, :sales
+  #     resource :seller
+  #   end
+
+  # Example resource route with more complex sub-resources:
+  #   resources :products do
+  #     resources :comments
+  #     resources :sales do
+  #       get 'recent', on: :collection
+  #     end
+  #   end
+
+  # Example resource route with concerns:
+  #   concern :toggleable do
+  #     post 'toggle'
+  #   end
+  #   resources :posts, concerns: :toggleable
+  #   resources :photos, concerns: :toggleable
+
+  # Example resource route within a namespace:
+  #   namespace :admin do
+  #     # Directs /admin/products/* to Admin::ProductsController
+  #     # (app/controllers/admin/products_controller.rb)
+  #     resources :products
+  #   end
+end

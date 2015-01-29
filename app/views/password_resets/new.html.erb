@@ -1,0 +1,27 @@
+<fieldset class="scheduler-border" style="width:30%">
+    <legend class="scheduler-border">Reset Password</legend>
+<%= form_tag password_resets_path, :method => :post do %>
+  <div class="field">
+    <%= label_tag :email %>
+    <%= text_field_tag :email, params[:email] %>
+  </div>
+  <br/>
+  <%= submit_tag "Reset Password" %>
+<% end %>
+</fieldset>  
+<style>
+  fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+}
+
+legend.scheduler-border {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+
+}
+</style>  

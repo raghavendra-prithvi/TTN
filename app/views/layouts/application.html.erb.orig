@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Time Tracker</title>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
+		<%= javascript_include_tag "application", "//www.google.com/jsapi" %>
+		<%= stylesheet_link_tag    "application", media: "all" %>
+		<%= csrf_meta_tags %>
+		<%= render 'layouts/shim' %>
+<script>
+   /*------ Grab colors from Report Controller------- */
+    function grabColors() {
+    $.ajax({
+  		async: false,
+        method: 'GET',
+		url: '/project_colors',
+        dateType: 'json',
+        success: function(data){
+        	var empty = [];
+			$.each(data, function (key, value) { 
+				empty.push([key, value]);
+				
+			});
+			colorHash = empty;
+		        }
+    });
+    }
+    
+     function assignColors(array) {
+    	var colors = [];
+    	$(array).each(function(i, value){
+    		$(colorHash).each(function(j, obj) {
+    			if ($.inArray(value[0], obj) != -1){
+    				colors.push(obj[1]);
+    			}
+    		});
+    	});
+    	return colors;
+    }
+    
+    /*------- Create Google Pie Chart with date from pieChart trigger -----*/
+    function createPieChart(pieHash) {
+    	google.load("visualization", "1", {packages:["corechart"],  "callback": drawChart});
+    	google.setOnLoadCallback(drawChart);
+    	var pieArray = [['Project Title', 'Hours']];
+    	var colorArray = assignColors(pieHash);
+    	pieArray = $.merge(pieArray, pieHash);  
+      	function drawChart() {
+			console.log(colorArray);
+        	var data = google.visualization.arrayToDataTable(pieArray);
+       		 var options = {
+        	colors: colorArray,
+        	chartArea: {width: 350, height:150}
+       	 };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+        
+      }
+
+
+	}
+          	
+          	
+	function overrideAlertBanner(msg, type) {
+		$('.alert').show();
+		$('.alert').removeClass(currentBannerClass);    	
+        $('.alert').addClass('alert-' + type);
+    	$('.alert').css({'opacity':1});
+        $('.alert').html(msg);
+        currentBannerClass = 'alert-' + type;
+    }
+    
+    function lockTodayTimeInput() {
+    	$("#timeLock :input, .timeLock").prop("disabled", true);
+		var msg = 'You have not entered in data for 3 business days. Please enter in you time.'
+    	overrideAlertBanner(msg, 'error');
+	    }
+	    
+	function validateHours(lastInput) {
+    	lastInput = parseFloat(lastInput);   
+    	if ((lastInput % 0.25) != 0) {
+    		alert('Hourly input must be in increments of .25 (Example: 3:00pm to 4:15pm is 1.25 hours.)');
+    		return false;
+    	}
+    	var sumDayHours = 0.0;  
+    	$('.today').each( function() {
+    		sumDayHours += parseFloat($(this).val());
+    	});
+    	if ((sumDayHours + lastInput) > 24.0) {
+    	    alert('Daily hours may not exceed 24.');
+    		return false;
+    	}
+    	else {
+    		return true;
+    	}
+    }
+
+	
+</script>
+	
+
+	<style>
+	.customHeight {
+		height:10px !important;
+		line-height:10px !important;
+		vertical-align:middle !important;
+					}
+	
+	.alertBanner {
+		margin-bottom: 0 !important;
+		height: 52 px !important;
+	}
+	
+	a:visited {
+		color:#428bca;
+	}
+	
+	.dropdown-toggle {
+		color:#428bca;
+
+	}
+
+
+
+	</style>
+	</head>
+<body>
+  <% if !session[:user_id].nil? && User.exists?(:id => session[:user_id]) %>
+    
+
+
+<% if !current_page?('/new_client')%>
+<% if !@current_user.client%>
+<div class="row">
+      <div class='col-xs-12 col-md-6'>
+      <ul class="nav nav-pills">
+      		  <li class="<%= is_active?('/welcome/index') %>" > <a href="/welcome/index">Time Input</a></li>
+              <li class="<%= is_active?('/report') %>"><a href="/report">Time Summaries</a></li>
+              <li><a href="/submit_report">Submit Reports</a></li>
+     </ul>
+     </div>
+     <div class='col-xs-12 col-md-6'>
+     <ul class="nav nav-pills">
+
+              <li class="pull-right"> <a href="/signout">Log Out (<%=@current_user.first_name%>)</a></li>
+              <% if @current_user.admin || @current_user.work_order_admin %>
+              <li class="dropdown pull-right <%=(current_page?('/admin/users')) ?
+              									 'active': (current_page?('/admin/projects')) ? 'active':''%>">
+          		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin Options <b class="caret"></b></a>
+              	          <ul class="dropdown-menu">
+              	          	<% if @current_user.admin%>
+              	          	<li><a href="/admin/users">Users</a></li>
+              	          	<li><a href="/admin/projects">Projects</a></li>
+              	          	<%end%><!-- end admin check --!>
+              	          	<% if @current_user.work_order_admin%>
+              	          	<li><a href='/work_order_admin'>Work Orders</a></li>
+              	          	<%end%> <!-- end work order admin check --!>
+              	          </ul>
+               </li>      
+              <%end%> <!-- end admin or work_order_admin check --!>
+              <% if @current_user.manager %>
+              <li class="dropdown pull-right <%=(current_page?('/manager')) ?
+              									 'active': (current_page?('/manager/manageReports')) ? 'active':''%>">
+              	 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Manager Options <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                  	<li><a href="/manager">Manager Home</a></li>
+                  	<li><a href="/manageReports">Manage Reports</a></li>
+                  </ul>
+            </li>
+              <%end%> <!-- end manager check --!>
+        
+    </ul>
+    </div>
+   
+    </div>
+    <%end%> <!-- check if current_user.client --!>
+    <%end%>
+<!-- client nav bar --!>
+
+<% if @current_user.client %>
+    <div class="row">
+      <div class='col-xs-12'>
+      <ul class="nav nav-pills">
+    	<li class="pull-right"> <a href="/signout">Log Out (<%=@current_user.name%>)</a></li>
+      </ul>
+      </div>
+    </div>
+<%end%>
+          <div style="clear:both">
+          </div>
+  <% end %>
+  
+  <% if !session[:user_id].nil? %> 
+    <% end %>
+    <div class="col-xs-12 flashContainer" style="height:52px;">
+    <div class="alert alert-info" style="display:<%= (params[:notice])?'':'none'%>">
+    <% if params[:notice]%>
+        <%=params[:notice]%>
+    <% end %>
+    </div>
+
+		<% flash.each do |key, value| %>
+                    <div class="<%= flash_class(key) %>">
+                          <div class="hideThis"><%= value %></div>
+                    </div>
+              <% end %>
+    </div>
+			<div class="container-fluid" id="body">
+				<div class="row-fluid" id="whitey">
+                                  <%= yield %>
+                                </div>
+                          </div>
+			<%= render 'layouts/footer' %>
+	</body>
+        <script>
+
+		
+          $(document).ready(function(){
+            $.ajaxSetup({
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+              }
+            });
+            
+<<<<<<< HEAD
+            var colorHash = [];
+        	grabColors();
+
+			
+	
+=======
+>>>>>>> cae589dfbb4a19cbbc395277e5877d6a12cbfdf2
+          });
+        </script>
+</html>

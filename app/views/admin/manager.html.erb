@@ -1,0 +1,486 @@
+<script src="/assets/jquery-ui.min.js" ></script>
+    <%= stylesheet_link_tag    "jquery-ui.min.js" %>
+<script>
+  function searchUser(){
+      user_search = $("#user_search").val();
+      if(user_search == ""){
+        alert("Please Enter User CLID");
+        return false;
+      }
+      $.ajax({
+                method: 'GET',
+                url: '/searchUsers',
+                data : "clid="+user_search,
+                success: function(dt){                  
+                  $("#userResult").html(dt);
+                }
+            });    
+  }
+  function changeImage(obj){    
+    if(obj.hasClass("accordion-close")){
+      obj.find("img")[0].src = "/assets/open.png";      
+    }
+    if(obj.hasClass("accordion-open")){
+      obj.find("img")[0].src = "/assets/closed.png";      
+    }
+    $(".load_user_info").html("");
+  }
+  
+  $("document").ready(function(){
+    jQuery("input#user_search").autocomplete({
+        source: function (request, response) {
+            jQuery.get("/getUsersList", {
+                query: request.term
+            }, function (data) {                
+                response(data);
+            });
+        }, appendTo: '#menu-container',
+        minLength: 3
+    });    
+    $("input#user_search").change(function(){
+        if( $("input#user_search").val() == "")
+            $("#userResult").html("");      
+    });   
+   $( "#accordion" ).accordion({
+         beforeActivate: function( event, ui ) {           
+            $("div.load_user_info").html("");
+        }     
+   });
+  });
+  
+</script>  
+<style>
+  .ui-menu .ui-menu-item a{
+    background:red;
+    height:10px;
+    width: 50px !important;
+    font-size:8px;
+  }
+  
+  ul.ui-autocomplete {
+    list-style: none;
+  }
+</style>  
+
+<div class="row" id="accordion" style="background-color:rgb(249,249,249);">
+    <h4>Projects List</h4>
+<div>  
+  <table class="table table-striped table-bordered table-condensed  container" style="border:3px solid #0B58B0;background-color:white;">
+  <% if @projects.length > 0 %>
+  <thead>
+    <tr>
+      <th>Name</th>     
+      <th>Acct Number</th>
+      <th>Type</th>
+      <th>Manager(s)</th>
+     <%if @permissions['activate_managed_projects']%> <th></th> <%end%> 
+    </tr>
+  </thead>
+  <% end %>
+  <tbody>
+    <% @projects.each do |project| %>
+      <tr>
+        <td><%= project.name %></td>
+        <td><%= project.getAcctNumber %></td>
+        <td><%=project.project_type.capitalize%></td>
+        <td> <% if !project.project_managers.blank? %>
+        	<%project.project_managers.each do |pm|%>
+        	<%if User.exists?(pm.user_id)%>
+        	<%= User.find(pm.user_id).last_name %><br /><% end %>
+        	<%end%>
+        	<%end%></td>
+
+        <%if @permissions['activate_managed_projects']%><td>
+          <% if project.active == true %>
+              <input type="button" class="btn btn-primary" value="Deactivate" id=<%=project.id%> onclick="deactivate(this.id)"> </input>
+          <% else %>
+              <input type="button" class="btn btn-primary" value="Activate" id=<%=project.id%> onclick="activate(this.id)"> </input>
+          <% end %>
+        </td> <%end%>     
+      </tr>
+    <% end %>
+    <% @archive_projects.each do |project| %>
+      <tr>
+        <td><%= project.name %></td>
+        
+        <td><%= project.acct_number %></td>
+        <td> <% if !project.user_id.nil? %>  
+                <%   @pm = User.where(:id => project.user_id) %>
+                <% if !@pm.empty? %>
+                    <%= @pm[0].name%>
+                <% end %>
+              <% end %>
+        </td>
+        <td>
+        </td>        
+<td><b>Archived</b></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% if @projects.length == 0 %>
+  <h3 class="pull-left"> You are not assigned to manage any projects.</h3>
+<% end %>
+<br/>
+</div>
+
+<%if @permissions['assign_users_managed_projects']%>
+<h4>Search Users</h4>
+<div>
+    <form class="form-search" href="#">
+        <div class="input-group" style="width:400px">
+            <input type="text" class="span2 search-query" id="user_search" style="height: 30px;width:225px">
+            <div id="menu-container" style="position:absolute; width: 300px;"></div>
+            <button type="button" class="btn btn-info" onclick="searchUser()" style="margin-left:10px">Search</button>
+            <div id="userResult" style="width:500px"></div>
+        </div>
+    </form>
+</div>
+
+<h4>Assign Projects</h4>
+<div>
+<div class="col-xs-3">
+    <label>Select User(s)</label>
+    <select class="project" id="users_id" multiple>	
+      <%@r_users.each do |p|%>          
+        <option value="<%=p.id%>" class="employeeOption"><%=p.name %></option>
+      <%end%>
+    </select>
+</div>
+
+
+<div class="col-xs-3">
+  <label>Select Project(s)</label>
+    <select multiple class="project" id="project_id">
+    <%@projectMasterList.each do |key, value|%>
+    <option value = "<%=value%>"><%=key%></option>
+    <%end%>
+    </select> <br />
+  <div class="pull-right"><input type="button" class="btn btn-medium btn-primary" value="Assign Project" id="assign_project"></input>
+	</div>
+</div>
+<br/>
+
+<table class="table table-bordered" id="projects_assigned">
+  <caption><b>Project-User Hierarchy</b></caption>
+  <thead>
+    <tr>
+      <th>
+        Project
+      </th>
+      <th colspan=25>
+        Team
+      </th>
+    </tr>
+  </thead>
+<tbody>
+<% @project_users.each do |puk,puv| %>
+    <tr>
+      <td style="color:green">
+        <% @p = ProjectData.find(puk).name %>        
+        <%= @p %>
+        <input type="checkbox" name="id" class="pull-right" onclick='$(this).parent().parent().find("input:checkbox").prop("checked", this.checked)' title="Select All" ></input>
+      </td>
+      <% puv.each do |v| %>  
+      	<%empId = v.user_id%>
+      	<%if !Reporter.where(:reporter_id => @user.id, :reported_id => empId).blank?%>
+        <td>
+        	<%if User.exists?(v.user_id)%>
+          <%=User.find(v.user_id).name %>
+          <input type="checkbox" name="id" class="pull-right #{@p}" value ="this.id"  id=<%=v.user_id.to_s + "_"+puk.to_s %> ></input>
+          <!-- <button onclick="removeUserProject(this.id)" id=<%=v.user_id.to_s + "_"+puk.to_s%> ><i class="icon-trash"></i></button> -->
+   			<%end%>
+        </td>    
+        <%end%>
+      <% end %>
+    </tr>
+<% end %>
+  </tbody>
+
+</table> <br />
+<div class="pull-right">
+<button class="btn btn-primary removeSelectedUser" >Remove the User(s)</button>
+
+</div>
+
+<br/>
+
+</div>
+<%end%>
+
+</div>
+
+<style>
+    .project {
+      width: 100% !important;
+    } 
+
+  select#users_id, select#project_id {
+    height: 146px !important;
+  }
+
+
+
+</style>
+
+<script>
+
+   $(document).ready(function() {            
+          $('.accordion').accordion({
+            	header: ".panelHB"}
+            	); //some_id section1 in demo
+        	$('.panelHB').click(function() {
+        	      window.location = $(this).attr('href');
+      			  return false;
+        	});           
+          $(".accordion:eq(0)").click();
+   });
+
+  function selectAllUsers(id){
+    $("#"+id).click(function(){
+        $(this).parent().parent().find("input:checkbox").prop('checked', this.checked);
+    });
+  }
+  
+  $('.user_report_group').click(function() {
+    var obj = $(this);
+    $('.user_report_group.active').removeClass('active');
+    obj.addClass('active');
+  });
+  
+  $('.view_type').click(function() {
+  	var obj = $(this);
+  	$('.view_type').removeClass('btn-default').removeClass('btn-primary').addClass('btn-default');
+  	obj.removeClass('btn-default').addClass('btn-primary');
+  });
+  
+  function activate(project_id){
+       cb = confirm("Are you sure want to Activate?");
+      if(cb == true){
+          $.ajax({
+                method: 'POST',
+                url: '/activateProject',
+                data : "id="+project_id,
+                success: function(dt){
+                  //alert(dt);
+                  if(dt=="success"){
+                    $("#"+project_id).val("Deactivate");
+                    $("#"+project_id).attr("onclick","deactivate(this.id)" );               
+                  }
+                }
+            });
+      }
+  }
+  
+  function deactivate(project_id){
+       cb = confirm("Are you sure want to deactivate?");
+    if(cb == true){
+          $.ajax({
+              method: 'POST',
+              url: '/deactivateProject',
+              data : "id="+project_id,
+              success: function(dt){
+                if(dt=="success"){
+                  $("#"+project_id).val("Activate");
+                  $("#"+project_id).attr("onclick","activate(this.id)" );
+                }
+              }
+          });
+    }
+  }
+  
+  function removeUserProject(id){
+    cb = confirm("Are you sure want to remove the user from project?");
+    if(cb == false){
+      return false;
+    }
+    ids = id.split("_");
+    user_id = ids[0];
+    project_id = ids[1];
+    dataStr = "user_id="+user_id +"&project_id="+project_id; 
+    $.ajax({
+              type: 'POST',
+              url: '/removeProjects',
+              data : dataStr,
+              success: function(dt){
+                $("#projects_assigned").html(dt);
+              }
+      });
+  }
+  
+  // remove all selected users from projects //
+  
+  function removeSelectedUserProject(){
+    var checkedValues = $('input:checkbox:checked').map(function() {
+          return this.id;
+      }).get();
+    if(checkedValues.length == 0){
+      alert("Please select User(s)");
+      return false; 
+    }
+    cb = confirm("Are you sure want to remove the selected users from projects?");
+    if(cb == false){
+      return false;
+    }
+    dataStr = "data="+checkedValues; 
+    $.ajax({
+              type: 'POST',
+              url: '/removeProjects',
+              data : dataStr,
+              success: function(dt){
+              	console.log(dt);
+                $("#projects_assigned").html(dt);
+                //window.location.reload();
+              }
+      });
+  }
+  
+    $(document).ready(function(){
+
+  $('.removeSelectedUser').click(function() {
+  	removeSelectedUserProject();
+  });
+  
+    $("#assign_project").click(function(){
+      users = $("#users_id").val();
+      projects = $("#project_id").val();
+      if(users.length == 0){
+        alert("Please select users");        
+        return false;
+      }
+      if( projects.length ==  0){
+        alert("Please select projects");
+        return false;
+      }
+      cb = confirm("Are you sure want to Assign the Projects?");
+      if(cb == false){
+        return false;      
+      }
+      dataStr = "users="+users+"&projects="+projects;
+      $.ajax({
+              method: 'POST',
+              url: '/assignProjects',
+              data : dataStr,
+              success: function(dt){
+                $("#projects_assigned").html(dt);
+              }
+      });
+    });
+    
+  $('.archiveProject').click(function() {
+  	var pid = $('.projectID').html();
+  	$.ajax({
+  		url: '/archiveProject',
+  		data: 'pid=' + pid,
+  		method: 'GET',
+  		success: function() {
+  			alert('Project was successfully archived.');
+  		}
+  	
+  	
+  	});
+
+    
+    
+  });
+  
+  });
+</script>
+
+
+<script>
+  $(document).ready(function(){
+      $('.employeeOption').click(function(e) {	
+        loadSelectValues();
+      });
+  });
+ 
+  // script to work with the users
+  function loadSelectValues() {
+	 var pid = $('.project_data_id').html();
+
+	managerIds = [];
+	employeeIds = [];
+	gaIds = [];
+
+
+	
+	$('.managerOption:selected').each(function() {
+		managerIds.push($(this).val());
+		if ($.inArray($(this).val(), employeeIds) != -1) {
+			$(this).prop("selected", false)
+			alert('User may not be assigned as Project Manager and Employee');
+		}
+	});
+
+	$('.employeeOption:selected').each(function() {
+	
+		if ($.inArray($(this).val(), managerIds) != -1) {
+			$(this).prop("selected", false)
+			alert('User may not be assigned as Project Manager and Employee');
+		}
+		else {
+			employeeIds.push($(this).val());
+		}
+	});
+	
+	$('.gaOption:selected').each(function() {
+			gaIds.push($(this).val());
+	});
+	
+	$.ajax({	
+			data: {'pid': pid, 'managerIds':managerIds, 'employeeIds': employeeIds, 'gaIds': gaIds},
+    		url: '/load_user_info',
+    		method: 'GET',
+    		success: function(htmlElement) {
+            $('.load_user_info').show();
+    			  $('.load_user_info').empty();
+				    //$('.load_user_info').removeClass("falsh");
+            $('.load_user_info').append(htmlElement);
+            $('.load_user_info').addClass("animate");
+            $('.load_user_info').addClass("move");
+    			}
+    });	
+}
+</script>
+<div class="load_user_info animate" style="display:none"></div>
+
+<style>
+  .flash {
+      animation: 2.5s ease 1s normal forwards 1 running slideDown;
+      transform: translateY(-100px);
+  }
+  .flash {
+      box-shadow: 0 0 5px black;
+      overflow: hidden;
+      position: absolute;
+      right: 0;
+      text-align: center;
+      top: 0;
+      width: auto;
+      z-index: 101;
+    background-color: blue;
+  }  
+  
+  .animate{    
+    //height: 100px;
+    //width: 100px;
+    background-color: #9BD1F2;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    transition: all 1s ease;
+    position: absolute;
+    top: 60%;
+    left: 80% ;
+  }
+  .animate.move {
+    left: 60%;    
+    margin-left: -100px; /*.animate width*/
+  }
+  .load_user_info.panel .panel-body{
+    background-color:#9BD1F2 !important;
+  }
+</style>

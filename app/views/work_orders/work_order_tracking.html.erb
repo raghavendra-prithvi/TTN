@@ -1,0 +1,17 @@
+<%@actualWorkOrders.each do |w| %>
+	Tracking Data for <%=w.work_order.project_name%> <br />
+	Work Order Number: <%= w.work_order.work_order_number%><br />
+	Project Description: <%= w.project_description%><br />
+	<%if !w.project_manager_id.blank?%>
+		Project Manager: 
+		<%projectManager = User.find(w.project_manager_id)%>
+		<%=projectManager.last_name + ', ' + projectManager.last_name %><br />
+	<%end%>
+	Start Date: <%=w.start_date%><br />
+	End Date: <%=w.end_date%><br />
+	Work Order Status: <%=w.work_order_status%><br />
+	Work Order Progress Status: <%=w.work_progress_status%><br />
+	Total Hours Worked: <%=w.work_order.project.time_tables.getTotal%>
+<%end%>
+	
+	

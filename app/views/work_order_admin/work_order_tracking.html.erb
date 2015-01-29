@@ -1,0 +1,969 @@
+<% if session[:user_id] %>
+  <%@user = User.find(session[:user_id]) %>	
+
+	<div class="row">
+		
+		<div class="col-xs-7"> 
+<!-- Table View Buttons -->
+ 			<table class="  firstRow">
+ 				<tr>
+                	<td> <input class = "datePicker" id="txtDate"/><input class="datePicker hidden" id="altDate"/></td>
+                	<td><div class="btn-group btn-group">	
+  					<button type="button" class="btn btn-default changeDate changeDatePrev" value="prev">Prev</button>
+  					<button type="button" class="btn btn-default changeDate" value="today">Today</button>
+					<button type="button" class="btn btn-default changeDate changeDateNext" value="next">Next</button>
+					</div></td>
+					<td>
+ 					<button type="button" class="btn btn-default btn-sm exportWeekly" >Export Weekly CSV</button>
+ 						  <button type="button" class="btn btn-default btn-sm exportMonthly" value="monthly">Export Monthly CSV</button>
+ 						  <button type="button" class="btn btn-default btn-sm exportQuarterly" value="quarterly">Export Quarterly CSV</button>
+ 						  <button type="button" class="btn btn-default btn-sm exportYearly">Export Calendar Year CSV</button>
+					</td>
+                   	</tr>
+        <tr><td>&nbsp</td></tr>
+                   	<tr>
+                   	<td> <label class="prLabel">DHH Report Type: </label>
+					<select class="time_view_select"> 
+						<option value="weekly" >Weekly</option>
+                  		<option value="monthly" >Monthly</option>
+                  		<option value="quarterly">Quarterly</option>
+                  		<option value="yearly">Calendar Year</option>
+                   		</select>
+                   	</td> 
+                   	<td><div class="status_select"><label>Work Progress Status:</label><select class="wo_status_select"> 
+                	    <option value="all">All</option>
+						<option value="hold">On Hold</option>
+                  		<option value="progress">In Progress</option> 
+						<option value="complete">Complete</option>
+                  		<option value="cancel">Canceled</option>  
+                  		<option value="blank">Needs Work Order Status</option>
+					</select>
+                   	 </div>
+                   	</td>
+
+                   	<td><div class="type_select"> <label>Segment Filters: </label>
+                	<select class="wo_type_select"> 
+                	    <option value="all">All</option>
+						<option value="project">Project</option>
+                  		<option value="support">Support</option>  
+                   		<option value="maintenance">Maintenance</option>
+                   		<option value="admin">Administration</option>
+                   		<option value="percent">Office Hour Distributions</option>
+                   		</select> </div>
+                   	</td>
+                  
+				</tr>
+            </table>
+        </div>
+        <div class="col-xs-5"> 
+        <div class="weeklyChart">
+        <b>Total Est Hours: </b><span class="tEstHours"></span> <br />
+        <b>Total Actual Hours: </b><span class="tActHours"></span> <br />
+        <b>Total Previous Week: </b><span class="tPrevWeek"></span><br />
+        </div>
+        </div>
+        
+<!-- Type Projects -->
+<div class="monthlyChart">
+
+<div class="col-xs-12">
+<table class="table table-condensed table-bordered table-hover grandTotal">
+<tr><td colspan=2><b>Grand Total :</b></td><td><b><div class="totalYearlyGrand"></div></b></td></tr>
+</table>
+</div>
+
+<div class="col-xs-12">
+   <fieldset class="monthly project">
+    <legend class="scheduler-border " style="padding-top:10px">Project</legend>
+ 			<table class="table  table-condensed table-bordered table-hover monthly project">	
+ 			<thead><th>Work Order ID </th><th>Project Name</th><th>WO Status</th><th>Current Status</th><th>Business Owner</th><th>Program Office</th><th>ULL CBIT Resource</th><th>Hours Worked</th><th>Options</th></thead>
+          	<tr class="toRemove"></tr>
+          	 <tr><td colspan=7><b>Total :</b></td><td><div class="totalMonthlyProject"></div></b></td><td></td></tr>
+          	</table>
+          	</fieldset>
+          
+</div>
+
+<div class="col-xs-12">
+<fieldset><legend class="scheduler-border yearly project" style="padding-top:10px">Project</legend>
+          	<table class="table table-condensed table-bordered table-hover yearly project">
+          	<thead><th>Quarter</th><th>Hours Worked</th></thead>
+         	<tr><td>Q1</td><td class="q1Project"></td></tr>
+          	 <tr><td>Q2</td><td class="q2Project"></td></tr>
+          	<tr><td>Q3</td><td class="q3Project"></td></tr>
+          	<tr><td>Q4</td><td class="q4Project"></td></tr>
+          	<tr><td><b>Total :</b></td><td><div class="totalYearlyProject"></div></b></td></tr>
+          </table>
+  </fieldset>
+</div>
+<!-- Type Support -->	
+<div class="col-xs-12">
+  <fieldset class="monthly support">
+    <legend class="scheduler-border  ">Support</legend>
+ 			<table class="table table-condensed table-bordered table-hover monthly support">
+ 			<thead><th>Work Order ID </th><th>Task Name</th><th>WO Status</th><th>Current Status</th><th>Business Owner</th><th>Program Office</th><th>ULL CBIT Resource</th><th>Hours Worked</th><th>Options</th></thead>
+          	<tr class="toRemove"></tr>
+          	<tr><td colspan=7><b>Total :</b></td><td><div class="totalMonthlySupport"></div></b></td><td></td></tr>
+          	</table>
+       	</fieldset>
+       
+    </div>
+<div class="col-xs-12">
+    	<fieldset>
+       	<legend class="scheduler-border yearly support">Support</legend>
+          <table class="table table-condensed table-bordered table-hover yearly support">
+          	<thead><th>Quarter</th><th>Hours Worked</th></thead>
+         	<tr><td>Q1</td><td class="q1Support"></td></tr>
+          	 <tr><td>Q2</td><td class="q2Support"></td></tr>
+          	<tr><td>Q3</td><td class="q3Support"></td></tr>
+          	<tr><td>Q4</td><td class="q4Support"></td></tr>
+          	<tr><td><b>Total :</b></td><td><div class="totalYearlySupport"></div></b></td></tr>
+          </table>
+</fieldset>
+</div>  
+<!-- Type Maintenance -->
+<div class="col-xs-12">
+  <fieldset class="monthly maintenance">
+    <legend class="scheduler-border ">Maintenance</legend>
+
+ 			<table class="table  table-condensed table-bordered table-hover monthly maintenance">	
+ 			<thead><th>Work Order ID </th><th>Task Name</th><th>WO Status</th><th>Current Status</th><th>Business Owner</th><th>Program Office</th><th>ULL CBIT Resource</th><th>Hours Worked</th><th>Options</th></thead>
+          	<tr class="toRemove"></tr>
+          	<tr><td colspan=7><b>Total :</b></td><td><div class="totalMonthlyMaintenance"></div></b></td><td></td></tr>
+
+        	</table>
+	</fieldset>
+
+</div>
+<div class="col-xs-12">
+	<fieldset>
+          		<legend class="scheduler-border yearly maintenance" style="padding-top:10px">Maintenance</legend>
+
+<div class="col-xs-12">
+<table class="table table-condensed table-bordered table-hover yearly maintenance">
+          	<thead><th>Quarter</th><th>Hours Worked</th></thead>
+          	<tr><td>Q1</td><td class="q1Maintenance"></td></tr>
+          	 <tr><td>Q2</td><td class="q2Maintenance"></td></tr>
+          	<tr><td>Q3</td><td class="q3Maintenance"></td></tr>
+          	<tr><td>Q4</td><td class="q4Maintenance"></td></tr>
+          	<tr class='totalRow'><td><b>Total :</b></td><td><b><div class="totalYearlyMaintenance"></div></b></td></tr>
+          </table>
+</fieldset>
+</div>
+<!-- Type Admin -->
+<div class="col-xs-12">
+   <fieldset class="monthly admin">
+    <legend class="scheduler-border">Administration</legend>
+ 			<table class="table  table-condensed table-bordered table-hover monthly admin">	
+ 	<thead><th>Type</th><th>ULL CBIT Resource Name</th><th>Hours Worked</th></thead>
+          	<tr class="toRemove"></tr>
+          	</table>
+</fieldset>
+
+</div>
+
+<div class="col-xs-12">
+<fieldset>
+          		<legend class="scheduler-border yearly Admin" style="padding-top:10px">Administration</legend>
+
+<table class="table table-condensed table-bordered table-hover yearly admin">
+          	<thead><th>Quarter</th><th>Hours Worked</th></thead>
+          	<tr><td>Q1</td><td class="q1Admin"></td></tr>
+          	 <tr><td>Q2</td><td class="q2Admin"></td></tr>
+          	<tr><td>Q3</td><td class="q3Admin"></td></tr>
+          	<tr><td>Q4</td><td class="q4Admin"></td></tr>
+          	<tr><td><b>Total :</b></td><td><div class="totalYearlyAdmin"></div></b></td></tr>
+</table>
+</fieldset>
+</div>
+
+
+
+<div class='col-xs-12'>
+  <fieldset>
+    <legend class="scheduler-border">Percentage Summaries</legend>
+	<div class="panel panel-default monthly percent">
+    <div class="panel-body">
+    	<table class="table table-condensed">
+    	<tr><td>Office of the Secretary (OS):</td><td> <span class="os"></span></td></tr>
+    	<tr><td>Office of Public Health (OPH):</td><td> <span class="oph"></span></td></tr>
+    	<tr><td>Office of Behavioral Health (OBH):</td><td> <span class=obh></span></td></tr>
+    	<tr><td>Office of Aging and Adult Services (OAAS):</td><td> <span class="oaas"></span></td></tr>
+    	<tr><td>Office of Citizens with Developmental Disabilities (OCDD):</td><td> <span class="ocdd"></span></td></tr>
+    	<tr><td>Medicaid:</td><td> <span class="medicaid"></span></td></tr>
+    	</table>
+	</div>
+	</div>
+    </fieldset>
+	</div>
+
+	</div> <!-- monthlyChart-->
+	
+<div class="weeklyChart">
+	<div class='col-xs-12 weeklyPanel'>
+
+ 	</div>
+</div>
+</div>
+</div>
+
+
+<style>
+.panel{
+	margin-bottom: 0px;
+}
+
+.sCaps {
+ font-variant:small-caps;
+
+}
+.weeklyPanel:first-of-type {
+	margin-top: 10px;
+}
+.panel-body {
+	padding: 1px;
+}
+.panel-heading{
+	padding: 1px;
+	background-color: #99CCFF !important;
+}
+.firstRow {
+	width: 710 px !important;
+}
+
+
+.changeDate, .backToReg, .toToday{
+	height: 25px !important;
+	padding:5px;
+	margin:0 !important;
+	line-height: 12.5px;
+	}
+#txtDate, #txtDate2 {
+   	width:90px !important;
+   	padding:0;
+	margin:0;
+	height:25px;
+}
+
+
+th {
+background-color: #99CCFF !important;
+}
+
+.time_view_select, .wo_type_select, .wo_status_select {
+	width: 200px !important;
+
+}
+
+.datePicker {
+	width:90px !important;
+	height: 25px !important;
+padding: 0 !important;
+margin: 0 !important;
+margin-right: -11px !important;
+text-align: center;
+}
+
+.estInput {
+	width: 40px;
+	height: 25px !important;
+	padding: 0;
+	margin: 0 !important;
+	text-align: right;
+	padding-right: 1px;
+	margin-right: -5px !important;
+}
+
+.regInput {
+	width:100%;
+	height: 25px !important;
+	padding: 0 !important;
+	margin: 0 !important;}
+	
+.table {
+	margin-bottom: 3px;
+}
+	.table tbody tr:hover td,
+.table tbody tr:hover th {
+  background-color: transparent;
+}
+
+.table tbody tr td {
+	border-top: 0px;
+	padding: 0px;
+	vertical-align: middle !important;
+	text-align: middle !important;
+}
+
+b {
+	padding: 0px !important;
+}
+
+.lastCol {
+	text-align: right !important;
+}
+
+.saveRow {
+	width: 45px !important;
+	text-align: center;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.headingInfo{
+	padding-right: 4px !important;
+}
+
+ fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    border-radius: 8px !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+  }
+
+  legend.scheduler-border {
+      font-size: .9em !important;
+	  border-bottom: 0px !important;
+  }  
+  
+  fieldset {
+  	margin-top: 15px !important;
+  
+  }
+  
+  legend.scheduler-border {
+    width:inherit; /* Or auto */
+    padding:0px; /* To give a bit of padding on the left and right */
+    /*border-bottom:none; */
+}
+
+.grandTotal {
+	margin-top: 10px !important;
+}
+ 
+
+</style>
+
+  
+<script type="text/javascript">
+
+  $(document).ready(function(){
+  
+  
+  var months = [ "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December" ];
+	var days = {1:"Mon", 2:"Tue", 3:"Wed", 4:"Thu", 5:"Fri", 6:"Sat", 0:"Sun"};
+	var quarterDates = {1: 0, 2: 3, 3: 6, 4: 9};
+
+    $("#txtDate").datepicker({ altField:  '#altDate', altFormat: 'yy-mm-dd', 
+    	showOtherMonths: true, selectOtherMonths: true, firstDay: 1, changeYear: true,
+    	onSelect: function() {
+        	var selectedDate = $("#txtDate").datepicker('getDate');
+        	changeView($('.time_view_select').val(), selectedDate);
+        	getOfficePercents();
+		 }
+		});
+
+  
+
+
+		
+	$('#txtDate').datepicker('setDate', 'today');
+    $('.time_view_select').val("weekly");
+	$('#txtDate').datepicker('setDate', 'today');
+	
+	function changeView(view, today) {
+	var row = $('.table.monthly tr');
+	$('.toRemove').remove();
+	$.ajax({
+		method: 'GET',
+        data: 'view=' + view + '&today=' + today,
+        url: '/getWOData',
+        dataType: 'json',
+        success: function(data){
+        	var names = [];
+        	var section = $('.weeklyPanel');
+			var panels = $('.weeklyPanel > .panel');
+			panels.remove();
+			var row = $('table.monthly tr');
+			row.has('.toRemove').remove();
+			$.each(data, function(key, value) {
+				if(view=="weekly"){
+					if (key == 'grandTotal'){
+						$('.tActHours').html(value);
+					}
+					else if (key == 'prevWeekTotal'){
+						$('.tPrevWeek').html(value);
+					}
+					else if  (key == 'estHourTotal'){
+						$('.tEstHours').html(value);
+					}
+					else {
+					var hours = value.hours_worked;
+					var prevHours = value.prev_week;
+					var office = value.program_office;
+					var pName = value.project_name;
+					var wid = value.wid;
+					var woStatus = value.wo_status;
+					var workStatus = value.work_status;
+					var woNumber = value.work_order_number;
+					var type = value.work_order_type;
+					var startDate = value.start_date;
+					var endDate = value.end_date;
+					var employees = value.employees;
+					var projectDescript = value.project_descript;
+					var pManager = value.pManager;
+					var estHours = value.est_hours;
+					var panel = '<div class="panel panel-default '+workStatus+'1" id="'+wid+'">'+
+    				'<div class="panel-heading"><b>Work Order</b> '+woNumber+' <b>Project Name</b> ' + pName + ' <span class="headingInfo pull-right"><span class="sCaps"> Program Office</span> '+office+
+    				'<span class="sCaps"> Manager</span> '+pManager+' <span class="sCaps">Actual Hours</span> '+hours+' <span class="sCaps">Prior Week</span> '+prevHours+'</span></div>'+
+				      '<div class="panel-body"><table class="table table-bordered table-condensed">' +
+					'<tr><td>Description</td> <td><input type="text" class="'+wid+'ProjectDescript regInput" value="'+projectDescript+'" disabled/></td>'+
+					'<td>Est Hours</td><td><input class="'+wid+'EstHours estInput" type="text" value="'+estHours+'" disabled/></td>' +
+					'<td>Status</td><td><select class="'+wid+'StatusSelect regInput" disabled="disabled" id="actual_work_order" name="actual_work_order"><option value="blank">Assign Status</option><option value="hold">On Hold</option>'+
+								'<option value="complete">Complete</option><option value="progress">In Progress</option><option value="cancel">Canceled</option></select></td>'+
+					'<td>WO Status</td><td><input class="'+wid+'WeekWOStatus regInput" type="text" value="'+woStatus+'" disabled/></td>' +
+					'<td>Start Date</td><td><input class = "datePicker startDate" id="'+wid+'StartDate" value="" disabled/></td>'+
+					'</tr>' +
+					'<tr><td>Employees</td><td colspan=7>';
+					$.each(employees, function(index, value) {
+						if (index == employees.length - 1) {
+							panel += value + '. </td>'; }
+						else {
+							panel += value + ', ';
+						}
+					});
+					panel += '<td>End Date</td><td><input class = "datePicker endDate" id="'+wid+'EndDate" value="" disabled/></td><td class="lastCol"><button class="editRow btn btn-sm btn-default" id="'+wid+'">Edit</button><button class="saveRow btn btn-sm btn-default" id="'+wid+'">Save</button><button class="viewRow btn btn-sm btn-default" id="'+wid+'">View Request</button></div></td></tr></table>';
+					section.append(panel);
+					
+					  $('#'+wid+'StartDate').datepicker({showOtherMonths: true, selectOtherMonths: true, firstDay: 1, changeYear: true});
+					  $('#'+wid+'EndDate').datepicker({showOtherMonths: true, selectOtherMonths: true, firstDay: 1, changeYear: true});
+					  $('#'+wid+'StartDate').datepicker('setDate', new Date(startDate));
+					  $('#'+wid+'EndDate').datepicker('setDate', new Date(endDate));
+
+						$('.' + wid + 'StatusSelect').val(workStatus);
+
+					}  
+				}
+				else if (view == "monthly"){
+				if (key == 'aGT'){
+						$('.totalMonthlyAdmin').html(value);
+					}
+					else if (key == 'mGT') {
+						$('.totalMonthlyMaintenance').html(value);
+					}
+					else if (key == 'pGT') {
+						$('.totalMonthlyProject').html(value);
+					}
+					else if (key == 'sGT') {
+						$('.totalMonthlySupport').html(value);
+					}
+					else if (key == 'grandTotal'){
+						$('.totalYearlyGrand').html(value);
+					}
+					else{
+					// extract keys and sort
+						names.push(key);
+					}
+				}
+				else if (view == "quarterly") {
+					if (key == 'aGT'){
+						$('.totalMonthlyAdmin').html(value);
+					}
+					else if (key == 'mGT') {
+						$('.totalMonthlyMaintenance').html(value);
+					}
+					else if (key == 'pGT') {
+						$('.totalMonthlyProject').html(value);
+					}
+					else if (key == 'sGT') {
+						$('.totalMonthlySupport').html(value);
+					}
+					else if (key == 'grandTotal'){
+						$('.totalYearlyGrand').html(value);
+					}
+					else{
+					// extract keys and sort
+						names.push(key);
+					}
+				}
+				else {
+					if (key == 'aGT'){
+						$('.totalYearlyAdmin').html(value);
+					}
+					else if (key == 'mGT') {
+						$('.totalYearlyMaintenance').html(value);
+					}
+					else if (key == 'pGT') {
+						$('.totalYearlyProject').html(value);
+					}
+					else if (key == 'sGT') {
+						$('.totalYearlySupport').html(value);
+					}
+					else if (key == 'grandTotal'){
+						$('.totalYearlyGrand').html(value);
+					}
+					else {
+						className = '.' + key;
+						$(className).html(value);
+					}
+				}
+			});
+			names.sort();
+			console.log(names);
+			if (names.length > 0){
+				$.each(names, function( index, key) {
+					val = data[key][0];
+					var owner = val.business;
+					var hours = val.hours_worked;
+					var office = val.program_office;
+					var pName = val.project_name;
+					var wid = val.wid;
+					var woStatus = val.wo_status;
+					var workStatus = val.work_status;
+					var woNumber = val.work_order_number;
+					var type = val.work_order_type;
+					var table = $('table.monthly.' + type + ' tr:last');
+					
+					var tableRow = '<tr class="toRemove ' + workStatus + '1" id="' + wid + 'Row"><td>' + woNumber + '</td><td>'+pName+'</td><td><input class="'+wid+'WOStatus regInput" type="text" value="'+woStatus +'" disabled/></td><td>'+
+									'<select class="'+wid+'StatusSelectMonth regInput" disabled="disabled" id="actual_work_order" name="actual_work_order"><option value="blank">Assign Status</option><option value="hold">On Hold</option>'+
+									'<option value="complete">Complete</option><option value="progress">In Progress</option><option value="cancel">Canceled</option></select>'+
+									'<td>'+owner+'</td><td>'+office+'</td><td>'+key+'</td><td>'+hours+'</td><td><button class="saveRow btn btn-sm btn-default" id="'+wid+'">Save</button><button class="editRow btn btn-sm btn-default" id="'+wid+'">Edit</button><button class="viewRow btn btn-sm btn-default" id="'+wid+'">View Request</button></td>';
+					table.before(tableRow);
+					$('.' + wid + 'StatusSelectMonth').val(workStatus);
+				});
+			}
+		  	$('.saveRow').hide();
+			}
+	});
+
+// Admin Data
+	
+	if ((view == 'monthly') || (view == 'quarterly')){
+	$.ajax({
+		method: 'GET',
+		url: '/get_admin_data',
+		data: 'today=' + today + '&view=' + view,
+		success: function(data) {
+			var table = $('table.monthly.admin');
+			var names = [];
+			var lastRowVal = 0;
+			$.each(data, function(key, value) {
+				if (key == 'grandTotal'){
+					lastRowVal = value;
+				}
+				else {
+					names.push(key)
+				}
+			});
+			if (names.length > 0) {
+				names.sort();
+				$.each(names, function(index, key) {
+					value = data[key];
+					var row = '<tr class="toRemove"><td>' + value[0] + '</td><td>' + key + '</td><td>' + value[1] +'</td></tr>';
+					table.append(row);
+			});
+			
+			var lastRow = '<tr class="toRemove"><td colspan=2><b>Total: </b></td><td><b>' + lastRowVal + '</b></td></tr>';
+			table.append(lastRow);
+		
+		}
+	}
+	
+	
+	});
+	}
+	}
+		
+
+
+
+  
+  	
+$('.toToday').click(function() {
+	var	newDate = new Date();
+	$('#txtDate').datepicker('setDate', newDate);
+	changeView($('.time_view_select').val(), newDate);
+	getOfficePercents();
+});
+
+
+$('.changeDate').click( function() { 
+    
+    var currentDate = $("#txtDate").datepicker('getDate');
+	var	newDate = new Date();
+	
+	var changeDay = 0;
+	var changeMonth = 0;
+	var changeYear = 0;
+	
+	var view =$('.time_view_select').val();
+	
+	if (view == "weekly") {
+		if ($(this).val() == 'prev') { changeDay = -7;}
+		else if ($(this).val() == 'next'){changeDay = 7;}
+	}
+	else if (view == "monthly") {
+		if ($(this).val() == 'prev') {changeMonth = -1;}
+		else if ($(this).val() == 'next'){changeMonth = 1;}	
+	}
+	else if (view == "yearly") {
+		if ($(this).val() == 'prev') {changeYear = -1;}
+		else if ($(this).val() == 'next'){changeYear = 1;}
+	}
+	else {
+		var currentQ = getQuarter(currentDate);
+		currentDate.setMonth(quarterDates[currentQ]);
+		currentDate.setDate(1);
+		if	($(this).val() == 'prev'){ changeMonth = -3;}
+		else if ($(this).val() == 'next') {changeMonth = 3;}
+	}
+
+	if ($(this).val() == "prev" || $(this).val() == "next"){
+		newDate.setYear(currentDate.getFullYear() + changeYear);	
+		newDate.setMonth(currentDate.getMonth() + changeMonth);	
+		newDate.setDate(currentDate.getDate() + changeDay);}
+
+
+	$('#txtDate').datepicker('setDate', newDate);
+	changeView(view, $("#txtDate").datepicker('getDate'));
+	getOfficePercents();
+
+
+		
+});
+
+		
+    
+	$('.time_view_select').change( function() {
+		if ($(this).val() =='weekly') {
+			$('.monthlyChart').hide(); 
+			$('.exportMonthly').hide();
+			$('.exportQuarterly').hide();
+			$('.exportYearly').hide();
+			$('.exportWeekly').show();
+			$('.wo_type_select').prop('disabled', true);
+			$('.percent').hide();
+			$('.wo_status_select').val('all');
+			$('.wo_status_select').trigger('change');
+			$('.weeklyChart').show();
+			$('.wo_status_select').prop('disabled', false);
+			}
+		else if ($(this).val() == 'monthly') {
+			$('.weeklyChart').hide();
+			$('.monthlyChart').show();
+			$('.yearly').hide();
+						$('.monthly').show();
+			$('.exportMonthly').show();
+			$('.exportQuarterly').hide();
+			$('.exportYearly').hide();
+			$('.exportWeekly').hide();
+			$('.percent').show();
+			$('.wo_type_select').prop('disabled', false);
+			$('.wo_status_select').prop('disabled', false);
+
+		}
+		else if ($(this).val() == 'quarterly') {
+			$('.weeklyChart').hide();
+			$('.monthlyChart').show();
+			$('.yearly').hide();
+			$('.monthly').show();
+			$('.exportMonthly').hide();
+			$('.exportQuarterly').show();
+			$('.exportYearly').hide();
+			$('.exportWeekly').hide();
+			$('.percent').show();
+			$('.wo_type_select').prop('disabled', false);
+			$('.wo_status_select').prop('disabled', false);
+
+		}
+		else if ($(this).val() == 'yearly') {
+			$('.weeklyChart').hide();
+			$('.monthlyChart').show();
+			$('.yearly').show();
+			$('.monthly').hide();
+			$('.exportMonthly').hide();
+			$('.exportQuarterly').hide();
+			$('.exportYearly').show();
+			$('.exportWeekly').hide();
+			$('.percent').show();
+			$('.wo_type_select').prop('disabled', false);
+			$('.wo_status_select').prop('disabled', true);
+		}
+		changeView($(this).val(), $("#txtDate").datepicker('getDate'));
+		getOfficePercents();
+		});
+		
+$('body').on('click', '.editRow', function() {
+var wID = $(this).attr('id');
+$(this).hide();
+var view = $('.time_view_select').val();
+if (view == 'monthly' || view == 'quarterly') {
+	$(this).hide();
+	$(this).prev('.saveRow').show();
+	row = $(this).closest('tr');
+	row.find('input, select').each(function(ind, value){
+		$(value).prop('disabled', false);
+	});
+
+}
+
+else {
+$('#' + wID + '.saveRow').show();
+//Enable editing in the row
+	$('.' + wID + 'ProjectDescript').prop('disabled', false);
+	$('#' + wID + 'StartDate').prop('disabled', false);
+	$('#' + wID + 'EndDate').prop('disabled', false);
+	$('.' + wID + 'ProjectDescript').prop('disabled', false);
+	$('.' + wID + 'WeekWOStatus').prop('disabled', false);
+	$('.' + wID + 'StatusSelect').prop('disabled', false);
+	$('.' + wID + 'EstHours').prop('disabled', false);
+	$('.' + wID + 'WOStatus').prop('disabled', false);
+	$('.' + wID + 'StatusSelectMonth').prop('disabled', false);
+
+}
+});
+
+$('body').on('click', '.saveRow', function() {
+	var wID = $(this).attr('id');
+	$(this).hide();
+
+	$('#' + wID + '.editRow').show();
+	$('.' + wID + 'ProjectDescript').prop('disabled', true);
+	$('#' + wID + 'StartDate').prop('disabled', true);
+	$('#' + wID + 'EndDate').prop('disabled', true);
+	$('.' + wID + 'WeekWOStatus').prop('disabled', true);
+	$('.' + wID + 'StatusSelect').prop('disabled', true);
+	$('.' + wID + 'EstHours').prop('disabled', true);
+	$('.' + wID + 'StatusSelectMonth').prop('disabled', true);
+	$('.' + wID + 'WOStatus').prop('disabled', true);
+
+	var view = $('.time_view_select').val();
+	
+	if ( view== "weekly"){
+		var weekWOStatus = $('.' + wID + 'WeekWOStatus').val();
+		var workStatus = $('.' + wID + 'StatusSelect').val();
+		var projectDescript = $('.' + wID + 'ProjectDescript').val();
+		var startDate = $('#' + wID + 'StartDate').datepicker('getDate');
+		var endDate = $('#' + wID + 'EndDate').datepicker('getDate');
+		var estHours = 	$('.' + wID + 'EstHours').val();
+				$('.' + wID + 'WeekWOStatus').val(weekWOStatus);
+		$('.' + wID + 'StatusSelect').val(workStatus);
+
+		var dataString = 'view=' + view + '&wID=' +wID+ '&projectDescript=' +projectDescript+ '&startDate=' +startDate+ '&endDate=' +endDate+ '&woStatus=' +weekWOStatus+ '&workStatus=' + workStatus + '&estHours=' + estHours;
+
+	}
+	else if (view =="monthly" || view =="quarterly" ){
+		var currentRow = $(this).closest('tr');
+		var weekWOStatus = currentRow.find('input').val();
+		var workStatus = currentRow.find('select').val();
+				$('.' + wID + 'WOStatus').val(weekWOStatus);
+		$('.' + wID + 'StatusSelectMonth').val(workStatus);
+
+		var dataString = 'wID=' +wID+'&woStatus=' +weekWOStatus+ '&workStatus=' + workStatus + '&view=' + view;
+		console.log(dataString);
+	}
+	
+	var className = workStatus + 1;
+	
+	var panel = $('#' + wID + '.panel');
+	panel.removeClass('hold1 progress1 cancel1 complete1 blank1');
+	panel.addClass(className);
+	var row = $('#' + wID + 'Row');
+	row.removeClass('hold1 progress1 cancel1 complete1 blank1');
+	row.addClass(className);
+	
+	
+	//Save new values to ActualWorkOrder
+		$.ajax({		
+		method: 'GET',
+        data: dataString,
+        url: '/saveAWOEdits',
+        dataType: 'json',
+		});
+		
+
+	});
+	
+	
+
+
+	$('body').on('click', '.viewRow', function() {
+		var wID = $(this).attr('id');
+		window.location.href = '/work_order_review/' + wID;
+	});
+
+	function getOfficePercents(){
+		var view = $('.time_view_select').val();
+		if (view != "weekly"){
+		$.ajax({		
+			method: 'GET',
+        	url: '/getOfficePercents',
+        	data: 'today=' + $('#txtDate').datepicker('getDate') + '&view=' + view,
+        	dataType: 'json',
+        	success: function(data){
+        		console.log(data);
+        		if (data.allZero){
+        			$('.os, .ocdd, .oaas, .obh, .oph, .medicaid').html('0%');
+        		}
+        		else{
+        		$('.os').html(parseFloat(data.os).toFixed(2) + '%');
+        		$('.ocdd').html(parseFloat(data.ocdd).toFixed(2) + '%');
+        		$('.oaas').html(parseFloat(data.oaas).toFixed(2) + '%');
+        		$('.obh').html(parseFloat(data.obh).toFixed(2) + '%');
+        		$('.oph').html(parseFloat(data.oph).toFixed(2) + '%');
+        		$('.medicaid').html(parseFloat(data.medicaid).toFixed(2) + '%');
+        		}
+
+        	}
+		});
+	}
+	}
+	
+	$('.wo_type_select').change(function() {
+		
+		var value = $(this).val();
+		var view = '.' + $('.time_view_select').val();
+		(view == '.quarterly')? view = '.monthly': view = view;
+		if (value=='admin'){
+			$(view + '.admin').show();
+			$(view + ':not(.admin)').hide();  
+			}
+		else if (value=='maintenance'){
+			$(view + '.maintenance').show();
+			$(view + ':not(.maintenance)').hide(); }
+		else if (value=='project'){
+		$('.status_select').show();
+			$(view + '.project').show();
+			$(view + ':not(.project)').hide(); }
+		else if (value=='support'){
+			$(view + '.support').show();
+			$(view + ':not(.support)').hide(); }
+		else if (value=='percent') {
+			$(view + '.percent').show();
+			$(view + ':not(.percent)').hide();
+		}
+	//All
+		else{
+			$('.wo_type_select').prop('disabled', false);
+			$(view).show();
+		}
+	
+
+	});
+
+	$('.wo_status_select').change(function() {
+		var value = $(this).val();
+
+		if (value != 'all') {
+			$('.'+value+1).show();
+		}
+		
+		if (value=='hold'){
+			$('.cancel1').hide();
+			$('.progress1').hide();
+			$('.complete1').hide(); 
+			$('.blank1').hide();}
+		else if (value=='progress'){
+			$('.cancel1').hide();
+			$('.complete1').hide();
+			$('.hold1').hide();
+			$('.blank1').hide();} 
+		else if (value=='cancel'){
+			$('.progress1').hide();
+			$('.complete1').hide();
+			$('.hold1').hide();
+			$('.blank1').hide();}
+		else if (value=='complete'){
+			$('.cancel1').hide();
+			$('.hold1').hide();
+			$('.progress1').hide();
+			$('.blank1').hide();}
+		else if (value=='all') {
+			$('.cancel1, .hold1, .progress1, .complete1, .blank1').show();
+		}
+		else {
+			$('.cancel1, .hold1, .progress1').hide();
+			$('.blank1').show();
+		}
+
+	});
+	
+
+	$('.exportWeekly').click(function() {
+		var date = $("#txtDate").datepicker('getDate');
+		$.ajax({
+			url: '/weeklyCSV?format=csv&date=' + date,
+			type: 'GET',
+			success: function(){
+				window.location = '/weeklyCSV?format=csv&date=' + date;
+			}
+			});
+		});
+	$('.exportQuarterly, .exportMonthly').click(function() {
+
+		var date = $("#txtDate").datepicker('getDate');
+		var csvType = $(this).val();
+		$.ajax({
+			url: '/monthly_quarterly_CSV?format=csv&date=' + date+ '&csv_type=' + csvType,
+			type: 'GET',
+			success: function(){
+				window.location = '/monthly_quarterly_CSV?format=csv&date=' + date+ '&csv_type=' + csvType;
+			}
+			});
+		});
+	$('.exportYearly').click(function() {
+		var date = $("#txtDate").datepicker('getDate');
+		$.ajax({
+			url: '/yearlyCSV?format=csv&date=' + date,
+			type: 'GET',
+			success: function(){
+				window.location = '/yearlyCSV?format=csv&date=' + date;
+			}
+			});
+		});
+
+	
+	
+	function getQuarter(d) {
+  		d = d || new Date();
+  		var m = Math.floor(d.getMonth()/3) + 1;
+  		return m > 4? m - 5 : m;
+	}
+	
+	
+ $('body').on('keydown', function(event) {
+    	if (event.which == 37) {
+    		event.preventDefault();
+			$('.changeDatePrev').trigger('click');			
+   		 } 
+   		 else if (event.which == 39) {
+   		 	event.preventDefault();
+			$('.changeDateNext').trigger('click');			
+        	}
+    });
+
+
+	
+	
+	
+	$('.time_view_select').trigger('change');
+	getOfficePercents();
+		
+	
+	
+	
+	});
+	
+    
+    
+
+
+
+  </script>
+<%end%>
+
+	
+	

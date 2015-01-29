@@ -1,0 +1,48 @@
+<!-- <script type="text/javascript">
+      window.onload = function (){
+        var success = new PDFObject({ url: "/assets/EffortTrackerManualtsm.pdf" }).embed();
+      };
+    </script>
+-->
+
+
+
+<%= javascript_tag do %>
+  
+      <% if @current_user.admin == true%>
+          window.onload = function (){
+                  var success = new PDFObject({ url: "/assets/EffortTrackerManualAdmin.pdf" }).embed();                    
+          };
+      <% elsif @current_user.time_sheet_manager == true %>
+          window.onload = function (){
+              var success = new PDFObject({ url: "/assets/EffortTrackerManualtsm.pdf" }).embed();         
+          };
+      <% elsif @current_user.time_sheet_collaborator == true %>
+          window.onload = function (){
+              var success = new PDFObject({ url: "/assets/EffortTrackerManualtsc.pdf" }).embed();                
+          };
+      <% elsif @current_user.work_order_admin == true %>
+          window.onload = function (){
+                  var success = new PDFObject({ url: "/assets/EffortTrackerManualWoAdmin.pdf" }).embed();
+          };
+      <% elsif @current_user.manager == true %>
+          window.onload = function (){
+                  var success = new PDFObject({ url: "/assets/EffortTrackerManualManager.pdf" }).embed();
+          };
+      <% elsif @current_user.role =="Classified" || @current_user.role =="Unclassified"%>
+          window.onload = function (){
+                    var success = new PDFObject({ url: "/assets/EffortTrackerManualEmployee.pdf" }).embed();
+          };
+      <% elsif @current_user.client == true %>
+          window.onload = function (){
+                      var success = new PDFObject({ url: "/assets/EffortTrackerManualWoAdmin.pdf" }).embed();
+          };
+      <% else @current_user.role =="GA" %>
+          window.onload = function (){
+                        var success = new PDFObject({ url: "/assets/EffortTrackerManualGa.pdf" }).embed();
+          };              
+      <%end%> 
+      
+  
+<% end %>
+

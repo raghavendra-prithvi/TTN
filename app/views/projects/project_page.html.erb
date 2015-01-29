@@ -1,0 +1,314 @@
+<script type="text/javascript">
+        $(document).ready(function() {
+            
+            $('.accordion').accordion({
+            	header: ".panelHB"}
+            	); //some_id section1 in demo
+        	$('.panelHB').click(function() {
+        	      window.location = $(this).attr('href');
+      			  return false;
+        	});
+        
+        
+        });
+</script>
+<% i = 0%>
+
+    <fieldset class="scheduler-border">
+    <legend class="scheduler-border">Current Projects</legend>
+<%if !@currentProjects.blank?%>
+<%@currentProjects.each do |p|%>
+      <% i = i+1 %>
+      <% div_id = "section#{i}" %>
+<%project = ProjectData.find(p[1].to_i) %>
+<div class="panel panel-default">
+<div class="panel-heading accordion" style="margin-bottom:0px !important;  background-color : <%=@project_colors[project.name]%>"  id=<%=div_id%> >
+  <b><%=project.name%></b>
+  <img src="/assets/expand.ico" style="width:34px" class="pull-right down-carrot" />
+  <span class="pull-right"><%if @privs%><%= link_to 'Edit', edit_project_path(project), :class => 'btn btn-default btn-sm buttonWidth panelHB', :type => 'button'%></span> <%end%></div>
+<div class="container">
+    <div class="panel-body content">
+    <div class="col-xs-6">
+	<b>Manager(s): </b> <br /> 
+	<%project.project_managers.each do |pm|%>
+		<%disabled = DisabledUser.where(:user_id => pm.user_id)%>
+		<%if disabled.blank?%>
+			<%user = User.find(pm.user_id)%>
+		<%= user.last_name + ', ' + user.first_name%>; <a href='mailto:<%=user.email%>' style="color:blue;"><u><%=user.email%></u></a> <br />
+		<%end%>
+		<%end%>
+		</div>
+		<div class="col-xs-6">
+	<b>Employee(s):</b> <br />
+		<%project.assigned_projects.each do |ap|%>
+			<%disabled = DisabledUser.where(:user_id => ap.user_id)%>
+		<%if disabled.blank?%>
+			<%user = User.find(ap.user_id)%>
+		<%= user.last_name + ', ' + user.first_name%>; <a href='mailto:<%=user.email%>' style="color:blue;"><u><%=user.email%></u></a> <br />
+		<%end%>
+		<%end%>
+		</div>
+		</div>  
+</div>  
+<%end%>
+<%else%>
+<div class="panel panel-default">
+  <div class="panel-body">
+	You are not assigned to any projects. Please speak with administration.
+    </div>
+</div>
+<%end%>
+</fieldset>
+
+
+<% if  !@managedProjects.blank? %>
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border">Projects you Manage</legend>
+<%@managedProjects.each do |m|%>
+    <% i = i+1 %>
+    <% div_id = "section#{i}" %>
+	<%pid = m[1].to_i%>
+	<%project = ProjectData.find(pid) %>
+	<div class="panel panel-default">
+<div class="panel-heading accordion" style="margin-bottom:0px !important;  background-color : <%=@project_colors[project.name]%>"  id=<%=div_id%>  >
+  <b><%=project.name%></b> <img src="/assets/expand.ico" style="width:34px" class="pull-right down-carrot" />
+  <span class="pull-right"><%if @privs%><%= link_to 'Edit', edit_project_path(project), :class => 'btn btn-default btn-sm buttonWidth panelHB', :type => 'button'%></span> <%end%></div>
+<div class="container">
+<div class="panel-body content">
+<div class="col-xs-6">
+	<b>Manager(s): </b> <br /> 
+	<%project.project_managers.each do |pm|%>
+	<%disabled = DisabledUser.where(:user_id => pm.user_id)%>
+			<%if disabled.blank?%>
+		<%user = User.find(pm.user_id)%>
+		<%= user.last_name + ', ' + user.first_name%>; <a href='mailto:<%=user.email%>' style="color:blue;"><u><%=user.email%></u></a> <br />
+		<%end%>
+	<%end%>
+	</div>
+	<div class="col-xs-6">
+	<b>Employee(s):</b> <br />
+		<%project.assigned_projects.each do |ap|%>
+			<%disabled = DisabledUser.where(:user_id => ap.user_id)%>
+			<%if disabled.blank?%>
+				<%user = User.find(ap.user_id)%>
+				<%= user.last_name + ', ' + user.first_name%>; <a href='mailto:<%=user.email%>' style="color:blue;"><u><%=user.email%></u></a> <br />
+			<%end%>
+		<%end%>
+		</div>
+		</div>
+</div>
+  
+</div>
+<%end%>
+
+</fieldset>
+<%end%>
+
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border">Your Active Projects of <%=Date::MONTHNAMES[Date.today.month]%></legend>
+<% if  !@userActiveProjects.blank? %>
+    <%@userActiveProjects.each do |u|%>
+    <div class="panel panel-default panelInfo">
+    <div class="panel-body"><p>These are projects you have clocked hours to this month. You can look back at your time for them in Time Summaries, and edit your time for them in Time Input. </p> </div>
+ 	</div>
+    <% i = i+1 %>
+    <% div_id = "section#{i}" %>
+	<%pid = u[1].to_i%>
+	<%project = ProjectData.find(pid) %>
+	<div class="panel panel-default">
+<div class="panel-heading accordion" style="margin-bottom:0px !important; background-color : <%=@project_colors[project.name]%>"    id=<%=div_id%> ><b><%=project.name%></b> 
+  <img src="/assets/expand.ico" style="width:34px" class="pull-right down-carrot" /><span class="pull-right"><%if @privs%><%= link_to 'Edit', edit_project_path(project), :class => 'btn btn-success btn-sm buttonWidth panelHB', :type => 'button' %></span> <%end%></div>
+<div class="container"> 
+<div class="panel-body content">
+	<div class="col-xs-6">
+	<b>Manager(s): </b> <br /> 
+	<%project.project_managers.alpha.each do |pm|%>
+		<%disabled = DisabledUser.where(:user_id => pm.user_id)%>
+		<%if disabled.blank?%>
+			<%user = User.find(pm.user_id)%>
+		<%= user.last_name + ', ' + user.first_name%>; <a href='mailto:<%=user.email%>' style="color:blue;"><u><%=user.email%></u></a> <br />
+		<%end%>
+		<%end%>
+	</div>
+	<div class="col-xs-6">
+		<b>Employee(s):</b> <br />
+		<%project.assigned_projects.alpha.each do |ap|%>
+		<%disabled = DisabledUser.where(:user_id => ap.user_id)%>
+		<%if disabled.blank?%>
+			<%user = User.find(ap.user_id)%>
+		<%= user.last_name + ', ' + user.first_name%>; <a href='mailto:<%=user.email%>' style="color:blue;"><u><%=user.email%></u></a> <br />
+		<%end%>
+		<%end%>
+	</div>
+		</div>
+</div>
+</div>
+<%end%>
+<%else%>
+<div class="panel panel-default">
+  <div class="panel-body">
+	You have not tracked hours for any projects this month.
+    </div>
+</div>
+<%end%>
+</fieldset>
+
+
+<% if @showAll%>
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border">Active Projects of <%=Date::MONTHNAMES[Date.today.month]%></legend>
+	<div class="panel panel-default panelInfo">
+    	<div class="panel-body ">These are all projects that have been clocked to this month, regardless of status.</div>
+ 	</div>
+<% if  !@allActiveProjects.blank? %>
+<%@allActiveProjects.each do |a|%>
+    <% i = i+1 %>
+    <% div_id = "section#{i}" %>
+	<%pid = a[1].to_i%>
+	<%project = ProjectData.find(pid) %>
+	<div class="panel panel-default">   
+    <div class="panel-heading accordion"  style="margin-bottom:0px !important; background-color : <%=@project_colors[project.name]%>"  id=<%=div_id%>   >
+            <b><%=project.name%></b> 
+            <img src="/assets/expand.ico" style="width:34px" class="pull-right down-carrot"  /> 
+            <%if @privs %>
+                  <span class="pull-right"><%= link_to 'Edit', edit_project_path(project), :class => 'btn btn-default btn-sm buttonWidth panelHB', :type => 'button' %></span>
+            <%end%>
+            
+        </div>   
+<div class="container">    
+<div class="panel-body content">
+	<div class="col-xs-6">
+	<b>Manager(s)</b> <br /> 
+	<%project.project_managers.alpha.each do |pm|%>
+		<%disabled = DisabledUser.where(:user_id => pm.user_id)%>
+		<%if disabled.blank?%>
+			<%user = User.find(pm.user_id)%>
+		<%= user.last_name + ', ' + user.first_name%>; <a href='mailto:<%=user.email%>' style="color:blue;"><u><%=user.email%></u></a> <br />
+		<%end%>
+		<%end%>
+	</div>
+		<div class="col-xs-6">
+
+	<b>Employee(s)</b> <br />
+		<%project.assigned_projects.alpha.each do |ap|%>
+		<%disabled = DisabledUser.where(:user_id => ap.user_id)%>
+		<%if disabled.blank?%>
+			<%user = User.find(ap.user_id)%>
+		<%= user.last_name + ', ' + user.first_name%>; <a href='mailto:<%=user.email%>' style="color:blue;"><u><%=user.email%></u></a> <br />
+		<%end%>
+		<%end%>
+		</div>
+		</div>
+</div>
+</div>
+<%end%>
+<%end%>
+
+</fieldset>
+<%end%>
+
+
+<style>
+	
+	.buttonWidth {
+		width: 85px !important;
+	}
+	
+	.btnCol {
+		text-align: center !important;
+	}
+	
+	
+	.panel{
+	margin-bottom: 0px;
+}
+
+.sCaps {
+ font-variant:small-caps;
+
+}
+
+.panel-body {
+	padding: 1px;
+	margin: 0px !important;
+}
+
+.panel-heading {
+    overflow: hidden;
+	vertical-align: middle !important;
+	padding: 1px !important;
+}
+.panelHB {
+    height:auto;
+    padding: 1px !important;
+}
+
+
+
+.table {
+	margin-bottom: 3px;
+}
+	.table tbody tr:hover td,
+.table tbody tr:hover th {
+  background-color: transparent;
+}
+
+.table tbody tr td {
+	border-top: 0px;
+	padding: 0px;
+	vertical-align: middle !important;
+	text-align: middle !important;
+}
+
+.panel-heading > b {
+	padding: 0px !important;
+	color: white;
+	margin-left: 10px;
+}
+
+.lastCol {
+	text-align: right !important;
+}
+
+.saveRow {
+	width: 45px !important;
+	text-align: center;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.headingInfo{
+	padding-right: 4px !important;
+}
+
+ fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    border-radius: 8px !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+  }
+
+  legend.scheduler-border {
+      font-size: .9em !important;
+	  border-bottom: 0px !important;
+  }  
+  
+  legend.scheduler-border {
+    width:inherit; /* Or auto */
+    padding:0px; /* To give a bit of padding on the left and right */
+    /*border-bottom:none; */
+}
+
+
+.down-carrot {
+	height: 20px !important;
+}
+
+.panelInfo {
+	margin-bottom: 5px !important;
+}
+
+
+</style>

@@ -1,0 +1,96 @@
+<%w = @work_order%>
+
+<div class="row">
+<div class="col-xs-12">
+<div class="panel panel-default">
+<div class="panel-heading"><b>Work Order: </b><%=w.work_order_number%> 
+<span class="pull-right"><%if show_edit_submit_WO(@work_order)%> <%= link_to 'Edit', edit_work_order_path(@work_order), :class=>'btn btn-sm btn-default panelHB' %><%end%><%if show_delete_WO(@work_order)%><%= link_to 'Delete', @work_order, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger panelHB" %><%end%>
+</span></div>
+<div class="panel-body">
+<b>Project Name:</b> <%=w.project_name%> <br /><br />
+<table class="table">
+<th>Program Office</th><th>Project Manager</th><th>Estimated Hours</th><th>ULL Contact</th>
+<tr><td><%=w.program_office%></td><td><%=w.UNO_project_manager%></td><td><%=w.estimated_hours%></td><td><%=w.ULL_contact%></td></tr>
+<th>Start Date</th><th>Due Date</th><th>Development End Date</th><th>Close Date</th></thead>
+<tr><td><%=w.ULL_start_date%></td><td><%=w.due_date%></td>
+<td><%=w.development_end_date%></td>
+<td><%=w.close_date%></td></tr>
+</table>
+
+<b>Summary:</b> <p><%=w.summary%></p>
+<b>Deliverables:</b> <p><%=w.deliverables%></p>
+<b>Comments:</b> <p><%=w.comments%></p>
+
+<b>ULL Team Members:</b> <p><%w.ull_team_members.each do |u|%>
+<%=u.name%> <br />
+<%end%></p>
+<b>Attachment(s):</b>
+<%w.attachments.each do |a| %>
+<p><%=File.basename(a.attachment.to_s)%>, 
+<%= link_to 'Download', a.attachment_url%></p>
+</p>
+<%end%>
+
+</div>
+</div>
+</div>
+
+<div class="col-xs-12">
+<button class="backBtn btn btn-sm btn-default">Back</button>
+<div class="pull-right">
+<%if show_edit_submit_WO(@work_order)%> <% if !@work_order.approved%><button class="submit btn btn-sm btn-success">Submit for Approval </button><%end%><%end%>
+</div>
+</div>
+<style>
+
+.panel-heading {
+    overflow: hidden;
+    padding-top: 20px;
+}
+.panelHB {
+    position: relative;
+    top: -5px;
+}
+
+a:visited:not(.btn-default) {
+	color: white;
+}
+
+
+
+</style>
+
+<script>
+
+	$('.submit').click(function () {
+    	if(!confirm("Once submitted, the Work Order Number and Project Name can not be changed. Are you sure you want to submit?")) {
+    		return;
+    	}
+  		else{
+		dataStr = 'id=<%=@work_order.id%>';
+		$.ajax({
+			method: 'GET',
+			data: dataStr,
+			url: '/work_order_submit',
+			dataType: 'json',
+			success: function(data){
+				if (!data.success) {
+					alert('There was a problem with submitting the  Work Order.');
+				}
+				else {
+					alert('Work Order Request successfully submitted.');
+					window.location.href = '/work_orders';
+					
+				}
+			}
+			});
+		}
+		});
+
+	$('.backBtn').click(function() {
+		window.location.href = '/work_orders';
+	
+	});
+
+
+</script>

@@ -1,0 +1,196 @@
+<form role="dayform" id="dayForm">
+<div class="scrollT">
+<div class="form-group">
+
+<table id="myTable" class="table table-striped table-bordered table-condensed tablesorter" >
+<caption class="text-left">Users</caption>  
+  <thead>
+    <tr>
+      <th>
+        Last Name
+      </th>
+            <th>
+        First Name
+      </th>
+
+      <th>
+        Email
+      </th>
+      <th>
+        Reporter        
+      </th>
+      <th>
+        Employee Type
+      </th>
+      <%if !@viewOnly%>
+      <th>
+      </th><%end%>
+      <%if @time_sheet_lock %>
+      <th> 
+      Time Input <br /><button type="button" class="btn btn-danger btn-sm lock_all_users" value="lock">Lock</button>
+<button type="button" class="btn btn-success btn-sm unlock_all_users" value="unlock">Unlock</button> </th>
+<th>
+ Previous Month<br />
+ <button type="button" class="btn btn-danger btn-sm lock_all_prev_month" value="lock">Lock</button>
+<button type="button" class="btn btn-success btn-sm unlock_all_prev_month" value="unlock">Unlock </button>
+</th>
+
+      </th>
+      <%end%>
+    </tr>
+  </thead>
+<tbody>
+
+<% @users.each do |u| %>
+    <tr>
+      <td>
+        <span class="hidden"><%=u.last_name%></span><input id="last_name<%=u.id%>" name="last_name" type="text" placeholder="Last Name" disabled="true" class="name today form-control" value=<%=u.last_name %>  ></input>
+      </td>
+            <td>
+        <span class="hidden"><%=u.first_name%></span><input id="first_name<%=u.id%>" name="first_name" type="text" placeholder="First Name" disabled="true" class="name today form-control" value=<%=u.first_name%>  ></input>  
+              <input id="userId" name="Id" type="hidden" disabled="true" class="today form-control" value=<%=u.id%>  />
+
+      </td>
+
+      <td>
+      	<% email = u.email %>
+      	<% email.slice! "@louisiana.edu" %>
+        <span class="hidden"><%=u.email%></span><input id="email<%=u.id%>" name="email" type="text" placeholder="CLID" disabled="true" class="email today form-control" value='<%=u.email%>'  />
+      </td>
+      <td>
+      	<select class="reporter" id="reporter<%=u.id.to_s%>" disabled>
+      	<option value="">Please Select</option>
+      	<%@selectArrayReporter.each do |manager|%>
+      		<option value="<%=manager.id%>" <%if manager.id == u.reporter%> selected <%end%>> <%=manager.last_name%>, <%=manager.first_name%></option>
+      	<%end%>
+      	</select>
+      </td>
+      <td>
+        <% selectArray = ["","GA","Classified","Unclassified"] %>
+        <%= select_tag 'project', options_for_select(selectArray,u.role), :disabled => true, :class => "role", :id => "role" + u.id.to_s%>        
+      </td>
+      <%if !@viewOnly%><td><div class="<%if !@user.time_sheet_manager%>pull-left <%end%>"><%if @permissions['edit_users']%><input type="button" class="btn btn-sm btn-success save-btn update-project-btn" id="<%=u.id%>" value="Edit" ></input><%end%>
+      <%if @permissions['remove_users'] && u.id != @user.id%><input type="button" class="btn btn-sm btn-warning user-disable" id="<%=u.id%>" value="Archive"></input>
+      									 <% if u.allow_delete%><input type="button" class="btn btn-sm btn-danger user-delete" id="<%=u.id%>" value="Delete"></input><%end%><%end%></div>
+     <%if @permissions['edit_users']%><div <% if !@time_sheet_lock%>class="pull-right"<%end%>><input type="button" class=" btn btn-sm btn-primary edit_permissions <%if !@time_sheet_lock%>toggle_css<%end%>" id="<%=u.id%>" value="Roles<%if !@time_sheet_lock%>/Permissions<%end%>" <%if u.role == 'GA'%> style="display:none"<%end%>></input></div><%end%></td><%end%>
+	<% if @time_sheet_lock %> 
+		<td> 
+			<button type="button" class="btn btn-sm btn-danger lock_user" id="<%=u.id%>" <%if u.locked %> style="display:none" <%end%> value="lock">Lock</button>
+			<button type="button" class="btn btn-sm btn-success unlock_user" id="<%=u.id%>" <%if !u.locked %> style="display:none" <%end%> value="unlock">Unlock</button>
+		</td>
+		<td>
+				 	<button type="button" class="btn btn-sm btn-danger lock_user_prev_month" id="<%=u.id%>" <%if u.prev_month_locked %> style="display:none" <%end%> value="lock">Lock</button>
+		 	<button type="button" class="btn btn-sm btn-success unlock_user_prev_month" id="<%=u.id%>" <%if !u.prev_month_locked %> style="display:none" <%end%> value="unlock">Unlock</button>
+
+		</td>
+	<%end%>
+
+  </tr>
+<% end %>
+
+  </tbody>
+
+</table>
+
+<%if !@viewOnly%>
+  <%if !@clients.blank? %>
+
+<table id="myTable" class="table table-striped table-bordered table-condensed tablesorter" >
+<caption class="text-left">Clients</caption>  
+  <thead>
+    <tr>
+      <th>
+        Last Name
+      </th>
+            <th>
+        First Name
+      </th>
+
+      <th>
+        Email
+      </th>
+    <%if !@viewOnly%>  <th colspan=2>
+      </th><%end%>
+    </tr>
+  </thead>
+<% @clients.each do |u| %>
+<tbody>
+    <tr>
+      <td>
+        <input id="last_name" name="last_name" type="text" placeholder="Last Name" disabled="true" class=" clientLN<%=u.id%> name today form-control" value=<%=u.last_name %>  ></input>
+      </td>
+            <td>
+       <input id="first_name" name="first_name" type="text" placeholder="First Name" disabled="true" class=" clientFN<%=u.id%> name today form-control" value=<%=u.first_name%>  ></input>  
+      </td>
+
+      <td>
+        <span class="hidden"><%=u.email%></span><input id="email" name="email" type="text" placeholder="CLID" disabled="true" class=" clientE<%=u.id%> email today form-control" value=<%=u.email%>  />
+      </td>
+
+   <td><%if @permissions['edit_users']%>  <input type="button" class="btn btn-sm btn-success save-btn client-update-project-btn" id="<%=u.id%>" value="Edit" ></input>
+      <%if @permissions['remove_users']%><input type="button" class="btn btn-sm btn-warning user-disable" id="<%=u.id%>" value="Archive"></input>
+      									 <%if u.allow_delete%><input type="button" class="btn btn-sm btn-danger user-delete" id="<%=u.id%>" value="Delete"></input><%end%><%end%></td><%end%>
+  
+  </tr>
+  </tbody>
+<%end%>
+</table>
+<% end %>
+
+<%end%>
+
+
+<!-- Archived Users List --!>
+  <%if !@disabled_users.blank? %>
+<table id="myTable" class="table table-striped table-bordered table-condensed tablesorter" >
+<caption class="text-left">Archived Users</caption>  
+  <thead>
+    <tr>
+      <th>
+        Last Name
+      </th>
+      <th>
+        First Name
+      </th>
+      <th>
+        Email
+      </th>
+      <th>
+      Role
+      </th>
+      <th>
+      </th>
+    </tr>
+  </thead>
+<tbody>
+<% @disabled_users.each do |u| %>
+    <tr>
+      <td>
+      	<%=u.last_name %>  
+      </td>
+            <td>
+     <%=u.first_name%>  
+      </td>
+
+      <td>
+        <%=u.email%> 
+      </td>
+            <td>
+       <%=u.role%>
+      </td>
+
+     <td> <%if @permissions['remove_users']%><input type="button" class="btn btn-sm btn-success user-enable" id="<%=u.id%>" value="Enable"></input>
+      									 <%end%></td>
+  
+  </tr>
+<% end %>
+  </tbody>
+</table>
+<%end%>
+
+
+
+</div>
+</div>
+</form>
+

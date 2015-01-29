@@ -1,0 +1,1257 @@
+<% if session[:user_id] %>  
+  <%@user = User.find(session[:user_id]) %>
+<!-- <% if @user.updated == true%>
+    <div class="alert alert-info"> You have a report to verify. Click on the <a href="/verify_report">link</a> to view the report. </div>  
+<% end %> -->
+    <div class="row">
+		<% flash.each do |key, value| %>
+		    <div class="flash <%= flash_class(key)%> pull-right"> 
+                          <div class="hideThis"><%= value %> <br /><a id="close">[close]</a></div>
+              </div> 
+              <% end %>
+<div class="col-xs-12">
+<div class="alert-default lockButton alert-dropdown pull-left"><div class="dropdown">
+  <button id="dLabel" class="btn btn-sm btn-danger" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		Missing Time (<span class="alert-count"></span>)<span class="caret"></span>
+  </button>
+  <ul class="main-alerts dropdown-menu" role="menu" aria-labelledby="dLabel">
+  </ul>
+</div>
+</div>
+<div class="alertBanner"></div>
+</div>
+  <!-- **************************************************************************** -->
+  <!-- DAY FUNCTIONALITY -->
+  
+
+      	<!-- FOR FUTURE TABBED TABLE 
+      	<ul class="nav nav-tabs" id="product-table">
+  <li><a href="#tab1" data-toggle="tab">Time Input</a>
+  </li>
+  <li><a href="#tab2" data-toggle="tab">Dashboard</a>
+  </li>
+		</ul> !-->
+      <div class="col-sm-12 col-md-7">
+      	<div class="scrollT1">
+        <form role="dayform" id="dayForm">
+        <div class="btn-group btn-group pull-left navGroup2 ">	
+  					<button type="button" class="btn btn-default  changeDateTopPrev navButtonNP" value="prevTop">Prev</button>
+  					<button type="button" class="btn btn-default  changeDateTop toToday navButtonT" value="today">Today</button>
+					<button type="button" class="btn btn-default  changeDateTopNext navButtonNP" value="nextTop">Next</button>
+					</div><br />
+              	<!-- FOR TABBED TABLE 
+
+        <div class="tab-content">
+   			 <div class="tab-pane" id="tab1"> !-->
+            <table class="table table-bordered pull-left <% if @locked %> lock_all <%end%>" id="daytimeTable">
+              <div class="form-group">
+                <thead>
+                  <tr>
+                    <th>Project</th>
+                    <th>Hours</th>
+                    <th><input id="txtDate" class="datepicker"/><input class="datePicker hidden" id="altDate"/></th>
+                    <th><button type="button" class="btn btn-large btn-primary timeLock" id="add" ><span class="glyphicon glyphicon-plus"></span></button></th>	
+                  </tr>
+                </thead>
+              <tbody>
+                <% if !@todayRecs.empty? %>
+                  <% @todayRecs.each do |t| %>       
+    <%pid = t.project_data_id.to_i%>
+<%if !ArchievedProject.where(:project_data_id => pid).blank?%>
+		<%project = ArchievedProject.where(:project_data_id => pid).first%>
+	    <tr id="lastRow" class="permanent_lock">
+      <td>
+   		<div class="project"><%=project.name%></div>
+      </td>
+      <td>
+        <%= t.hours %> 
+      </td>
+      <td colspan=2>
+     	Archived
+      </td>
+
+    </tr>
+	<%elsif ProjectData.find(pid).locked || !ProjectData.find(pid).active%>
+			<%project = ProjectData.find(pid)%>
+
+		    <tr id="lastRow" class="permanent_lock">
+      <td>
+   		<div class="project"><%=project.name%></div>
+      </td>
+      <td>
+        <%= t.hours %> 
+      </td>
+      <td colspan=2>
+     	Locked by Admin
+      </td>
+
+    </tr>
+	<%else%>
+	    <tr id="lastRow">
+      <td>
+        <%=hidden_field_tag 'hiddenId', t.id%>
+        <%= select_tag 'project', options_for_select(@selectArray,t.project_data_id), :disabled => true, :class => "project" %>
+      </td>
+      <td>
+        <input id="today" disabled="true" name="today" type="text" placeholder="Hours" class="today" value=<%= t.hours %>  />
+      </td>
+      <td>
+        <input type="button" class="btn btn-success save-btn" id="save" value="Edit"></input>
+      </td>
+      <td>
+        <input type="button" class="btn btn-large btn-danger remove-btn" id="remove" value="Remove"></input>
+      </td>
+
+    </tr>
+  <% end %>
+                  <% end %>
+                <% else %>
+                  <tr id="lastRow">
+                    <td class="pHolder">
+                      <input type="hidden" id="hiddenId" name="hiddenId" class="hiddenId" />
+
+                      <%= select_tag 'project', options_for_select(@selectArray,""), :disabled => false, :class => "project" %>
+                    </td>
+                    <td id="timeLock">
+                      <input id="today" name="today" type="text" placeholder="Hours" class="today" value=0 />
+                    </td>
+                    <td>
+                      <input type="button" class="btn btn-success save-btn" id="save" value="Save"></input>
+                    </td>
+                    <td>
+                      <input type="button" class="btn  btn-danger remove-btn" id="remove" value="Remove"></input>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+              </div>  
+          </table>
+          <!-- </div> tab 
+    			<div class="tab-pane" id="tab2"> HI OH </div>
+    		</div> tab content --!>
+        </form>
+ 		  </div>
+
+        </div>
+
+	<div class="col-sm-12 col-md-5"><div class="pieChart" id="piechart"></div></div> 
+	<div class="scrollT2">
+	<div class="btn-group btn-group pull-left navGroup2 ">	
+		<button type="button" class="btn btn-default  changeDateBottomPrev navButtonNP" value="prevBottom">Prev</button>
+		<button type="button" class="btn btn-default toToday navButtonT" value="today">Today</button>
+		<button type="button" class="btn btn-default  changeDateBottomNext navButtonNP" value="nextBottom">Next</button>
+		</div>
+	<div class="render_project_table"><br />
+ 			<table class="table projectTable currentWeek"><div class="form-group"><tr></tr> </div></table>
+ 	</div>
+	</div> 
+</div>
+
+<style>
+
+.render_project_table {
+  width: 100%;
+  max-width: 1200px;
+}
+.projectTable{
+height:230px !important;
+border-bottom: 2px solid #dddddd !important;
+border-top: 2px solid #dddddd !important;
+width: 100% !important;
+max-width: 1200px;
+margin-right, margin-left: 15px !important;
+}
+
+.table tbody tr:hover td, .table tbody tr:hover th {
+    background-color: transparent;
+}
+
+.scrollT1 {
+	overflow:auto;
+	height:250px;
+	padding-bottom:0px;
+	margin-top:0px;
+	margin-bottom:0px !important;
+	width: 575px;
+}	
+
+
+.scrollT2 {
+	overflow:auto;
+	width: 100% !important;;
+	min-width: 1200px !important;
+	height:100%;
+	padding-bottom:0px;
+	margin-top:20px !important;
+	margin-left: 15px !important;
+	margin-right: 15px !important;
+}
+
+
+.btn{
+    width:75px !important;
+   	padding:0;
+	margin:0 !important;
+	height:25px !important;
+	
+}
+
+.navButtonNP{
+	width:45px !important;
+	font-size:10px !important;
+}
+.navButtonT{
+	width: 50px !important;
+	font-size:10px !important;
+}
+
+.navGroup1{
+	width:45px;
+}
+.navGroup2{
+	margin-bottom:0px;
+}
+
+
+.project {
+	height:25px !important;
+	width:300px;
+	padding: 0;
+}
+
+th {
+padding:3px !important;
+font-weight:normal !important;
+}
+
+td {
+padding:3px !important;
+text-align:center !important;
+
+}
+
+
+.cellClick {
+	cursor:default;
+	width:270px !important;
+	padding:0px !important;
+	text-align:left !important;	
+}
+
+.cellClick:hover {
+	border-top: 2px solid #47a447 !important;
+	border-bottom: 2px solid #47a447 !important;
+	
+}
+
+
+
+.today{
+	box-sizing: border-box;
+	width: 55px;
+	height: 25px !important;
+	padding:0;
+	margin:0 !important;
+	}
+	
+.datepicker {
+   	width:90px;
+   	padding:0;
+	margin:0;
+	height:25px;
+}
+
+.todayClass {
+	border-top: 2px solid #428bca !important;
+	border-bottom: 2px solid #428bca;
+	
+}
+
+.selectedDay {
+	border-top: 2px solid #47a447 !important;
+	border-bottom: 2px solid #47a447 !important;
+
+}
+
+.clickAlertDate:hover {
+	cursor: pointer;
+}
+
+.cellClick {
+	position: relative;
+}
+.dailyHourTotals {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	background-color: white !important;
+}
+
+.weeklyHourTracker {
+	font-size: large;
+}
+
+.btn-group-vertical {
+	width: 100% !important;
+}
+.pTableBtn{
+	width:100% !important;
+	    width:100%;
+    min-width:50px;
+    max-width:270px;
+    display: -webkit-flex;
+
+	text-align:left;
+	height: 48px !important;
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
+          cursor:default;
+}
+.pTableInfo{
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
+  margin-left:2px;
+ font-weight: normal;
+ font-size: 13px !important;
+ font-family: verdana, arial, helvetica, sans serif !important;
+}
+
+.add-locked-css {
+	border: dashed #f2dede
+}
+
+</style>
+
+
+
+
+  <!-- Script for day functionality -------------------------------------------------------------------- --->
+  <script type="text/javascript">
+
+
+     
+    $(document).ready(function(){
+    
+    
+
+    grabColors();
+    var alertCount = 0;
+    var doubleClick = false;
+    var doubleClickProject;
+    var lockTimeInput;
+    var weeklyHourLimitLock;
+    var prev_month_locked = true;
+    var user_locked = false;
+    var prev_msg = '';
+    var date = new Date();
+	var firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+	var requiredDates = [];
+	var requiredWeeks = [];
+	var hoursHash = {};
+	var prev_day_lock_html = '';
+	var prev_week_hours_html = '';
+	
+	
+	function generateSelectBox() {
+		usedProjects = [];
+		$('.project').each(function() {
+			usedProjects.push($(this).val());
+		});
+	}
+   
+    
+    function setTimeInputLocks() {
+  		$.ajax({ 
+			url: '/check_TS_locks',
+			method: 'GET',
+			async: false,
+			success: function(ts_locks) {
+				user_locked = ts_locks.user;
+				prev_month_locked = ts_locks.prev_month;
+				console.log(ts_locks);						
+			}
+			});
+		
+	}
+	
+	function lockTodayTimeInput(dates) {
+     	if (dates.length > 0) {
+    		console.log(dates);
+    		lockTimeInput = true;
+    		var msg = '<div>Input Locked. Missing time for: ';
+    		dates = dates.sort( function sortfunction(a, b){
+				return (new Date(a)- new Date(b)) //causes an array to be sorted numerically and ascending
+			});
+    		$.each(dates, function(index, value) {
+    			var date = new Date(value);
+    			date = '<span class="clickAlertDate" id="' + date + '">' + $.format.date(new Date(date), "M/d/yy") + '</span>';
+    			msg += date;
+    			msg += (index == dates.length - 1) ? '. ' : ', ';
+    			});
+    		msg += '</div>';
+    		prev_day_lock_html = msg;
+	    }
+	    else {
+    		prev_day_lock_html = '';
+    		delete alertObject['prevDayLock'];
+	    }
+	}
+	
+
+function lockTodayTimeInputWeeklyHours(hoursRequired) {
+     	if (requiredWeeks.length > 0) {
+    		var msg = '<div>Input Locked. Did not work ' + hoursRequired + ' hours for weeks starting on: ';
+
+    		$.each(requiredWeeks, function(index, value) {
+    			var date = new Date(value);
+    			var formattedDate = $.format.date(date, "M/d/yy");
+    			date = '<span class="clickAlertDate" id="' + date + '">' + formattedDate +' (missing ' + hoursHash[formattedDate] +' hours)</span>';
+    			msg += date;
+    			msg += (index == requiredWeeks.length - 1) ? '. ' : ', ';
+    		});
+    		msg += '</div>';
+    		prev_week_hours_html = msg;
+	    }
+	    else {
+    		prev_week_hours_html = '';
+    		delete alertObject['weeklyHourLock'];
+	    }
+	}
+	
+// Need to set Required Days
+
+    
+     function dateChange() {
+  		$.ajax({
+            url: '/load_today_data',
+            method: 'GET',
+            data : "toDay="+ $("#txtDate").val(),
+            async: false,
+            success: function(data){
+              $("#daytimeTable").find("tr:gt(0)").remove();
+              $("#daytimeTable").find("tbody").append(data);
+				var calDate = new Date($("#txtDate").val());
+				var today = new Date();
+				//generateSelectBox();
+				if (doubleClick == true) {
+					doubleClickEdit();
+				};
+				reloadPieProject();  
+				runLocks();
+            },
+            failure: function(){
+              alert("Unable to load the today values.");
+            }
+          });
+    }
+	
+// Enable arrow keys for hour input 
+ 	
+ $('body').on('keydown', 'input.today', function(event) {
+		var input = $(this);
+    	if (event.which == 38) {
+	   		 if (input.val() < 24 ) {
+        		input.val((parseInt(input.val()) + 1));
+        	}
+   		 } 
+   		 else if (event.which == 40) {
+   		 	if (input.val() > 0 ) {
+        	input.val((parseInt(input.val()) - 1));
+        }
+        }
+        else  if (event.which == 13){
+        	input.closest('tr').find('.save-btn').trigger('click');
+			    }
+    
+	});
+	
+$('body').on('focus', 'input.today', function() {
+	var input = $(this);
+	if (input.val() == ''){
+		input.val(0);
+	}
+});
+ 
+ $('body').on('click', 'input.today', function() {
+	var input = $(this);
+	input.select();
+});
+
+
+
+var multiKey = {37: false, 39: false, 16: false};
+$(document).keydown(function(e) {
+    if (e.keyCode in multiKey) {
+        e.preventDefault();
+        multiKey[e.keyCode] = true;
+        if (multiKey[37] && multiKey[16]) {
+        	$('.changeDateBottomPrev').trigger('click');			
+
+        }
+        else if (multiKey[39] && multiKey[16]) {
+       	 $('.changeDateBottomNext').trigger('click');
+        
+        }
+         else if (multiKey[39]) {
+			$('.changeDateTopNext').trigger('click');			
+        }
+        else if (multiKey[37]) {
+			$('.changeDateTopPrev').trigger('click');			
+   		 } 
+        
+    }
+}).keyup(function(e) {
+    if (e.keyCode in multiKey) {
+        multiKey[e.keyCode] = false;
+    }
+});
+
+ 
+
+
+      $('.project').each(function() {
+        $(this).data('lastValue', $(this).val());
+      });
+      var months = [ "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December" ];
+      var days = {0:"Sun", 1:"Mon", 2:"Tue", 3:"Wed", 4:"Thu", 5:"Fri", 6:"Sat"};
+		
+
+    /*------- Input Array of format [[values]] to grab color code from colorHash -----*/
+
+   
+     /*------------ Reload Pie Chart and Weekly View -----------------*/
+
+	function reloadPieProject() {
+        $('.projectTable').trigger('change');
+        $('.pieChart').trigger('change');
+    }
+          	
+/*------------ Set DatePicker Input -----------------*/
+	$("#txtDate").datepicker({ altField:  '#altDate', altFormat: 'yy-mm-dd',showOtherMonths: true, selectOtherMonths: true,
+        showOtherMonths: true, selectOtherMonths: true,
+        onSelect: function() {
+          var selectedDate = $("#txtDate").datepicker('getDate');
+          var selectedMonthName = months[selectedDate.getMonth()];
+          $("#currentMonth").html(selectedMonthName);
+          storedDateWeekly = new Date(selectedDate);
+          storedDateDaily = new Date(selectedDate);
+          dateChange();
+		  today = new Date();
+    	  runLocks();
+        }
+      });
+      
+      
+      
+      
+      /*------------ Set Global Variables -----------------*/
+
+      $('#txtDate').datepicker('setDate', 'today');
+      var toDayDate = $("#txtDate").datepicker('getDate');
+      var todayMonthName = months[toDayDate.getMonth()];
+      $("#currentMonth").html(todayMonthName);
+      var id = 0;
+      storedDateWeekly = new Date(toDayDate);
+      storedDateDaily = new Date(toDayDate);
+	  
+	/*------------ Button that brings everything to current date -----------------*/
+
+      $('.toToday').click( function(){
+           $('#txtDate').datepicker('setDate', 'today');  
+           storedDateWeekly = new Date();
+           storedDateDaily = new Date();
+           dateChange();
+      });
+      
+    $('body').on('click', '.clickAlertDate', function() {
+      	var date = $(this).attr('id');
+      	date = new Date(date);
+        $('#txtDate').datepicker('setDate', date);
+        storedDateWeekly = new Date(date);
+        storedDateDaily = new Date(date);
+        dateChange();
+
+      });
+      
+    
+	/*------------ 'Prev' and 'Next' Button -----------------*/
+	
+	$('.changeDateTopNext').click( function() { 
+          var changeDay = 0;
+          var changeMonth = 0;
+          var changeYear = 0;
+          changeDay = 1;
+          storedDateDaily.setYear(storedDateDaily.getFullYear() + changeYear);	
+          storedDateDaily.setMonth(storedDateDaily.getMonth() + changeMonth);	
+          storedDateDaily.setDate(storedDateDaily.getDate() + changeDay);
+           $('#txtDate').datepicker('setDate', new Date(storedDateDaily) );
+           storedDateWeekly = new Date(storedDateDaily);
+           dateChange();
+	    });
+	    
+		$('.changeDateTopPrev').click( function() { 
+          var changeDay = 0;
+          var changeMonth = 0;
+          var changeYear = 0;
+          changeDay = -1;
+          storedDateDaily.setYear(storedDateDaily.getFullYear() + changeYear);	
+          storedDateDaily.setMonth(storedDateDaily.getMonth() + changeMonth);	
+          storedDateDaily.setDate(storedDateDaily.getDate() + changeDay);
+           $('#txtDate').datepicker('setDate', new Date(storedDateDaily) );
+           storedDateWeekly = new Date(storedDateDaily);
+           dateChange();
+	    });
+	    
+	    
+	    
+      $('.changeDateBottomNext').click( function() { 
+          var changeDay = 0;
+          var changeMonth = 0;
+          var changeYear = 0;
+          changeDay = 7;
+          storedDateWeekly.setYear(storedDateWeekly.getFullYear() + changeYear);	
+          storedDateWeekly.setMonth(storedDateWeekly.getMonth() + changeMonth);	
+          storedDateWeekly.setDate(storedDateWeekly.getDate() + changeDay);
+          $('.projectTable').trigger('change');	
+	    });
+	
+	    $('.changeDateBottomPrev').click( function() { 
+          var changeDay = 0;
+          var changeMonth = 0;
+          var changeYear = 0;
+          changeDay = -7;
+          storedDateWeekly.setYear(storedDateWeekly.getFullYear() + changeYear);	
+          storedDateWeekly.setMonth(storedDateWeekly.getMonth() + changeMonth);	
+          storedDateWeekly.setDate(storedDateWeekly.getDate() + changeDay);
+          $('.projectTable').trigger('change');	
+	    });
+
+      
+      
+      /* --- prevecious dates entry check for prev and next buttons --- */
+	function prevDateEntryCheck(){
+		var dates;
+        $.ajax({
+    		url: '/checkPrevTimeSheets',
+    			method: 'GET',
+    			async: false,
+    			dataType: 'json',
+    			success: function(data){
+    				if (data.empty){
+    					dates = data.emptyDays;
+    					$.each(dates, function(index, date) {
+    						requiredDates.push($.format.date(date, "M/d/yyyy"));
+    					});
+    					lockTimeInput = true;
+    					lockTodayTimeInput(requiredDates);
+    				}
+    				else {
+    					lockTimeInput = false;
+              		}
+    			}
+		});
+      }
+      
+      
+      function prevWeekHoursCheck() {
+      	$.ajax({
+      		url: '/checkPrevWeekHours',
+      		type: 'GET',
+      		 async: false,
+      		success: function(data){
+      			console.log(data);
+      			if(data.lock) {
+      				requiredWeeks = [];
+      				hoursHash = {};
+      				weeklyHourLimitLock = true;
+    				$.each(data.required_weeks, function(index, week) {
+    					var formattedDate = $.format.date(week[0], "M/d/yy");
+    					requiredWeeks.push(formattedDate);
+    					hoursHash[formattedDate] = week[1];
+    				});
+    				requiredWeeks = requiredWeeks.sort( function sortfunction(a, b){
+						return (new Date(a)- new Date(b)) //causes an array to be sorted numerically and ascending
+					});
+    				lockTodayTimeInputWeeklyHours(data.hours_required);
+
+      			}
+      			else {
+      				weeklyHourLimitLock = false;
+      			}
+      			
+      		}
+      	});
+      }
+      
+
+    /*------------ Start of Time Input -----------------*/
+
+     
+             
+        function removeRow(input){
+        	var todayValue = new Date($("#txtDate").val());
+			var today = new Date();
+			var pastDate = false;
+			var firstRowVal;
+			var secondRowVal;
+			
+            if( input.closest('.permanent_lock').length == 0) {
+
+        	var table = document.getElementById("daytimeTable");
+       	 	var noOfRows = table.rows.length;
+       	 	var hd1 = input.parent().prev().prev().prev().children('input');
+ 			var ip1 = input.parent().prev().prev().children();
+        	var sp1 = input.parent().prev().prev().prev().children('select');
+        	
+            if(hd1.val() == '' || hd1.val()== "" || hd1.val() == undefined){
+            	if(noOfRows > 2){
+			    	input.parents("tr").remove();
+			    }
+
+            }
+            else{
+              var svC = confirm("Are you sure want to delete?");
+	          if(svC == true){
+              dataStr = "id="+hd1.val();
+              $.ajax({
+                method: 'POST',
+                url: '/deleteDayTimesheets',
+                data : dataStr,
+                success: function(dt){
+                  alert(dt.msg);
+                  reloadPieProject();
+                  if ( new Date(todayValue) < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                  	pastDate = true;
+                  }
+                  else {
+                  	pastDate = false;
+                  }
+                  
+                  if(dt.deleted == true) {
+                  	if (noOfRows > 2) {
+                  		console.log('here1');
+                    	firstRowVal = $('#hiddenId').val();
+                    	input.parents("tr").remove();
+                    	secondRowVal = $('#hiddenId').val();
+                    	if (firstRowVal != "" && secondRowVal == "" && pastDate ) {
+                    		 updateRequiredDates('add');
+                    	}
+                   		prevWeekHoursCheck();
+						runLocks();
+                     }
+                    else {
+                        ip1.val('');
+						sp1.val('');
+						hd1.val('');
+						input.parent().prev().children().attr('value', "Save");
+						ip1.attr('disabled',false);
+          				sp1.attr('disabled',false);
+          				if ( pastDate ) {
+          					updateRequiredDates('add');
+          					prevWeekHoursCheck();
+          				}
+                    }
+                    runLocks();
+                }
+                }
+              });
+            }
+          }
+          }
+          else {
+          	alert('This project has been archived and can not be edited.');
+          }
+        }
+        
+        function saveRow(input){
+        
+        if( input.closest('.permanent_lock').length == 0) {
+
+        var todayValue = $("#txtDate").val();
+        var ip1 = input.parent().prev().children('input');
+        var sp1 = input.parent().prev().prev().children('select');
+        var hd1 = input.parent().prev().prev().children('input');
+        console.log(hd1.val());
+        if(input.attr('value') == "Edit"){
+          input.attr('value', "Save");
+          ip1.attr('disabled',false);
+          sp1.attr('disabled',false);
+        }
+        else{
+          if(ip1.val() == '' || ip1.val() == undefined){
+            alert("Please enter the no. of hours");
+            return false;
+          }
+          if(sp1.val() == '' || sp1.val() == undefined){
+            alert("Please select the project");
+            return false;
+          }
+          if (validateHours(ip1.val()) == false) {
+          	return false;
+          }
+          var svC = confirm("Are you sure want to save the changes?");
+          if(svC == true){
+            var hrs = ip1.val();
+            var prj = sp1.val();
+            dataStr = "project=" + prj + "&today=" + todayValue + "&hours=" + hrs + "&id="+ hd1.val();
+            console.log(dataStr);
+            $.ajax({
+              type: 'POST',
+              url: '/saveDayTimesheets',
+              data : dataStr,
+              async: false,
+              success: function(dt){
+                alert(dt.msg);
+                hd1.val(dt.id);
+                ip1.prop('disabled', true);
+                sp1.prop('disabled', true);
+                input.closest('tr').find('.today').prop('disabled', true);
+                input.attr('value','Edit');
+  				grabColors();
+                reloadPieProject();
+                updateRequiredDates('remove');
+                prevWeekHoursCheck();
+				
+                runLocks();
+
+              }
+            });
+          }
+        }
+          $("#add").trigger('click');
+        }
+        
+        else {
+        	alert('This project has been archived.');
+        }
+        }
+        
+        function doubleClickEdit () {
+     		$('#daytimeTable').find('select').each( function(ind, value) {
+     		if (value.value == doubleClickProject) {
+     			if( $(this).closest('.permanent_lock').length == 0) {
+     				$(this).prop('disabled', false);
+     				$(this).closest('tr').find('input.today').prop('disabled', false);
+     				$(this).closest('tr').find('input.today').focus(); 		
+            		$(this).closest('tr').find('.save-btn').attr('value', "Save");
+            	}
+            	        else {
+        		alert('This project has been archived.');
+       		 }
+     		}
+     	});
+       	}
+
+        
+        function weekSlideDates(value, date){
+         		var changeDay = 0;
+          		var changeMonth = 0;
+          		var changeYear = 0;
+          		if (value == 'prev') { changeDay = -7;}
+          		else if (value == 'next'){changeDay = 7;}
+          		else if (value == 'prevTop') {changeDay = -1;}
+          		else if (value == 'nextTop') {changeDay = 1;}
+          		date.setYear(storedDateWeekly.getFullYear() + changeYear);	
+          		date.setMonth(storedDateWeekly.getMonth() + changeMonth);	
+         		date.setDate(storedDateWeekly.getDate() + changeDay);
+         		return date;
+         	}/* Project Table Creation */
+
+		function weeklyScroll(dataStr, tableClass){
+				$.ajax({
+          		method: 'GET',
+          		data: dataStr,
+          		url: '/weeklyTimeView',
+          		success: function(data){
+          			//ignoring input of tableClass, that's for weekly scroll functionality
+   			     	$('.render_project_table').html(data);					
+            		},
+            	failure: function(){
+              		alert("Unable to load the today values.");
+           		}
+        	});
+
+        	}
+       
+           /*------- Enable change date on click -----*/
+			$('body').on('click', '.cellClick', function(event) {
+    								var cid = $(this).attr('id');
+    								var dateNum = parseInt(cid);
+    								var newDate = new Date(dateNum);
+    								var timer = setTimeout(function() {
+    								doubleClick = false;
+      								$('#txtDate').datepicker('setDate', newDate);  
+      								storedDateDaily = new Date(newDate);
+      								storedDateWeekly = new Date(newDate);
+ 									dateChange();
+									event.preventDefault;
+ 									}, 200);
+ 									 $(this).find('button').click(function(event) {
+    									doubleClick = true;
+    									var selectedProject = $(this).attr('id');     		
+    									doubleClickProject = selectedProject;
+    									$('#txtDate').datepicker('setDate', newDate);  
+      									storedDateDaily = newDate;
+      									storedDateWeekly = newDate;
+ 										dateChange();
+										clearTimeout(timer);
+										event.preventDefault();
+										event.stopPropagation();
+    								});
+   						 		});
+   						 	
+
+
+
+     $("#add").click(function () {
+     	
+        generateSelectBox();	
+         var master = $(this).parents("#daytimeTable");
+        var table = document.getElementById("daytimeTable");
+    	var noOfRows = table.rows.length;
+    	var saveButtonStatus = $('input#save:last').val();
+    	var noAPs = $('select.project:last option').length;
+		if (noAPs == 1 || (saveButtonStatus == undefined && noAPs != 0)) {
+			alert('You have no more Assigned Projects');
+		}
+	
+		else if (saveButtonStatus != 'Save') {
+
+        id++;
+        var rowHtml = "<tr id='lastRow'>\n\
+                          <td><input type='hidden' id='hiddenId' name='hiddenId' /><select id='project"+ noOfRows +"' name='project' class='project'>\n\
+                          <%if !@selectArray.blank?%><% @selectArray.each do |p|%><option value='<%=p[1]%>'><%=p[0]%></option><% end %><%end%></select></td>\n\
+                          <td><input id='today timeLock"+ noOfRows +"' name='today' type='text' placeholder='Hours' class='today'/></td>\n\
+                          <td><input type='button' class='btn btn-success save-btn' id='save' value='Save'></input></td>\n\
+                          <td><input type='button' class='btn btn-large btn-danger remove-btn' id='remove' value='Remove'></input></td> \n\
+                      </tr>";
+    
+        master.find("tbody").append(rowHtml);
+        
+        /* ENSURE SELECT BOX is Populated with project values that have not been entered */
+        $.each(usedProjects, function(index, value) {
+        	if (value != '') {
+        		if ($('.project:last option[value="' + value +'"]')){
+        		$('.project:last option[value="' + value +'"]').remove();
+        	}       
+        	}
+        });
+	
+   
+       $(".project").last().change(function(){
+          select_box_old_val = $(this).data("lastValue");
+          select_box_new_val = $(this).val();
+          exist = false;
+          console.log(select_box_old_val);
+          $('.project').not(this).each(function(){
+            if(exist == false){
+              console.log(select_box_new_val);
+              if($(this).val() == select_box_new_val){
+                //select_box.val(select_box.data("lastVal"));
+                exist = true;
+                alert("Project has already been entered for today.");
+              }
+            }
+          });
+          if(exist == true){
+            $(this).val($(this).data("lastValue"));
+          }
+          else{
+            $(this).data("lastValue",$(this).val());
+          }
+        }); 
+		
+		}
+      });
+      
+      $('body').on('click', '.save-btn', function(){
+        saveRow($(this));
+      });
+      
+      $('body').on('click', '.remove-btn', function(){
+         removeRow($(this));        
+      });
+ 
+
+      $(".project").change(function(){
+        select_box_old_val = $(this).data("lastValue");
+        select_box_new_val = $(this).val();
+        exist = false;
+        console.log(select_box_old_val);
+        $('.project').not(this).each(function(){
+          if(exist == false){
+            console.log(select_box_new_val);
+            if($(this).val() == select_box_new_val){
+              //select_box.val(select_box.data("lastVal"));
+              exist = true;
+              alert("Project has already been entered for today.");
+            }
+          }
+        });
+        if(exist == true){
+          $(this).val($(this).data("lastValue"));
+        }
+        else{
+          $(this).data("lastValue",$(this).val());
+        }
+      });       
+        
+      $('.pieChart').change(function() {
+        var todayValue = $("#txtDate").val();
+        dataStr = "today=" + todayValue;
+        $.ajax({
+          method: 'GET',
+          async: false,
+          data: dataStr,
+          url: '/createPieChart',
+          dataType: 'json',
+          success: function(pieHash){
+           var newPieHash = [];
+            $.each(pieHash,function( key, value ) {
+            	newPieHash.push([key, parseInt(value)]);
+              });
+            if (1 < newPieHash.length){
+				createPieChart(newPieHash);
+          	}
+          	else{
+				createPieChart('blank');        	}
+          }
+        });
+      });
+
+    /*------- Create Week View at bottom of page -----*/
+
+ $('body').on('change', '.projectTable',  function() {
+ 			var loopCount = 0;
+ 			var todayValue = storedDateWeekly;
+ 			var selectedDate = storedDateDaily;
+ 			console.log('selected =' + storedDateDaily + '   todayVal = ' + storedDateWeekly);
+		  	var viewValue =  'weekly';
+
+			var dataHash = {"today" : todayValue, 'view' : viewValue, 'selectedDate': selectedDate};
+			if(loopCount == 0 ) {weeklyScroll(dataHash, '.currentWeek');}
+
+/*---------------------- Future scroll functionality -------------------*/
+ 			/*while (loopCount <3){
+         	else if (loopCount == 1) {
+         		var newDate = weekSlideDates('prev', todayValue);
+         		dataStr = "today=" + newDate + "&view=" + viewValue;
+         		weeklyScroll(dataStr, '.before');
+         	}
+         	else {
+         		var newDate = weekSlideDates('next', todayValue);
+                dataStr = "today=" + newDate + "&view=" + viewValue;
+         		weeklyScroll(dataStr, '.after');
+         	}
+						
+			 loopCount++;
+			 }*/
+					
+		});
+		
+		
+
+  	$('.pull-down').each(function() {
+    	$(this).css('margin-top', $(this).parent().height()-($(this).height() + 20));
+
+	});
+	
+	function lockTable() {
+		$("#timeLock :input, .timeLock, select#project, #today").prop("disabled", true);
+		$('#daytimeTable').addClass('add-locked-css');
+	}
+	
+	function unlockTable() {
+		$('table').find('input:not(.today)').prop('disabled', false);
+		$("input#save, input#remove, #add").not('.permanent_lock').prop("disabled", false);
+		$('#daytimeTable').removeClass('add-locked-css');
+
+	}
+	
+
+	
+	function updateRequiredDates (dayOperation) {
+		var newRequiredDates = [];
+	    var todayValue = new Date($("#txtDate").val());
+	    var todayNumber = todayValue.getDay();
+	    if (todayNumber != 0 && todayNumber != 6) { //Make sure not to update on weekends
+			if (dayOperation == 'remove'){
+				requiredDates = $.map(requiredDates, function(date) {
+					return new Date(date);
+					});
+				$.each(requiredDates, function(index, date) {
+					if (date.getTime() != todayValue.getTime()) {
+						newRequiredDates.push(date);
+					}
+				});		
+			requiredDates = newRequiredDates;
+			if (requiredDates.length == 0) {
+				lockTimeInput = false;
+			}
+		}
+		else {
+			requiredDates.push(todayValue);
+		} 
+		
+		lockTodayTimeInput(requiredDates);
+		}
+	}	
+	
+	function updateRequiredWeeks (dayOperation) {
+		var newRequiredWeeks = [];
+	    var todayValue = new Date($("#txtDate").val());
+	    var todayNumber = todayValue.getDay();
+	    if (todayNumber != 0 && todayNumber != 6) { //Make sure not to update on weekends
+			if (dayOperation == 'remove'){
+				requiredDates = $.map(requiredDates, function(date) {
+					return new Date(date);
+					});
+				$.each(requiredDates, function(index, date) {
+					if (date.getTime() != todayValue.getTime()) {
+						newRequiredDates.push(date);
+					}
+				});		
+			requiredDates = newRequiredDates;
+			if (requiredDates.length == 0) {
+				lockTimeInput = false;
+			}
+		}
+		else {
+			requiredDates.push(todayValue);
+		} 
+		
+		lockTodayTimeInput(requiredDates);
+		}
+	}	
+	
+	function generateCondensedAlert() {
+    		var msg = '<div>Input Locked. Missing time for: ';
+    		var curr;
+    		var startWeekNum;
+    		var idDate;
+    		var startDate;
+    		var endDate;
+    		var prevStart = null;
+    		var gap = false;
+    		console.log(requiredDates);
+			$.each(requiredDates, function (index, date) {
+				 curr = new Date(date);
+				 if (prevStart == null) {
+				 	idDate = curr;
+				 	startDate =  $.format.date(curr, "M/d/yy");
+				 	msg += '<span class="clickAlertDate" id="' + idDate + '">' + startDate; 
+				 	gap = false;
+				 }
+				 else if ((curr.getDate() - prevStart.getDate()) > 1) {
+					idDate = curr;
+					startDate =  $.format.date(curr, "M/d/yy");
+					endDate = $.format.date(endDate, "M/d/yy");
+				 	msg += '-' + endDate + '</span>, <span class="clickAlertDate" id="' + idDate + '">' + startDate;
+				 }
+				 else if (curr.getDate() - prevStart.getDate()  == 1) {
+				 	endDate = curr;
+				 }
+				 if (index == requiredDates.length - 1) {
+					if (endDate == curr) {
+						endDate = $.format.date(endDate, "M/d/yy");
+						msg += '-' + endDate + '</span>';
+					}
+					else {
+						msg += '</span>';
+					}
+				}
+				 
+				 prevStart = curr;
+		    });
+		    msg += '</div>';
+
+			return msg;
+
+	}
+	
+	function runLocks() {
+		alertObject = {};
+		console.log('runLocks called');
+		var msg;
+		var type;
+		var inputDate = new Date($("#txtDate").val());
+		var today = new Date();
+		var cont = true;
+		var lockTableBool = false;
+		
+		today = new Date( today.getFullYear(), today.getMonth(), today.getDate());
+		if (user_locked) {
+			msg = 'You have been locked from editing time by the Time Sheet Manager.';
+			type = 'danger';
+			alertObject['userLock'] = [type, msg];
+			lockTable();	
+			cont = false
+		} 
+		else if (prev_month_locked && inputDate < firstDayOfMonth) {
+			msg ='You are locked from editing time for this month.'
+			type = 'danger';
+			alertObject['prevMonthLock'] = [type, msg];
+			lockTable();
+			cont = false
+		}
+		
+		if (cont) {
+		 if (lockTimeInput) {
+			if ($(prev_day_lock_html).text().length > 150) { //If message is too long, condense to weekly
+				msg = generateCondensedAlert();
+			}
+			else {
+				msg = prev_day_lock_html;
+			}
+			type = 'danger';
+			alertObject['prevDayLock'] = [type, msg];
+			if (new Date(inputDate) >= new Date(today)) {
+				lockTableBool = true;
+			}
+		}
+		if (weeklyHourLimitLock) {
+			msg = prev_week_hours_html;
+			type = 'danger';
+			alertObject['weeklyHourLock'] = [type, msg];
+			if (new Date(inputDate) >= new Date(today)) {
+				lockTableBool = true;
+			}
+		} 
+		if (lockTableBool) {
+			lockTable();
+		}
+		else {
+			unlockTable();
+		}
+	}
+		updateAlerts();
+	}
+	
+
+	
+
+
+	setTimeInputLocks();
+	prevDateEntryCheck();
+	prevWeekHoursCheck();
+	
+	runLocks();
+	generateSelectBox();
+	reloadPieProject();
+	//$('.flash').delay(2000).hide();
+  
+  });
+
+          
+	
+	
+
+  </script>
+
+
+<%end%>

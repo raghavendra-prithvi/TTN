@@ -1,0 +1,21 @@
+<%w = @work_order%>
+<p id="notice"><%= notice %></div></p>
+<p><div class="title">Work Order Number</div><%=w.work_order_number%></p>
+<p><div class="title">Project Name</div><%=w.project_name%></p>
+<p><div class="title">Type</div><%=w.work_order_type%></p>
+<p><div class="title">UNO Project Manager</div><%=w.UNO_project_manager%></p>
+<p><div class="title">Business Owner</div><%=w.business_owner%></p>
+<p><div class="title">Program Office</div><%=w.program_office%></p>
+<p><div class="title">Due Date</div><%=w.due_date%></p>
+<p><div class="title">ULL Start Date</div><%=w.ULL_start_date%></p>
+<p><div class="title">Development End Date</div><%=w.development_end_date%></p>
+<p><div class="title">Close Date</div><%=w.close_date%></p>
+<p><div class="title">Estimated Hours</div><%=w.estimated_hours%></p>
+<p><div class="title">ULL Contact</div><%=w.ULL_contact%></p>
+<p><div class="title">Summary</div><%=w.summary%></p>
+<p><div class="title">Deliverables</div><%=w.deliverables%></p>
+<p><div class="title">Comments</div><%=w.comments%></p>
+<p><div class="title">Attachments</div><%=w.attachments%></p>
+
+<%= link_to 'Edit', edit_work_order_path(@work_order) %> |
+<%= link_to 'Back', work_orders_path %>

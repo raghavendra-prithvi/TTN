@@ -1,0 +1,118 @@
+class SessionsController < ApplicationController
+  def new
+    if session[:user_id] && User.exists?(:id => session[:user_id]) 
+    	user = User.find(session[:user_id])
+    	if user.client
+      		redirect_to '/new_client'
+      	else
+      		redirect_to welcome_index_path
+    	end
+    end  
+    @user = User.new
+    @identity = env['omniauth.identity']
+  end
+  
+    def new_client
+  	puts 'here new_client'
+  		if session[:user_id] && User.exists?(:id => session[:user_id]) 
+    		@current_user = User.find(session[:user_id])
+    		if !@current_user.client.blank?
+      			redirect_to '/work_orders'
+    		else
+    			redirect_to '/'
+    		end
+    	end
+ end
+
+
+  def create 
+  	puts "login"
+    if !params[:first_name].nil?
+      env["omniauth.auth"]["info"]["first_name"] = params[:first_name]
+    end
+	if !params[:last_name].nil?
+      env["omniauth.auth"]["info"]["last_name"] = params[:last_name]
+    end
+    if !params[:last_name].nil? || !params[:first_name].nil?
+      env["omniauth.auth"]["info"]["name"] = params[:first_name] + " " + params[:last_name]
+    end
+	if !params[:role].nil?
+      if params[:role] == 'GA'
+        env["omniauth.auth"]["info"]["role"] = params[:role]
+        env["omniauth.auth"]["info"]["reporter"] = params[:reporter]
+      else
+        env["omniauth.auth"]["info"]["role"] = params[:role]
+      end
+    end
+    user = User.from_omniauth(env["omniauth.auth"])
+    
+	if !env["omniauth.auth"]["info"]["reporter"].nil?
+      @reporter = Reporter.new
+      @reporter.reporter_id = user.reporter
+      @reporter.reported_id = user.id
+      @reporter.save
+    end
+
+	session[:user_id] = user.id
+	
+    if params[:first_name] && params[:last_name]
+    	user.first_name = params[:first_name]
+    	user.last_name = params[:last_name]
+    	user.save
+    end
+
+    if !params[:client].blank?
+    	if user.client.nil?
+    		user.client = true
+    	end
+    else
+    	if user.client.nil?
+    		user.client = false
+    	end
+    end
+    user.save
+
+    if user.confirmed == "t"
+    	if user.client = true
+      		redirect_to '/work_orders'
+		else
+			redirect_to '/' 
+		end
+	else
+      redirect_to send_mail_path
+    end
+    #	else
+    #		UserMailer.registration_confirmation(user).deliver
+    #		redirect_to petitions_path, notice: "A confirmation e-mail has been send to your inbox."
+    #	end
+  end
+
+  def destroy
+  	@current_user = User.find(session[:user_id])
+    session[:user_id] = nil
+    cookies.delete(:remember_token)
+    if @current_user.client
+    	destination = '/new_client'
+    else
+    	destination = root_path
+    end
+    @current_user = nil
+    puts destination
+    redirect_to destination, notice: "Signed out!"
+    puts cookies
+    puts session[:user_id]
+  end
+
+  def failure
+<<<<<<< HEAD
+	puts params
+	puts 'failure params'
+	redirect_to root_path, alert: "Authentication failed, please try again."
+  end
+=======
+      puts params
+      puts 'failure params'
+      redirect_to root_path, alert: "Authentication failed, please try again."
+	end
+>>>>>>> b88778b46cb9e19b29da672ae035d3bf36177cf5
+end

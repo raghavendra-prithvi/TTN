@@ -1,0 +1,604 @@
+<head>
+  <meta charset="utf-8">
+  <title>Work Order Request Processing</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+  </head>
+  
+<% if session[:user_id] %>  
+  <%@user = User.find(session[:user_id]) %>
+<%w = @work_order%>
+
+
+<div class="panel panel-default">
+<div class="panel-heading"><b>Work Order: </b><%=w.work_order_number%> 
+<span class="pull-right"><%if show_edit_submit_WO(@work_order)%> <%= link_to 'Edit', edit_work_order_path(@work_order) %><%end%><%if show_delete_WO(@work_order)%><%= link_to 'Delete', @work_order, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %><%end%>
+</span></div>
+<div class="panel-body">
+<b>Project Name:</b> <%=w.project_name%> <br /><br />
+<table class="table">
+<th>Program Office</th><th>Project Manager</th><th>Estimated Hours</th><th>ULL Contact</th>
+<tr><td><%=w.program_office%></td><td><%=w.UNO_project_manager%></td><td><%=w.estimated_hours%></td><td><%=w.ULL_contact%></td></tr>
+<th>Start Date</th><th>Due Date</th><th>Development End Date</th><th>Close Date</th></thead>
+<tr><td><%=w.ULL_start_date%></td><td><%=w.due_date%></td>
+<td><%=w.development_end_date%></td>
+<td><%=w.close_date%></td></tr>
+</table>
+
+<b>Summary:</b> <p><%=w.summary%></p>
+<b>Deliverables:</b> <p><%=w.deliverables%></p>
+<b>Comments:</b> <p><%=w.comments%></p>
+
+<b>ULL Team Members:</b> <p><%w.ull_team_members.each do |u|%>
+<%=u.name%> <br />
+<%end%></p>
+<b>Attachment(s):</b>
+<%w.attachments.each do |a| %>
+<p><%=File.basename(a.attachment.to_s)%> :
+<%= link_to 'Download', a.attachment_url%></p>
+<%end%>
+
+</div>
+</div>
+
+
+        
+<div id="work_order_request_form" title="Process Work Order">
+	<table class="table">
+	<tr>
+	<td class="firstCol">
+    Account #
+	</td>
+	<td class="secCol"><select name="account_number" id="account_number" class="text">
+<option value="">Please Select</option>
+<option value='' disabled><b>External Project Acct Numbers </b></option>
+<%Project.all.each do |p|%>
+<option class="external" value="<%=p.id%>" <%if @internal == false && @project.project.id == p.id%> selected <%end%>><%=p.acct_number%></option>
+<%end%>
+<option value='' disabled><b>Internal Project Acct Numbers </b></option>
+<%@internalAcct.each do |p, a|%>
+ <option class="internal" value="<%=p%>" <%if @internal == true && @acct_number== a%> selected <%end%>><%=a%></option>
+<%end%>
+</select>
+
+    </td></tr>
+    <tr>
+    <td>
+  	Manager(s) 
+  	</td><td>
+	<select name="managers" id="managers" class="managers" multiple>
+    <%@managers.each do |m| %>
+		<option value="<%=m.id%>,<%=m.email%>"><%=m.last_name%>, <%=m.first_name%></option>
+    <% end %>
+    </select>
+    </td></tr>
+    <tr><td>
+    Employee(s) 
+    </td><td>
+	<select name="employees" id="employees" class="employees" multiple>
+    <%@employees.each do |e| %>
+		<option value='<%=e.id%>,<%=e.email%>'><%=e.last_name%>, <%=e.first_name%></option>
+    <% end %>
+    </select>
+    </td></tr>
+	<tr><td>
+    GA(s) 
+    </td><td>
+	<select name="gas" id="gas" class="gas" multiple>
+    <%@gas.each do |e| %>
+		<option value='<%=e.id%>,<%=e.email%>'><%=e.last_name%>, <%=e.first_name%></option>
+    <% end %>
+    </select>
+    </td></tr>
+	<tr><td>   
+	Status
+    </td><td>
+    <select name="working_status" class="working_status" id="working_status">
+    	<option value="blank">Assign Status</option>
+    	<option value="hold">On Hold</option>
+    	<option value="complete">Complete</option>
+    	<option value="progress">In Progress</option>
+    	<option value="cancel">Cancelled</option>
+	</select>
+	</td>
+	</tr>
+	<tr><td>
+    WO Status
+    </td><td>
+    <input type="text" class="wo_status"/>
+   </td></tr>
+   
+	<tr><td>
+	Brief Project Description
+   	</td>
+   <td>
+    <textarea id="field" class="project_descript" maxlength="200"></textarea>
+    <span id="charNum" class="charNum pull-right">0/200</span>
+    </td></tr>
+    </table>
+    
+</div>
+
+</div>
+</div>
+
+<div id="reject_form" title="Reject or Hold Work Order Request">
+     <div class="col-xs-12"><label for="rejectFeedback">Feedback</label></div>
+    <div class="col-xs-9">
+    	<%@status = 'rejected'%>
+     <div class="editable"><%= render('wo_request_response') %></div>
+     </div>
+     <div class="col-xs-3"><div class="col-xs-12"><input type="checkbox" class="customMessageOptions" value="includeW"/> Add Feedback </div>
+     </div>
+
+</div>
+
+<div id="confirm_form" title ="Confirm Work Order Request">
+    <div class="controlWidth">
+
+   <span class='smallCaps'>Account #</span> <div class="selectedAccountNumber tab"></div> <br />
+   <span class='smallCaps'>Manager(s)</span><div class="selectedManagers tab"></div> <br />
+    <span class='smallCaps'>Employee(s)</span> <div class="selectedEmployees tab"></div> <br />
+    <span class='smallCaps'>GA(s)</span> <div class="selectedGAs tab"></div> <br />
+    <span class='smallCaps'>Status</span> <div class="wStatusInput tab"></div><br />
+    <span class='smallCaps'>WO Status</span> <div class="woStatusInput tab"></div><br />
+    <span class='smallCaps'>Project Description</span> <div class="projectDescriptInput tab"></div><br />
+    <div class="row">
+         <div class="col-xs-12">
+    <span class='smallCaps'>Email to UL Regarding Approval</span>
+    </div>
+    <div class="col-xs-9">
+    	<%@status = 'approved'%>
+     <div class="editable"><%= render('wo_request_response') %></div><br />
+     </div>
+     <div class="col-xs-3">
+     <div class="col-xs-12"><input type="checkbox" class="customMessageOptions" value="includeW"/> Add Feedback </div>
+     <div class="col-xs-12"><input type="checkbox" class="emailOptions" value="includePMList"/> Include Project Manager </div>
+     </div> 
+     
+     
+     <div class="col-xs-12">
+    <span class='smallCaps'>Email to Assigned Manager(s)</span><br />
+    </div>
+    <div class="col-xs-9">
+     <div class="editable2 messageToManagers"><%= render('project_manager_assignment') %></div>
+     </div>
+     <div class="col-xs-3">
+     <div class="col-xs-12"><input type="checkbox" class="customMessageOptions" value="includePM"/> Add Custom Message </div>
+     </div>
+     <div class="col-xs-12"><br /></div>
+	<div class="col-xs-12 ">
+    <span class='smallCaps'>Email to Assigned Employee(s) / GA(s)</span><br />
+    </div>
+    <div class="col-xs-9">
+     <div class="editable3 messageToEmployees"><%= render('employee_assignment') %></div>
+     </div>
+     <div class="col-xs-3">
+    <div class="col-xs-12"><input type="checkbox" class="customMessageOptions includeE" value="includeE"/> Add Custom Message </div>
+     <div class="col-xs-12"><input type="checkbox" class="emailOptions includeEmp" value="includeEmp"/> Include Other Employees </div>
+     </div>
+    </div>
+    </div>
+</div>
+  
+<div id="loading" title="Work Order Processing">
+<p> Work order is being processed and the emails are being sent. You will be alerted on its success.</p>
+</div>
+
+<%if !@submitted_work_orders.blank?%>
+<%if @submitted_work_orders.include?(@work_order) %>
+<button class="approve">Approve</button>
+<button class="reject">Reject or Hold Request</button>
+<%end%>
+<%end%>
+<button class="backBtn">Back</button>
+
+
+
+
+<style>
+
+div.editable, div.editable2, div.editable3 {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
+    padding: 5px;
+    word-wrap: break-word;
+}
+
+textarea {
+	width: 100% !important;
+}
+
+input {
+	height: 25px !important;
+	padding: 0px !important;
+	width: 100% !important;
+}
+select {
+	width: 100% !important;
+
+}
+.col-xs-6 {
+	margin-top:10px !important;
+}
+
+.charNum {
+	font-family: Verdana,Arial,sans-serif;
+	font-size: .75em;
+	color:#555555 !important;
+}
+
+.firstCol {
+	width: 200px !important;
+}
+
+.secCol {
+	width: 100% !important;
+}
+
+.controlWidth{
+	min-width: 600px !important;
+	width: auto !important;
+    overflow-x: hidden;
+
+}
+
+.tab {
+	padding-left:2em;
+}
+
+.smallCaps {
+font-variant:small-caps;
+
+}
+
+.special {
+	margin-top: 5px !important;
+}
+
+</style>
+
+
+<script>
+	
+	
+$(document).ready(function(){
+
+
+
+
+	var dHeight = 300;
+	var dWidth = 300;
+	var dPosition = [0, 0];
+
+	$('.addEMessage, .addPMessage, .addWMessage').hide();
+
+		$('.customMessageOptions').click(function() {
+			if ($(this).val() == 'includeE') {
+				$('.addEMessage').toggle();
+			}
+			else if ($(this).val() == 'includePM'){
+				$('.addPMessage').toggle();				
+			}
+			else if ($(this).val() == 'includeW'){
+				$('.addWMessage').toggle();
+			}
+		});
+
+ 
+
+    $( "#work_order_request_form" ).dialog({
+      autoOpen: false,
+      modal: true,
+      positon: dPosition,
+      buttons: {
+        "Save": function() {
+        	console.log('new line');
+  			common = false
+            accountNumber = $('#account_number  option:selected').text();
+          	employees = $('#employees').val();
+          	
+        	empInfo = {};
+			$('#employees option:selected').each(function(){ 
+  				empInfo[$(this).text()] = $(this).val(); 
+			});
+			manInfo ={};
+			$('#managers option:selected').each(function(){
+				var manager = $(this).val();
+  				manInfo[$(this).text()] = manager;
+  				$.each(empInfo, function(key, value) {
+  				 if (value == manager){
+  				 	common = true;
+  				 }
+  				});
+			});
+			
+			if (common == false) {
+			gaInfo = {};
+			$('#gas option:selected').each(function() {
+				gaInfo[$(this).text()] = $(this).val();
+			});
+
+
+			
+    		employeeNames = $("#employees option:selected").map(function () {
+        		return $(this).text();}).get().join('; ');
+        	var empString = '';
+        	$.each(empInfo, function(key, value) {
+        		var valArr = value.split(',');
+        		empString += '<li>' + key + ': ' + valArr[1] + '</li>';
+        		});
+        	$('.addEmployees').html(empString);
+
+			managerNames = $("#managers option:selected").map(function () {
+        		return $(this).text();}).get().join('; ');
+        	var managerString = '';
+        	$.each(manInfo, function(key, value) {
+        		var valArr = value.split(',');
+        		managerString += '<li>' + key + ': ' + valArr[1] + '</li>';
+        		});
+        	$('.addManagers').html(managerString);
+        	
+        	gaNames = $("#gas option:selected").map(function () {
+        		return $(this).text();}).get().join('; ');
+        	var gaString = '';
+        	$.each(gaInfo, function(key, value) {
+        		var valArr = value.split(',');
+        		gaString += '<li>' + key + ': ' + valArr[1] + '</li>';
+        		});
+        	$('.addGAs').html(gaString);
+        	
+			if (accountNumber != 'Please Select') {
+          	 $('.selectedAccountNumber').html(accountNumber);
+          	 }
+          	 else{
+	          	 $('.selectedAccountNumber').html('None selected');
+          	 }
+          	 
+          	 workingStatus = $('.working_status').val();
+          	 WOStatus = $('.wo_status').val();
+          	 projectDescript = $('.project_descript').val();
+          	 
+          	 $('.projectDescriptInput').html(projectDescript);
+          	 $('.wStatusInput').html(workingStatus);
+          	 $('.woStatusInput').html(WOStatus);
+          	$('.selectedEmployees').html(employeeNames);
+          	$('.selectedManagers').html(managerNames);
+          	$('.selectedGAs').html(gaNames);
+
+          	$('#confirm_form').dialog('open');
+          	$(this).dialog('close');
+          	
+          	}
+          else {
+          	alert('Users may not be assigned as Manager and Employee of project.');
+          }
+          	
+          	
+        },
+        "Cancel": function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+    
+    $("#work_order_request_form").dialog( "option", "width", 700 );
+    $("#work_order_request_form").dialog( "option", "height", 650 );
+
+
+    
+    
+    
+    $( "#confirm_form" ).dialog({
+      autoOpen: false,
+      height: 650,
+      width: 700,
+      minHeight: 700,
+
+      modal: true,
+      positon: dPosition,
+      buttons: {
+        "Confirm Work Order Approval": function() {
+        		if (!confirm('Are you sure you want to Approve this Work Order?')) {
+      				return;}
+      			else{
+      				var dataObject = {};
+        			var dataString = "approved=true&acct_number=" + accountNumber;
+        			dataObject.approved = true;
+        			dataObject.acct_number = accountNumber;
+        			$.each($('.emailOptions:checked'), function(ind, value) {
+						if (value.value=='includePMList'){
+							includePMListToClient = true;
+							dataString += "&includePMList=true";
+							dataObject.includePMList = true;
+						}
+						else{
+							includeEmpListToEmps = true;
+							dataString += "&includeEMList=true";
+							dataObject.includeEMList = true;
+						}
+					});
+					$.each($('.customMessageOptions:checked'), function(ind, value) {
+						if (value.value=='includeW') {
+							includeCustomToClients = true;
+							wmMessage = $('.addedWMessage').val();
+							dataString += "&wmMessage=" + wmMessage;
+							dataObject.wmMessage = wmMessage;
+						}
+						else if (value.value=='includePM') {
+							includeCustomToPMs = true;
+							pmMessage = $('.addedPMMessage').val();
+							dataString += "&pmMessage=" + pmMessage;
+							dataObject.pmMessage = pmMessage;
+						}
+						else {
+							includeCustomToEmps = true;
+							emMessage = $('.addedEMessage').val();
+							dataString += "&emMessage=" + emMessage;
+							dataObject.emMessage = emMessage;
+						}
+					});
+					
+					empString = '';
+					$.each(empInfo, function(key, value) {
+        				var valArr = value.split(',');
+        				empString += valArr[0] + ',';
+        			});
+					dataString += '&assigned_employees=' + empString;
+					dataObject.assigned_employees = empString;
+					
+					var managerString = '';
+        			$.each(manInfo, function(key, value) {
+        				var valArr = value.split(',');
+        				managerString += valArr[0] + ',';
+        			});
+        			
+        			var gaString = '';
+        			$.each(gaInfo, function(key, value) {
+        				var valArr = value.split(',');
+        				gaString += valArr[0] + ',';
+        			});
+					dataString += '&project_managers=' + managerString + '&workStatus=' +workingStatus+ '&woStatus=' + WOStatus + '&gas=' + gaString;	
+				    dataObject.project_managers = managerString;
+				    dataObject.workStatus = workingStatus;
+				    dataObject.gas = gaString;
+				    dataObject.descript = projectDescript;
+				    $('#loading').dialog('open');
+      				$(this).dialog('close');
+
+					processWorkOrderRequest(dataObject);
+					
+                }
+        },
+         "Edit": function() {
+			$(this).dialog('close');
+          $('#work_order_request_form').dialog('open');
+        },
+        "Cancel": function() {
+        	$(this).dialog('close');
+        }
+      }
+    });
+    
+    $("#confirm_form").dialog( "option", "width", 700 );
+    $("#comfirm_form").dialog( "option", "height", 650 );
+
+    
+    $('#loading').dialog({
+      autoOpen: false,
+      height: dHeight,
+      width: dWidth,
+      modal: true,
+      minHeight: 700,
+
+      positon: dPosition,
+		
+		});
+		
+	$("#loading").dialog( "option", "width", 700 );
+    $("#loading").dialog( "option", "height", 300 );
+
+		
+    $('.approve').click(function() {
+     	$('.emailOptions').prop('checked', true);
+
+		$('.emailOptions').click(function() {
+			if ($(this).val() == 'includeEmp') {
+				$('.hideEList').toggle();
+			}
+			else {
+				$('.hideMList').toggle();				
+			}
+		});
+	
+        $( "#work_order_request_form" ).dialog( "open" );
+    });
+    
+
+    
+    $( "#reject_form" ).dialog({
+      autoOpen: false,
+      height: dHeight,
+      width: dWidth,
+      positon: dPosition,
+      modal: true,
+          minHeight: 700,
+
+      buttons: {
+      	'Hold Work Order and Send Feedback': function() {
+      		if (!confirm('Are you sure you want to place this Work Order on Hold?')) {
+      			return;}
+      		else{
+      		
+      			customMessage = $('#reject_form').find('.addedWMessage').val();
+      		//	var dataString = "approved=pending&wmMessage=" + customMessage;
+      			var dataObject = {'approved': 'pending', 'wmMessage': customMessage}; 
+      			$('#loading').dialog('open');
+      			$(this).dialog('close');
+      			processWorkOrderRequest(dataObject);
+      		}
+      	},
+      	'Reject and Send Feedback': function() {
+      		if (!confirm('Are you sure you want to place this reject this Work Order?')) {
+      			return;}
+      		else{
+      			customMessage = $('#reject_form').find('.addedWMessage').val();
+	      		//var dataString = "approved=false&wmMessage="+customMessage;	
+	      		var dataObject = {'approved': 'false', 'wmMessage': customMessage};
+	      		 $('#loading').dialog('open');
+      			$(this).dialog('close');
+				processWorkOrderRequest(dataObject);
+			}
+      	}
+      }
+    });
+    
+    $("#reject_form").dialog( "option", "width", 700 );
+    $("#reject_form").dialog( "option", "height", 650 );
+    
+        $('.reject').click(function() {
+    	$('.hideMList').hide()
+    	$('#reject_form').dialog( 'open' );
+
+    });
+
+
+    function processWorkOrderRequest(dataObject) {
+    	//dataString += '&wid=<%=@work_order.id%>';
+    	dataObject.wid= '<%=@work_order.id%>';
+		$.ajax({
+        	method: 'GET',
+        	data: dataObject,
+            url: '/processReport',
+            success: function() {
+            	alert('Work Order successfully processed.');
+            	window.location.href = '/work_order_admin';
+            }
+		});	
+	};
+	
+	$('.backBtn').click(function(){
+		   var referrer =  document.referrer;
+		//alert(referrer);
+		//alert(window.location.href);
+		window.location.href = referrer;
+		
+	
+	});
+	
+	
+	
+	// Count characters for Project Description
+	
+	$('.project_descript').keyup(function() {
+        var len = $(this).val().length;
+         $('#charNum').text(len + '/' + 200);
+        
+      });
+});
+
+</script>
+
+<%end%>

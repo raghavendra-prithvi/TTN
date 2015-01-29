@@ -1,0 +1,24 @@
+<div style="width:30%">
+  <fieldset>
+    <legend>Details</legend>
+    Manager : <% if !@proj_man.blank? %><%@proj_man.each do |p| %>
+    <% user = User.where(:id => p.user_id) %>
+    <%if user.blank? %>
+    	<%=DisabledUser.where(:user_id => p.user_id).first.name%>
+    <%else%>
+    	<%=user.first.name%>
+    <%end%><br />
+    <%end%><% end %>
+    <br/>
+    Team:
+    <% @assi_prj.each do |p| %>
+      <b><%= User.find(p.user_id).name %></b>
+      <br/>
+    <% end %>
+    
+    <br/>
+    <br/>
+    Total No. Of hours: <%= @hrs %>
+    </fieldset>
+  
+</div>

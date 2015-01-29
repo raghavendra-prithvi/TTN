@@ -1,0 +1,499 @@
+<% if session[:user_id] %>
+  <%@user = User.find(session[:user_id]) %>	
+
+<div class="tab-content">
+
+
+
+	<div class="row-fluid">
+		<div class="col-md-12"> 
+<<<<<<< HEAD
+
+<!-- Table View Buttons --!>
+=======
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+ 			<table class="firstRow">
+ 				<tr>
+                	<td><div class="labelDates">From:</div></td>
+                	<td> <input class = "datePicker" id="txtDate"/><input class="datePicker hidden" id="altDate"/></td>
+                  	<td><div class="labelDates"> to:</div></td> 
+                  	<td> <input class = "datePicker" id="txtDate2"/><input class="datePicker hidden" id="altDate2"/></td>
+				  	<td> <label class="prLabel">View: </label></td>
+<<<<<<< HEAD
+					<td> <select class="time_view_select"> 
+=======
+					<td> <select class="selectpicker projectReport"> 
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+						<option value="weekly" >Weekly</option>
+                  		<option value="monthly" >Monthly</option>  
+                   		<option value="yearly" >Yearly</option>
+                   		</select>
+                   	</td> 
+<<<<<<< HEAD
+                   	<td> <label class="prLabel">Work Order Type: </label></td>
+                	<td> <select class="wo_type_select"> 
+                	    <option value="all" >All</option>
+						<option value="project" >Project</option>
+                  		<option value="support" >Support</option>  
+                   		<option value="maintenance" >Maintenance</option>
+                   		<option value="admin" >Administration</option>
+                   		</select>
+                   	</td> 
+
+=======
+                   <td> <label class="prLabel">Select Work Order: </label></td>
+                   	<td> <select class="wid">
+                   		<%WorkOrder.all.each do |w|%>
+						<option value="<%=w.id%>" ><%=w.project_name%> (<%=w.work_order_number%>)</option>
+						<%end%>
+                   		</select>
+                   	</td> 
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+                   <td>	
+                   <div class="btn-group btn-group">	
+  					<button type="button" class="btn btn-default changeDate" value="prev">Prev</button>
+  					<button type="button" class="btn btn-default changeDate" value="today">Today</button>
+					<button type="button" class="btn btn-default changeDate" value="next">Next</button>
+					</div>
+					</td>
+ 					<td>  <button type="button" class="btn btn-default customView" value="custom">Custom Date Range</button></td>
+ 					<td>  <button type="button" class="btn btn-default toToday" value="today">Today</button></td>
+					<td>  <button type="button" class="btn btn-default backToReg" value="custom">Back</button></td>
+<<<<<<< HEAD
+ 					<td>  <button type="button" class="btn btn-default " value="">Export CSV</button></td>
+
+				</tr>
+            </table>
+            
+<!-- Type Projects --!>
+		<div class=" table table-responsive">
+ 			<table class="table  wo_type_project_table table-condensed table-bordered table-hover">	
+ 			<thead><th>Work Order ID </th><th>Project Name</th><th>Status</th><th>Business Owner</th><th>Program Office</th><th>ULL CBIT Resource</th><th>Hours Worked</th><thead>
+              	<% if !@project.nil?%>
+              	<%@project.each do |m| %>
+            		<tr><td><%=m.work_order_number%></td><td><%=m.project_name%></td><td>
+            		<%if !m.actual_work_order.nil?%><%=m.actual_work_order.work_order_progress_status%><%end%></td>
+            		<td><%=m.business_owner%></td><td><%=m.program_office%></td><td><%=m.ULL_contact%></td><td class="maintHours"></td><tr>
+            	<%end%>
+            	<%end%>
+            <tr></tr>
+          	</table>
+			</div> <!-- table responsive--!>
+			
+<!-- Type Support --!>	
+		<div class=" table-responsive">
+ 			<table class="table  wo_type_support_table table-condensed table-bordered table-hover">
+  			<thead><th>Work Order ID</th><th>Task Name</th><th>Status</th><th>Business Owner</th><th>Program Office</th><th>ULL CBIT Resource</th><th>Hours Worked</th><thead>
+            	   	<% if !@support.nil?%>
+            	   	<%@support.each do |m| %>
+            		<tr><td><%=m.work_order_number%></td><td><%=m.project_name%></td><td>
+            		<%if !m.actual_work_order.nil?%><%=m.actual_work_order.work_order_progress_status%><%end%></td>
+            		<td><%=m.business_owner%></td><td><%=m.program_office%></td><td><%=m.ULL_contact%></td><td class="maintHours"></td><tr>
+            	<%end%>
+            	<%end%><tr></tr>
+          	</table>
+			</div> <!-- table responsive--!>
+
+<!-- Type Maintenance --!>
+		<div class=" table-responsive">
+ 			<table class="table  wo_type_maintenance_table table-condensed table-bordered table-hover">	
+   			<thead><th>Work Order ID </th><th>Task Name</th><th>Status</th><th>Business Owner</th><th>Program Office</th><th>ULL CBIT Resource</th><th>Hours Worked</th><thead>
+            	<%@maintenance.each do |m| %>
+            		<tr><td><%=m.work_order_number%></td><td><%=m.project_name%></td><td>
+            		<%if !m.actual_work_order.nil?%><%=m.actual_work_order.work_order_progress_status%><%end%></td>
+            		<td><%=m.business_owner%></td><td><%=m.program_office%></td><td><%=m.ULL_contact%></td><td class="maintHours"></td><tr>
+            	<%end%>
+            	<tr></tr>
+          	</table>
+			</div> <!-- table responsive--!>
+
+<!-- Type Admin --!>
+		<div class=" table-responsive">
+ 			<table class="table  wo_type_administration_table table-condensed table-bordered table-hover">	
+ 	<thead><th>Type</th><th>ULL CBIT Resource Name</th><th>Hours Worked</th></thead>
+            	<tr></tr>
+          	</table>
+			</div> <!-- table responsive--!>
+	
+=======
+				</tr>
+            </table>
+			<div class=" table-responsive">
+ 			<table class="table  projectTable table-condensed table-bordered table-hover">	
+            	<tr></tr>
+          	</table>
+			</div> <!-- table responsive--!>
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+	</div>    		
+	</div>    		
+
+	<div class="col-lg-5"><div class="pieChart center" id="piechart" style="width: 900px; height: 275px;"></div></div> 
+
+<style>
+
+.table {
+width:auto !important;
+}
+.firstRow{
+	padding:20px !important;
+}
+.customView { height:25px !important;
+	line-height:12.5px;}
+	
+	
+.projectReport {
+	height:25px !important;
+	width:85px;
+	padding: 5px;
+}
+
+.projectCell{
+    width: 333px !important;
+}
+
+.changeDate, .backToReg, .toToday{
+	height: 25px !important;
+	padding:5px;
+	margin:0 !important;
+	line-height: 12.5px;
+	}
+#txtDate, #txtDate2 {
+   	width:90px !important;
+   	padding:0;
+	margin:0;
+	height:25px;
+
+.colToday {
+  color: red !important;
+}
+
+th {
+color:#2a6496 !important;
+}
+		
+</style>
+
+  
+<script type="text/javascript">
+
+  $(document).ready(function(){
+  var months = [ "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December" ];
+	var days = {1:"Mon", 2:"Tue", 3:"Wed", 4:"Thu", 5:"Fri", 6:"Sat", 0:"Sun"};
+    $("#txtDate").datepicker({ altField:  '#altDate', altFormat: 'yy-mm-dd', 
+    	showOtherMonths: true, selectOtherMonths: true, firstDay: 1, changeYear: true,
+    	onSelect: function() {
+        	var selectedDate = $("#txtDate").datepicker('getDate');
+    		$('#txtDate2').datepicker('option', {minDate: new Date(selectedDate)});
+		  	if ($('.backToReg').is(":visible")) {
+				loadSpanData();
+			}
+			else {
+			  	$('.projectReport').trigger('change');
+			}
+		 }
+		});
+		
+	$("#txtDate2").datepicker({ altField:  '#altDate2', altFormat: 'yy-mm-dd', 
+    showOtherMonths: true, selectOtherMonths: true, firstDay: 1, changeYear: true,
+    onSelect: function() {
+     	var selectedDate = $("#txtDate2").datepicker('getDate');
+		loadSpanData();
+		}
+		});
+		
+    $('#txtDate').datepicker('setDate', 'today');
+    $('#txtDate2').datepicker('setDate', 'today');
+    $('.projectReport').val('weekly');
+    $('#txtDate2').hide();
+    $('.backToReg').hide();
+	$(".labelDates").hide();
+	$(".toToday").hide();
+    
+
+
+
+
+$('.changeDate').click( function() { 
+    
+    var currentDate = $("#txtDate").datepicker('getDate');
+	var	newDate = new Date();
+	
+	var changeDay = 0;
+	var changeMonth = 0;
+	var changeYear = 0;
+	
+	if ($('.projectReport').val() == "weekly") {
+		if ($(this).val() == 'prev') { changeDay = -7;}
+		else if ($(this).val() == 'next'){changeDay = 7;}
+	}
+	else if ($('.projectReport').val() == "monthly") {
+		if ($(this).val() == 'prev') {changeMonth = -1;}
+		else if ($(this).val() == 'next'){changeMonth = 1;}	
+	}
+	else if ($('.projectReport').val() == "yearly") {
+		if ($(this).val() == 'prev') {changeYear = -1;}
+		else if ($(this).val() == 'next'){changeYear = 1;}
+	}
+	
+	if ($(this).val() == "prev" || $(this).val() == "next"){
+		newDate.setYear(currentDate.getFullYear() + changeYear);	
+		newDate.setMonth(currentDate.getMonth() + changeMonth);	
+		newDate.setDate(currentDate.getDate() + changeDay);}
+
+
+	$('#txtDate').datepicker('setDate', newDate);
+	$('.projectReport').trigger('change');
+
+
+		
+});
+
+$('.toToday').click(function() {
+	var	newDate = new Date();
+	$('#txtDate').datepicker('setDate', newDate);
+	$('#txtDate2').datepicker('setDate', newDate);
+	loadSpanData();
+});
+
+$('.wid').change(function() {
+
+<<<<<<< HEAD
+=======
+	$('.pieChart').trigger('change');
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+	$('.projectReport').trigger('change');
+
+});
+
+
+
+$('.customView').click( function() {
+	$(this).hide();
+	var currentDate = $("#txtDate").datepicker('getDate');
+	$('#txtDate2').datepicker('option', {minDate: new Date(currentDate)});
+	$(".backToReg").show();
+	$('.projectReport').hide();
+	$('.prLabel').hide();
+	$('.changeDate').hide();
+	$('.toToday').show();
+	$('#txtDate2').show();
+	$(".labelDates").show();
+<<<<<<< HEAD
+=======
+	$('.pieChart').hide();
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+	loadSpanData();
+});
+
+$('.backToReg').click( function() {
+	$(this).hide();
+    $('#txtDate').datepicker('setDate', 'today');
+	$(".customView").show();
+	$('#txtDate2').hide();
+	$('.projectReport').trigger('change');
+	$('.projectReport').show();
+	$('.prLabel').show();
+	$('.changeDate').show();
+	$(".labelDates").hide();
+	$('.toToday').hide();
+});
+		
+
+
+function loadSpanData () {
+	 $(".projectTable").find("tr").remove();
+    var startDate = $("#txtDate").datepicker('getDate');
+    var endDate = $("#txtDate2").datepicker('getDate');	
+		dataStr = "start=" + startDate + "&end=" + endDate;
+			$.ajax({
+          		method: 'GET',
+          		data: dataStr,
+          		url: '/createCustomReport',
+          		dateType: 'json',
+          		success: function(data){
+          			var firstRow = '<thead><tr><th class="projectCell">Work Order</th><th>Total Hours</th></tr></thead><tbody>';
+					$.each(data, function (i, obj) { 
+						firstRow += '<tr><td>' + obj.projectName + '</td><td>' + obj.projectHours + '</td></tr>';
+					});
+					firstRow += '</tbody>';
+
+					$('.projectTable').append(firstRow);   
+<<<<<<< HEAD
+=======
+				    $('.pieChart').trigger('change');
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+          		}
+          	});
+}
+
+
+<<<<<<< HEAD
+			$.ajax({
+          		method: 'GET',
+          		url: '/getWOData',
+          		dateType: 'json',
+          		success: function(){
+          			alert('hey');
+          		}
+          	});
+
+
+
+=======
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+		
+  $('.projectReport').change(
+		function() {
+			var todayValue = $("#altDate").val();
+			var viewValue =  $(this).val();
+			var wid = $('.wid').val();
+			dataStr = "today=" + todayValue + "&view=" + viewValue + "&wid=" + wid;
+			$.ajax({
+          		method: 'GET',
+          		data: dataStr,
+          		url: '/getWOData',
+          		dateType: 'json',
+          		success: function(data){
+   			     	$(".projectTable").find("tr").remove();
+						$.each(data, function (i, obj) { 
+							var totalHours = new Array();
+							if (obj.dates) {
+							   	
+<<<<<<< HEAD
+							   	var firstRow = '<tr><td class="projectCell">Work Order</td>';
+=======
+							   	var firstRow = '<tr><td class="projectCell">Project</td>';
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+							   	$.each(obj.dates, function(i, value) {
+							   		var date = new Date(value);
+							   		var today = new Date();
+							   		if (viewValue == "weekly") {
+							   			var dateColHead = days[date.getDay()] + ":<br/>";
+							   			if (today.getDate() == date.getDate() && today.getMonth() == date.getMonth() && today.getFullYear() == date.getFullYear()){
+							   				firstRow += '<td style="text-decoration:underline;">' + dateColHead + $.format.date(date, "M/d/yy") + '</td>'
+							   			}
+							   			else{
+							   				firstRow += '<td>' + dateColHead + $.format.date(date, "M/d/yy") + '</td>';
+										}
+									}
+									else if (viewValue == "monthly") {
+										var count = i + 1;
+										var dateColHead = $.format.date(date, "M/d/yy");
+										dateColHead = "Week " + count + ":<br /> " + dateColHead;
+										if (today.getDate() < date.getDate() || today.getDate() >= (date.getDate() + 7)
+											|| today.getFullYear() != date.getFullYear() || today.getMonth() != date.getMonth()) {
+											firstRow += '<td>';}
+										else{
+											firstRow += '<td style="text-decoration:underline;">';
+										}
+										firstRow += dateColHead + '</td>';
+											
+									}
+									else if (viewValue == "yearly") {
+										if (today.getMonth() != date.getMonth() || today.getYear() != date.getYear()) {
+											firstRow += '<td>';
+										}
+										else {
+											firstRow += '<td style="text-decoration:underline;">';
+										}
+										var dateColHead = $.format.date(date, "MMM: yyyy");
+										firstRow += dateColHead + '</td>';
+									}
+									
+							   	});
+							   	firstRow += '<td>Total</td></tr>';
+								$('.projectTable > tbody:last').append(firstRow);   
+							}
+							
+							else if (obj.totals) {
+            					totalString = '<tr><td>Total: </td>';
+            					for (i = 0; i<obj.totals.length; i++) {
+            						totalString += '<td>' + obj.totals[i] + '</td>';
+            					}
+            					totalString += '</tr>';
+            					$('.projectTable > tbody:last').append(totalString);   
+
+            				}
+            				else {	
+            					$.each(obj, function (key, value) {
+            						var backColor = assignColors([[key]]);
+            						var nextRow = '<tr><td style="background-color:'+backColor+'; color: white";>' + key + '</td>';
+            						$.each(value, function (i, info) {
+            							nextRow += '<td>' + info.projectHours + '</td>';
+            							});
+            						nextRow += '</tr>';
+            						$('.projectTable > tbody:last').append(nextRow);   
+								});
+							}
+
+
+								
+								
+							 }); 
+								
+            	
+            		
+            		
+            		},
+
+            	failure: function(){
+              		alert("Unable to load the today values.");
+           		}
+        	});
+<<<<<<< HEAD
+=======
+		    $('.pieChart').trigger('change');
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+
+		
+		});
+		
+
+
+$('.pieChart').change(function() {
+		var todayValue = $("#altDate").val();
+		var endValue = $("#altDate2").val();
+		var viewValue = $('.projectReport').val();
+    	if ($('.backToReg').is(":visible")) {
+        	dataStr = "today=" + todayValue + "&end=" + endValue;
+        }
+        else{
+			dataStr = "today=" + todayValue + "&view=" + viewValue;
+		}
+        $.ajax({
+          method: 'GET',
+          data: dataStr,
+          url: '/createReportPieChart',
+          dataType: 'json',
+          success: function(pieHash){
+            var newPieHash = [];
+            $.each(pieHash,function( key, value ) {
+              newPieHash.push([key, value]);
+              ;});
+			if (1 <= newPieHash.length){
+            	createPieChart(newPieHash);
+				$('.pieChart').show();
+          	}          
+          	else {
+          		$('.pieChart').hide();
+          	}
+          },
+          failure: function() { alert('uh oh');}
+        });
+      });
+
+<<<<<<< HEAD
+=======
+
+	$('.pieChart').trigger('change');
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+	$('.projectReport').trigger('change');
+
+    });
+
+  </script>
+<%end%>
+
+	
+	

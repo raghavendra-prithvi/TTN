@@ -1,0 +1,18 @@
+Dear <span class="employeeName inline">(Employee's Name)</span>, <br /> <br />								
+								<p>You have been assigned to work on the project: <%=@work_order.project_name%>. </p>
+								<div class="addEMessage"><textarea class="addedEMessage"></textarea></div>
+								
+								<p>The manager(s) you will be reporting to are: 
+								<div class="addManagers"></div>											</p>
+								<div class="hideEList"><p>
+									Here is the list of other member's assigned to this project:
+									<li> (Employee Last Name), (Employee First Name); email@lousiana.edu </li>
+									<li>...</li>
+									<li>...</li>
+									</div></p>
+									<p>
+                              Thank you. <br/> <br/>
+                              Sincerely, <br/>
+                              <%=User.find(session[:user_id]).name%></p>
+
+

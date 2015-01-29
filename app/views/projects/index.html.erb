@@ -1,0 +1,230 @@
+<table class="table table-striped table-bordered table-condensed">
+  <% if @projects.length > 0 %>
+    <tr>
+      <th>Acct Number (Name)</th>
+      <th>Project Name</th>
+      <th>Type</th>
+      <th>Manager(s)</th>
+     <%if !@tableViewOnly%>
+      <th class="btnCol"></th>
+      <%end%>
+		<% if @time_sheet_lock %> 
+      <th class="ts_buttons"><button type="button" class="btn btn-sm btn-danger lock_all_projects" value="lock">Lock</button>
+		  <button type="button" class="btn btn-sm btn-success unlock_all_projects" value="unlock">Unlock</button> 
+		</th>
+		<%end%>
+    </tr>
+  <% end %>
+    <% @projects.each do |project| %>
+      <tr>
+      <%if !project.project.nil?%>
+        <td><%= project.project.acct_number.to_s + ' (' + project.project.name.to_s + ')'%></td>
+      <%elsif !project.internal_project_acct_number.nil?%>
+        <td> <%=project.internal_project_acct_number.acct_number%></td>
+      <%else%>
+      	<td></td>
+    <%end%>
+        <td><%= project.name %></td>
+        <td><%=project.project_type.to_s.capitalize%></td>
+        <td> <% if !project.project_managers.blank? %>
+        	<%project.project_managers.each do |pm|%>
+        		<%if DisabledUser.where(:user_id => pm.user_id).blank? %>
+        	<%= User.find(pm.user_id).last_name %><br />
+        		<%end%>
+        	<% end %>
+        	<%end%></td>
+       <%if !@tableViewOnly%> 
+       <td class="btnCol">
+       <% if @permissions['activate_all_projects']%>
+          <% if project.active == true %>
+              <input type="button" class="btn btn-warning btn-sm buttonWidth" value="Deactivate" id=<%=project.id%> onclick="deactivate(this.id)"> </input>
+          <% else %>
+              <input type="button" class="btn btn-warning btn-sm buttonWidth" value="Activate" id=<%=project.id%> onclick="activate(this.id)"> </input>
+          <% end %>
+        <%end%>
+        <% if @permissions['edit_projects'] %>
+        <%= link_to 'Edit', edit_project_path(project), :class => 'btn btn-success btn-sm buttonWidth' %>
+        <%end%>
+       <%if @permissions['archive_all_projects']%> 
+	<button type="button" class=" btn btn-sm btn-danger archiveProject buttonWidth" id="<%=project.id%>">Archive</button>
+	<%end%>
+	</td> <%end%>
+	
+		<% if @time_sheet_lock %> 
+			<td> <button type="button" class="btn btn-sm btn-danger lock_project" id="<%=project.id%>" <%if project.locked %> style="display:none" <%end%> value="lock">Lock</button>
+				 <button type="button" class="btn btn-sm btn-success unlock_project" id="<%=project.id%>" <%if !project.locked %> style="display:none" <%end%> value="unlock">Unlock</button>
+			</td>
+		<%end%>
+      </tr>
+<%end%>
+
+
+</table>
+
+<table class="table table-striped table-bordered table-condensed">
+
+
+<% if @projects.length == 0 %>
+  <h3> There are no Projects to display. you can add them. </h3>
+<% end %>
+<br/>
+<%if @permissions['create_projects']%>
+<%= link_to 'New Internal Project', new_project_path, :class => "btn btn-active btn-success btn-sm"%>
+<%end%>
+<%= link_to 'View Archived', archived_projects_path, :class => "btn btn-active btn-primary btn-sm"%>
+</div>
+
+<style>
+	a.btn:visited {
+		color: white !important;
+	}
+	
+	.buttonWidth {
+		width: 85px !important;
+	}
+	
+	.btnCol {
+		text-align: center !important;
+	}
+	
+.unlock_project, .lock_project{
+	height: 30px !important;
+	width: 100% !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	
+}
+table td {
+	vertical-align: middle !important;
+
+}
+
+
+.lock_all_projects, .unlock_all_projects {
+
+}
+
+.ts_buttons {
+	width: 129px !important;
+}
+</style>
+
+<script>
+  function activate(project_id){
+        $.ajax({
+              type: 'POST',
+              url: '/activateProject',
+              data : "id="+project_id,
+              success: function(dt){
+                //alert(dt);
+                if(dt=="success"){
+                  $("#"+project_id).val("Deactivate");
+                  $("#"+project_id).attr("onclick","deactivate(this.id)" );               
+                }
+              }
+          });
+  }
+  
+  function deactivate(project_id){
+        $.ajax({
+              type: 'POST',
+              url: '/deactivateProject',
+              data : "id="+project_id,
+              success: function(dt){
+                if(dt=="success"){
+                  $("#"+project_id).val("Activate");
+                  $("#"+project_id).attr("onclick","activate(this.id)" );
+                }
+              }
+          });  
+  }
+
+  $('.archiveProject').click(function() {
+  var pid = $(this).attr('id');
+
+  	if (confirm('Archiving the project is irreversible. This Specific Project will no longer be available to track hours. Are you sure you want to Archive this project?')){
+  	  	$.ajax({
+  		url: '/archiveProject',
+  		data: 'pid=' + pid,
+  		type: 'GET',
+  		success: function(data) {
+  			if (data.fail) {
+  				alert(data.msg);
+  			}
+  			else {
+  				window.location.href="/admin/projects";
+  			}
+  		}
+  	
+  	
+  	});
+  }
+  });
+  
+  // Functions for Time Locking
+
+  $('.lock_all_projects, .unlock_all_projects').click(function() {
+      var lockStatus = $(this).val();
+
+  	if (confirm('Are you sure you want to ' + lockStatus + ' all projects from having time edited?')) {
+  	  	if (lockStatus == 'lock') {
+  			var lockParam = 'true';
+  		}
+  		else {
+  			var lockParam = 'false';
+  		}
+
+  		$.ajax({
+  			url: '/update_all_project_locks',
+  			data: {'locked': lockParam},
+  			type: 'GET',
+  			success: function() {
+  			  	if (lockParam == 'true') {
+  					$('.unlock_project').show();  					
+  					$('.lock_project').hide();
+  				}
+  				else {
+  					$('.unlock_project').hide();
+  					$('.lock_project').show();
+  				}    				
+  				alert('All Projects have been' + lockStatus + 'ed.');
+  			}
+		});
+  	}
+  });
+  
+  $('.lock_project, .unlock_project').click(function() {
+    var lockStatus = $(this).val();
+    var project_id = $(this).attr('id');
+  	if (confirm('Are you sure you want to ' + lockStatus + ' this project from having time edited?')) {
+  	  	if (lockStatus == 'lock') {
+  			var lockParam = 'true';
+  		}
+  		else {
+  			var lockParam = 'false';
+  		}
+  		$.ajax({
+  			type: 'GET',
+  			url: '/update_project_locks',
+  			data: {'locked': lockParam, 'project_id': project_id},
+  			success: function() {
+  			  	if (lockParam == 'true') {
+  					$('#' + project_id + '.unlock_project').show();  					
+  					$('#' + project_id + '.lock_project').hide();
+  				}
+  				else {
+  					$('#' + project_id + '.unlock_project').hide();
+  					$('#' + project_id + '.lock_project').show();
+  				}  		
+  				alert('This project has been ' + lockStatus + 'ed.');
+  			}
+  		});
+  	}
+  });
+  
+   $('.lock_all input').prop('disabled', true);
+
+
+//-------------------------------
+  
+</script>

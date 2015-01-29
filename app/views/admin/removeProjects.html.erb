@@ -1,0 +1,32 @@
+<thead>
+    <tr>
+      <th>
+        Project
+      </th>
+      <th colspan=25>
+        Team
+      </th>
+    </tr>
+  </thead>
+     <tbody>
+
+  <% @project_users.each do |puk,puv| %>
+    <tr>
+      <td style="color:green">
+        <% @p = ProjectData.find(puk).name %>        
+        <%= @p %>
+        <input type="checkbox" name="id" class="pull-right" onclick='$(this).parent().parent().find("input:checkbox").prop("checked", this.checked)' title="Select All" ></input>
+      </td>
+      <% puv.each do |v| %>  
+      	<%empId = v.user_id%>
+      	<%if !Reporter.where(:reporter_id => @pm.id, :reported_id => empId).blank?%>
+        <td>
+          <%=User.find(v.user_id).name %>
+          <input type="checkbox" name="id" class="pull-right #{@p}" value ="this.id"  id=<%=v.user_id.to_s + "_"+puk.to_s %> ></input>
+          <!-- <button onclick="removeUserProject(this.id)" id=<%=v.user_id.to_s + "_"+puk.to_s%> ><i class="icon-trash"></i></button> -->
+        </td>    
+        <%end%>
+      <% end %>
+    </tr>
+<% end %>
+</tbody>

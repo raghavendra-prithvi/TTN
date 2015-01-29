@@ -1,0 +1,98 @@
+            <div style="display:none" id="email_login"></div> <!-- email_login -->
+			<div class="row">
+			<div class="col-xs-5">
+			<div id="login_form_div">
+				<%= form_tag "/auth/identity/callback" do %>
+				    <%= label_tag :auth_key, "Email" %><br />
+            <%= text_field_tag :auth_key,''%> @louisiana.edu <br />
+<<<<<<< HEAD
+				   
+				  <%= label_tag :password %> <br />
+				    <%= password_field_tag :password,'', class: 'input-sm'%> <br />
+				  	
+				  	<%= submit_tag "Login"%> <br />
+						<%= link_to " Create Account", "#", :onclick => "$('#login_form_div').hide();$('#signup_form_div').show();", :class => "enroll"%> 
+=======
+				    <%= label_tag :password %> <br />
+				    <%= password_field_tag :password,''%> <br />
+				  		<%= submit_tag "Login"%> <br />
+        <br/>
+						<%= link_to " Enroll", "#", :onclick => "$('#login_form_div').hide();$('#signup_form_div').show();"%> |
+						<%= link_to " Forgot Password?", "#", :onclick => "$('#login_form_div').hide();$('#signup_form_div').show();"%>
+>>>>>>> cae589dfbb4a19cbbc395277e5877d6a12cbfdf2
+				<% end %>
+			</div><!-- login_form_div -->
+			<div id="signup_form_div">
+				  <%= form_tag "/auth/identity/register" do %>
+			      <% if @identity && @identity.errors.any? %>
+			        <div class="error_messages">
+			          <h2><%= pluralize(@identity.errors.count, "error") %> prohibited this account from being saved:</h2>
+			          <ul>
+			          <% @identity.errors.full_messages.each do |msg| %>
+			            <li><%= msg %></li>
+			          <% end %>
+			          </ul>
+			        </div>
+			      <% end %>
+			        <%= label_tag :first_name %><br />
+			        <%= text_field_tag :first_name, @identity.try(:first_name)%> <br />
+              <%= label_tag :last_name %><br />              
+			        <%= text_field_tag :last_name, @identity.try(:last_name)%> <br />
+			        <%= hidden_field_tag :name,"xxx"%> <br />
+			        <%= label_tag :email %><br />
+			        <%= text_field_tag :email, @identity.try(:email)%> @louisiana.edu <br />
+			        <%= label_tag :password %><br />
+			        <%= password_field_tag :password,''%> <br />
+			        <%= label_tag :password_confirmation %><br />
+			        <%= password_field_tag :password_confirmation,''%><br />
+        <label>Role</label><br/>
+              <% selectArray = ["","GA","Classified","Unclassified"] %>
+        <%= select_tag 'role', options_for_select(selectArray) , :onchange => "if($(this).val() == 'GA'){ $('#reporter_div').show(); } else{ $('#reporter_div').hide();  }" %>    <br/>
+        <div id="reporter_div" style="display:none;">
+          <br/>
+          <label>Reporter</label><br/>
+        <%selectArray = [["Please Select", ""]] %>
+        <%User.where(:manager => true).each do |p|%>          
+            <%selectArray << [p.name, p.id]%>          
+        <%end%>
+        <%= select_tag 'reporter', options_for_select(selectArray), :class => "project" %><br/>
+          </div>
+        <br/>
+				  		<%= submit_tag "Sign Up"%> <br />
+						Returning User? <%= link_to " login here", "#", :onclick => "$('#signup_form_div').hide();$('#login_form_div').show();"%> <br />
+			    <% end %>
+			</div><!-- signup_form_div -->
+		</div>
+		</div>
+<style> 
+.login-container{
+position: relative;
+background: rgba(240, 248, 255, 0.5);
+width: 600px;
+ margin:0px auto;
+}
+
+#input-sm {
+	height: 30px !important;
+}
+
+</style>
+
+
+<script type="text/javascript">
+
+
+	
+
+$("document").ready(function(){
+	$("#signup_form_div").hide();
+	
+	$('.enroll').on('click', function() {
+		$('.alert').hide();
+	});
+
+});
+</script>
+
+
+

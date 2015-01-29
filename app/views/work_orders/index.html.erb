@@ -1,0 +1,257 @@
+<% if session[:user_id] %>  
+  <%@user = User.find(session[:user_id]) %>
+
+<div class="row">
+<div class="col-xs-12 topRow"> <div class="pull-left"> <a class="btn btn-sm btn-success newWorkOrder" href='/work_orders/new'>New Work Order</a></div>
+</div>
+
+<div class="col-xs-6">
+<% if @saved_work_orders.count > 0 %> 
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border" style="color:green">Saved</legend>
+<table class="table table-condensed table-bordered">
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th></th>
+  	</thead>
+  <tbody>
+   <% @saved_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+        <td><%= link_to 'View', w, class: "btn btn-sm btn-default" %>
+        <%= link_to 'Edit', edit_work_order_path(w), class: "btn btn-sm btn-default" %>
+        <%= link_to 'Delete', w, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %></td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+    </fieldset>
+    <%end%>
+
+
+<% if @resubmit_work_orders.count > 0 %>     	
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border">On Hold</legend>
+<table class="table table-condensed table-bordered">
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+        <th>Latest Feedback</th>
+  		<th></th>
+
+  	</thead>
+  <tbody>
+
+    <% @resubmit_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+        <%if !w.work_order_feedbacks[-1].nil?%>
+        <td><%=w.work_order_feedbacks[-1].feedback%></td>
+        <% else %>
+        <td></td>
+        <%end%>
+        <td><%= link_to 'View', w, class: "btn btn-sm btn-default" %><%= link_to 'Edit', edit_work_order_path(w), class: "btn btn-sm btn-default" %></td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+  </fieldset>
+    <%end %>
+
+<% if @rejected_work_orders.count > 0 %>
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border" style="color:red">Rejected</legend>
+<table class="table table-condensed table-bordered">
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th>Latest Feedback</th>
+  		<th></th>
+
+  	</thead>
+  <tbody>
+
+    <% @rejected_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+        <%if !w.work_order_feedbacks[-1].nil?%>
+        <td><%=w.work_order_feedbacks[-1].feedback%></td>
+        <% else %>
+        <td></td>
+        <%end%>
+        <td><%= link_to 'View', w, class: "btn btn-sm btn-default" %><%= link_to 'Delete', w, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %></td>
+        
+
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+    </fieldset>
+    <%end %>
+
+<% if @cancelled_work_orders.count > 0 %>     	
+
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border">Cancelled</legend>
+<table class="table table-condensed table-bordered">
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th></th>
+  		<th></th>
+  	</thead>
+  <tbody>
+    <% @cancelled_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+      	<td></td>
+        <td><%= link_to 'View', w, class: "btn btn-sm btn-default" %><%= link_to 'Delete', w, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+    </fieldset>
+  <%end %>
+
+</div>
+<div class="col-xs-6">
+
+<% if @submitted_work_orders.count > 0 %>    
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border">Submitted</legend>
+<table class="table table-condensed table-bordered ">
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th></th>
+  	</thead>
+  <tbody>
+
+    <% @submitted_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+        <td><%= link_to 'View', w, class: "btn btn-sm btn-default" %><%= link_to 'Edit', edit_work_order_path(w), class: "btn btn-sm btn-default" %></td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+  </fieldset>
+    <%end %>
+
+<% if @approved_work_orders.count > 0 %>
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border" style="color:green">Approved</legend>
+<table class="table table-condensed table-bordered">
+
+
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th>Latest Feedback</th>
+  		<th></th>
+  	</thead>
+  <tbody>
+
+    <% @approved_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+        <%if !w.work_order_feedbacks[-1].nil?%>
+        <td><%=w.work_order_feedbacks[-1].feedback%></td>
+        <% else %>
+        <td></td>
+        <%end%>
+     	<td><%= link_to 'View', w, class: "btn btn-sm btn-default" %><%= link_to 'Edit', edit_work_order_path(w), class: "btn btn-sm btn-default" %></td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+  </fieldset>
+    <%end %>
+</div>
+
+</div>
+
+<div class="pull-down">
+<div class="col-xs-12"> 
+	<div class="pull-right">
+		<span class="label label-default">CBIT Work Order Contact</span> 
+		<%if @multiple_admin%> 
+			<%@work_order_admin.each do |w|%>
+				<%=w.first_name%> <%=w.last_name%>:  <a href='mailto:<%=w.email%>' style="color:blue;"><u><%=w.email%></u></a>
+			<%end%>
+		<%else%> 
+    <%if !@work_order_admin.nil?%>
+			<%w = @work_order_admin%> 
+			<%=w.first_name%> <%=w.last_name%>:  <a href='mailto:<%=w.email%>' style="color:blue;"><u><%=w.email%></u></a>
+		<%end%>
+    <%end%>
+
+</div>
+</div>
+</div>
+
+
+<style>
+
+
+
+
+.btn:not(.btn-default) {
+	color: white !important;
+
+}
+
+  fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    border-radius: 8px !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+  }
+
+  legend.scheduler-border {
+      font-size: .9em !important;
+	  border-bottom: 0px !important;
+  }  
+  
+  legend.scheduler-border {
+    width:inherit; /* Or auto */
+    padding:0px; /* To give a bit of padding on the left and right */
+    /*border-bottom:none; */
+}
+
+table {
+	margin-bottom: 0px !important;
+}
+
+.topRow {
+	margin-bottom: 5px !important;
+}
+</style>
+
+<script>
+$(document).ready( function() {
+    $(".work-order-home-client").addClass("active");  
+  	$('.pull-down').each(function() {
+    	$(this).css('margin-top', $(this).parent().height()-($(this).height() + 20));
+
+	});
+	overrideAlertBanner('', '');
+});
+
+</script>
+
+<%end%>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Time Tracker</title>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
+		<script src="/assets/jquery.js?body=1"></script>
+<script src="/assets/jquery_ujs.js?body=1"></script>
+<script src="/assets/bootstrap.js?body=1"></script>
+<script src="/assets/application.js?body=1"></script>
+<script src="/assets/admin.js?body=1"></script>
+<script src="/assets/advanced.js?body=1"></script>
+<script src="/assets/authentications.js?body=1"></script>
+<script src="/assets/bootstrap-wysihtml5.js?body=1"></script>
+<script src="/assets/carts.js?body=1"></script>
+<script src="/assets/jquery-1.10.2.js?body=1"></script>
+<script src="/assets/jquery-dateFormat.js?body=1"></script>
+<script src="/assets/jquery-ias.min.js?body=1"></script>
+<script src="/assets/jquery-ui-1.10.4.custom.js?body=1"></script>
+<script src="/assets/jquery.fittext.js?body=1"></script>
+<script src="/assets/jquery.grid-a-licious.js?body=1"></script>
+<script src="/assets/new_tests.js?body=1"></script>
+<script src="/assets/projects.js?body=1"></script>
+<script src="/assets/report.js?body=1"></script>
+<script src="/assets/work_order_admin.js?body=1"></script>
+<script src="/assets/work_orders.js?body=1"></script>
+<script src="/assets/jquery.qtip.js?body=1"></script>
+<script src="//www.google.com/jsapi"></script>
+		<link href="/assets/jquery.qtip.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/application.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/admin.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/bootstrap-wysihtml5.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/bootstrap.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/bootstrap.min.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/custom.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/home_page.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/homepage.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery-ui-1.10.4.custom.min.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery-ui.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery.countdown.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery.signaturepad.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery.ui.all.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery.ui.base.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery.ui.core.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery.ui.datepicker.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/jquery.ui.theme.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/login.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/main.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/new_tests.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/newpetition.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/payments.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/petitions.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/photos.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/posts.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/profile.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/registrations.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/report.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/scaffolds.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/sessions.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/signatures.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/social_buttons.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/static_pages.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/statuses.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/texts.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/users.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/welcome.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/work_order_admin.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/work_orders.css?body=1" media="all" rel="stylesheet" />
+		<meta content="authenticity_token" name="csrf-param" />
+<meta content="4ypNJj9Nru4T3PpVVVrB2+7gwzl5bBu1c4LqBVKxqmM=" name="csrf-token" />
+		
+<!--[if lt IE 9]>
+  <script type="text/javascript">
+    var html5 = { 'elements': 'abbr article aside audio bdi data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video' };
+  </script>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script>
+   /*------ Grab colors from Report Controller------- */
+   
+
+   function grabColors() {
+    $.ajax({
+  		async: false,
+        method: 'GET',
+		url: '/project_colors',
+        dateType: 'json',
+        success: function(data){
+        	var empty = [];
+			$.each(data, function (key, value) { 
+				empty.push([key, value]);
+				
+			});
+			colorHash = empty;
+		        }
+    });
+    }
+    
+     function assignColors(array) {
+    	var colors = [];
+    	$(array).each(function(i, value){
+    		$(colorHash).each(function(j, obj) {
+    			if ($.inArray(value[0], obj) != -1){
+    				colors.push(obj[1]);
+    			}
+    		});
+    	});
+    	return colors;
+    }
+    
+    /*------- Create Google Pie Chart with date from pieChart trigger -----*/
+    function createPieChart(pieHash) {
+    	google.load("visualization", "1", {packages:["corechart"],  "callback": drawChart});
+    	google.setOnLoadCallback(drawChart);
+    	var pieArray = [['Project Title', 'Hours']];
+    	var colorArray = assignColors(pieHash);
+    	pieArray = $.merge(pieArray, pieHash);  
+      	function drawChart() {
+			console.log(colorArray);
+        	var data = google.visualization.arrayToDataTable(pieArray);
+       		 var options = {
+        	colors: colorArray,
+        	chartArea: {width: 350, height:150}
+       	 };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+        
+      }
+
+
+	}
+          	
+          	
+	function overrideAlertBanner(msg, type) {
+		var delayTime = 0;
+		if ($('.alert').length > 1) {
+			delayTime = 3000;
+			setTimeout(function() {
+			$('.alert').last().remove();
+			}, delayTime);
+		}
+		if (!$('.alertBanner').is(':visible')) {
+			$('.alertBanner').removeClass(currentBannerClass);    
+       	 	$('.alertBanner').addClass('alert-' + type);
+        	$('.alertBanner').html(msg);
+        	$('.alertBanner').hide(0).delay(delayTime).show(1);
+        	currentBannerClass = 'alert-' + type;
+        }
+    }
+    
+    function lockTodayTimeInput(dates) {
+    	var msg = 'You are missing data within the past 3 business days. Please enter in you time for ';
+    	$.each(dates, function(index, value) {
+    		var date = new Date(value);
+    		date = $.format.date(date, "M/d/yy");
+    		msg += date;
+    		msg += (index == dates.length - 1) ? '. ' : ', ';
+    		});
+    		
+    	
+    	$("#timeLock :input, .timeLock").prop("disabled", true);
+    	overrideAlertBanner(msg, 'error');
+	    }
+	    
+	function validateHours(lastInput) {
+    	lastInput = parseFloat(lastInput);   
+    	if ((lastInput % 0.25) != 0) {
+    		alert('Hourly input must be in increments of .25 (Example: 3:00pm to 4:15pm is 1.25 hours.)');
+    		return false;
+    	}
+    	var sumDayHours = 0.0;  
+    	$('.today').each( function() {
+    		sumDayHours += parseFloat($(this).val());
+    	});
+    	if ((sumDayHours + lastInput) > 24.0) {
+    	    alert('Daily hours may not exceed 24.');
+    		return false;
+    	}
+    	else {
+    		return true;
+    	}
+    }
+
+	
+</script>
+	
+
+	<style>
+	.customHeight {
+		height:10px !important;
+		line-height:10px !important;
+		vertical-align:middle !important;
+					}
+	
+
+	
+	a:visited {
+		color:#428bca;
+	}
+	
+	.dropdown-toggle {
+		color:#428bca;
+
+	}
+	.flashContainer {
+		height: 52px;
+	}
+
+
+	</style>
+	</head>
+<body>
+    
+
+
+ <!-- check if current_user.client --!>
+<!-- client nav bar --!>
+
+    <div class="row">
+      <div class='col-xs-12'>
+      <ul class="nav nav-pills">
+    	<li class="pull-right"> <a href="/signout">Log Out (c c)</a></li>
+      </ul>
+      </div>
+    </div>
+          <div style="clear:both">
+          </div>
+  
+    <div class="col-xs-12 flashContainer">
+	<div class="alert alert-info alertBanner" style="display:none"></div>
+    
+		<div class="row"> 
+              </div>
+    </div>
+			<div class="container-fluid" id="body">
+				<div class="row-fluid" id="whitey">
+                                  <div class="row"><h4 class="pull-left">ULL Work Order</h4></div>
+<form accept-charset="UTF-8" action="/work_orders" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="4ypNJj9Nru4T3PpVVVrB2+7gwzl5bBu1c4LqBVKxqmM=" /></div> 
+  
+ <table class="">
+ <thead><tr><th class="firstCol"></th><th class="secCol"></th></tr></thead>
+ <tbody>
+	<tr><td><label for="work_order_work_order_number">Work order number</label></td>
+    <td><input id="work_order_work_order_number" name="work_order[work_order_number]" type="text" /> </td></tr>
+    
+    <tr><td><label for="work_order_project_name">Project name</label> </td>
+   <td> <input id="work_order_project_name" name="work_order[project_name]" type="text" /> </td></tr> 
+    
+    <tr><td><label for="work_order_work_order_type">Work order type</label> </td>
+   <td> <select id="work_order_work_order_type" name="work_order[work_order_type]"><option value="">Please Select</option>
+<option value="project">Project</option>
+<option value="maintenance">Maintenance</option>
+<option value="support">Support</option></select> </td></tr>
+    <!-- Project Support Maintenence --!>-
+
+    
+    <tr><td><label for="work_order_UNO_project_manager">Uno project manager</label> </td>
+    <td><input id="work_order_UNO_project_manager" name="work_order[UNO_project_manager]" type="text" /> </td></tr>
+    
+    <tr><td><label for="work_order_business_owner">Business owner</label> </td>
+   <td> <input id="work_order_business_owner" name="work_order[business_owner]" type="text" /> </td></tr>
+    
+    <tr><td><label for="work_order_program_office">Program office</label> </td>
+    <td><input id="work_order_program_office" name="work_order[program_office]" type="text" /> </td></tr>
+    
+    <tr><td><label for="work_order_due_date">Due date</label> </td>
+    <td><input id="txtDate1" class="datepicker"/> </td></tr>
+    
+    <tr><td><label for="work_order_ULL_start_date">Ull start date</label> </td>
+    <td><input id="txtDate2" class="datepicker"/> </td></tr>
+    
+    <tr><td><label for="work_order_development_end_date">Development end date</label> </td>
+    <td><input id="txtDate3" class="datepicker"/></td></tr>
+    
+   <tr><td><label for="work_order_close_date">Close date</label> </td>
+    <td><input id="txtDate3" class="datepicker"/></td></tr>
+    
+    <tr><td><label for="work_order_estimated_hours">Estimated hours</label> </td>
+    <td><input id="work_order_estimated_hours" name="work_order[estimated_hours]" type="text" /> </td></tr>
+    
+    <tr><td><label for="work_order_ULL_contact">Ull contact</label> </td>
+    <td><input id="work_order_ULL_contact" name="work_order[ULL_contact]" type="text" /> </td> </tr>
+    </tbody>
+    </table>
+	<div class="row">
+ <div class="col-xs-3 "><label for="work_order_summary">Summary</label> <br />
+    <textarea cols="50" id="work_order_summary" name="work_order[summary]" rows="10">
+</textarea></div> 
+    
+   <div class="col-xs-3 "> <label for="work_order_deliverables">Deliverables</label> <br />
+    <textarea cols="50" id="work_order_deliverables" name="work_order[deliverables]" rows="10">
+</textarea> </div>
+    
+    <div class="col-xs-3"> <label for="work_order_comments">Comments</label> <br />
+    <textarea cols="50" id="work_order_comments" name="work_order[comments]" rows="10">
+</textarea> </div>
+    
+     <div class="col-xs-3 disabled"> <label for="work_order_attachments">Attachments</label> <br />
+    COMING SOON</div>
+    
+    
+</div>
+  <div class="actions">
+    <input name="commit" type="submit" value="Save Work order" />
+  </div>
+  
+</form>
+<style>
+table {
+}
+
+table th, table tr {
+	padding: 0px !important;
+}
+.firstCol {
+	width:100 px !important;
+}
+
+.secCol{
+}
+
+input {
+	height: 100% !important;
+}
+
+#txtDate1, #txtDate2, #txtDate3, #txtDate4 {
+	height: 100% !important;
+	width: 100px !important;
+}
+</style>
+
+<script>
+    $(document).ready(function(){
+      $('#txtDate1, #txtDate2, #txtDate3, #txtDate4').datepicker('setDate', 'today');
+
+	$("#txtDate1, #txtDate2, #txtDate3, #txtDate4").datepicker({ showOtherMonths: true, selectOtherMonths: true
+        });
+      });
+
+</script>
+
+<a href="/work_orders">Back</a>
+
+                                </div>
+                          </div>
+			<div class="row">
+<div class="col-lg-12">
+	</div>
+</div>
+
+
+	</body>
+        <script>
+
+		
+          $(document).ready(function(){
+            $.ajaxSetup({
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+              }
+            });
+            
+            var colorHash = [];
+        	grabColors();
+			
+			blinking($('.blink'));
+
+			
+			function blinking(elm) {
+    			var colors = ['#d2322d', 'white'];
+    			var textColors = ['white', '#428bca'];
+    			timer = setInterval(blink, 500);
+    			var count = 0;
+    			function blink() {
+    				(count == 0)? count=1:count=0;
+    				setTimeout(function() { elm.css({backgroundColor: colors[count]});
+    										elm.css({color: textColors[count]});}, 0);
+        		}
+        		}
+        		
+    		});
+    		
+
+	
+        
+        </script>
+</html>

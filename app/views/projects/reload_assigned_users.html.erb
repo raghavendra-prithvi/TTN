@@ -1,0 +1,24 @@
+	<select class="ip_manager pull-left" multiple>
+	<option value='' disabled><b>Assign Manager(s)</b></option>
+	<option value='' disabled></option>
+
+	<%@managers.each do |p|%>          
+	  <option value="<%=p.id%>" class="managerOption" <%if @projectManagers.include?(p.id)%> selected <%end%>><%=p.last_name + ', ' +  p.first_name%></option>
+	<%end%>
+	
+	<option value='' disabled></option>
+	<option value='' disabled><b>Assign Employee(s)</b></option>
+	<option value='' disabled></option>
+	<%@employees.each do  |p|%>          
+	<option value="<%=p.id%>" class="employeeOption" <%if @projectEmployees.include?(p.id)%> selected <%end%>><%=p.last_name + ', ' +  p.first_name%></option>
+	<%end%>
+	
+	<option value='' disabled></option>
+	<option value='' disabled><b>Assign GA(s)</b></option>
+	<option value='' disabled></option>
+
+	<%@gas.each do |p|%>          
+	<option value="<%=p.id%>" class="gaOption" <%if @projectGas.include?(p.id)%> selected <%end%>><%=p.last_name + ', ' +  p.first_name%></option>
+	<%end%>
+
+</select>

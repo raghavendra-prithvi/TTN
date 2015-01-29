@@ -1,0 +1,889 @@
+
+
+
+<div style="padding-left:10%">
+<h3 align="center">
+    Contents
+</h3>
+<p>
+    <a href="#_Toc395208390">Login: 4</a>
+</p>
+<p>
+    <a href="#_Toc395208391">CBIT employee login page. 4</a>
+</p>
+<% if @current_user.client == true %>  
+<p>
+    <a href="#_Toc395208392">Client login page: 4</a>
+</p>
+<% end %>
+
+<p>
+    <a href="#_Toc395208393">With Valid Credentials: 6</a>
+</p>
+<p>
+    <a href="#_Toc395208394">With Invalid Credentials: 7</a>
+</p>
+<p>
+    <a href="#_Toc395208395">Confirmation email / resend confirmation email: 7</a>
+</p>
+<p>
+    <a href="#_Toc395208396">WHY ACTIVATION IS IMPORTANT: 8</a>
+</p>
+<% if @current_user.client != true %>
+  <p>
+      <a href="#_Toc395208397">TIME INPUT: 9</a>
+  </p>
+  <p>
+      <a href="#_Toc395208398">VALIDATIONS: 9</a>
+  </p>
+  <p>
+      <a href="#_Toc395208399">TIME SUMMARIES: 10</a>
+  </p>
+<% end %>
+  <p>
+      <a href="#_Toc395208400">LOGOUT : 10</a>
+  </p>
+<% if @current_user.role =="GA" %>
+    <p>
+          <a href="#_Toc395208401">SUBMIT REPORT for GA's. 10</a>
+    </p>
+  
+  <% end %>
+<% if @current_user.admin == true%>
+<p>
+    <a href="#_Toc395208402">ADMIN : 10</a>
+</p>
+<% end %>
+<% if @current_user.manager == true %>
+  <p>
+      <a href="#_Toc395208403">MANAGER : 12</a>
+  </p>
+  <p>
+      <a href="#_Toc395208404">Manager home: 12</a>
+  </p>
+  <p>
+      <a href="#_Toc395208405">Manage Reports: 12</a>
+  </p>
+<% end %>
+<% if @current_user.time_sheet_manager == true %>
+    <p>
+        <a href="#_Toc395208406">TIME SHEET MANAGER: 14</a>
+    </p>
+<% end %>
+<% if @current_user.time_sheet_collaborator == true %>
+    <p>
+        <a href="#_Toc395208407">TIME SHEET COLLABORATOR: 15</a>
+    </p>
+  <% end %>
+<% if @current_user.work_order_admin == true %>
+  <p>
+        <a href="#_Toc395208408">WORKORDER ADMIN: 15</a>
+    </p>
+  <% end %>
+<% if @current_user.admin == true%>
+<p>
+    <a href="#_Toc395208409">� Admin. 15</a>
+</p>
+<% end %>
+<% if @current_user.work_order_admin == true %>  
+<p>
+    <a href="#_Toc395208410">� Work orders. 15</a>
+</p>
+<p>
+    <a href="#_Toc395208411">� Work tracking. 17</a>
+</p>
+  <% end%>  
+  <% if @current_user.client == true %>
+      <p>
+          <a href="#_Toc395208412">CLIENT. 17</a>
+      </p>
+      <p>
+          <a href="#_Toc395208413">Creating a new work order: 17</a>
+      </p>
+      <p>
+          <a href="#_Toc395208414">View Approved work orders: 18</a>
+      </p>
+      <p>
+          <a href="#_Toc395208415">Edit WorkOrder: 18</a>
+      </p>
+  <% end %>
+  </div>
+
+<div style="padding-top:60px;">
+  
+  </div>
+<p>
+    <strong><h2>INTRODUCTION</h2></strong>
+</p>
+<p>
+    Effort Tracker application is used to automate the process of recording and tracking the efforts spent by CBIT employees. This application is capable of
+    handling new clients ,work orders and also used for Resource management. All the functionalities and access privileges differs from employee to employee
+    based on their roles.
+</p>
+<p>
+    <strong>ROLES:</strong>
+</p>
+<p>
+    <a href="#_TIME_INPUT:"><strong>Classified / Unclassified Employee</strong></a>
+    <strong><u>: </u></strong>
+</p>
+<p>
+    All the employees of CBIT are categorized as either classified or unclassified. Both classified &amp; unclassified employees share the same privileges and
+    access permissions. The main Responsibility of classified/unclassified employee is recording their hours spent on assigned projects.
+</p>
+<% if @current_user.admin == true%>
+<p>
+    <a href="#_ADMIN_:"><strong>Admin</strong></a>
+    <strong><u>:</u></strong>
+</p>
+<p>
+    Admin role of Effort Tracker has the following privileges/responsibilities
+</p>
+<ul>
+    <li>
+        Edit/Update a user
+    </li>
+    <li>
+        Delete a user
+    </li>
+    <li>
+        Update the privileges of a user
+    </li>
+    <li>
+        Edit/Update client details
+    </li>
+    <li>
+        Activate/Deactivate a project
+    </li>
+    <li>
+        Edit a project
+    </li>
+    <li>
+        Archive a project
+    </li>
+    <li>
+        View Archived Projects
+    </li>
+</ul>
+<% end %>
+
+<% if @current_user.manager == true %>
+    <p>
+        <a href="#_MANAGER_:"><strong>Manager</strong></a>
+        <strong><u>:</u></strong>
+    </p>
+    <p>
+        Manager role of Effort Tracker has the following privileges/responsibilities
+    </p>
+    <ul>
+        <li>
+            Activate/Deactivate a project
+        </li>
+        <li>
+            Archive a project
+        </li>
+        <li>
+            Assign Employees to a project
+        </li>
+        <li>
+            Remove a selected user/ all users from a project
+        </li>
+    </ul>
+    <p>
+        � Manage the submitted reports of Graduate assistants
+    </p>
+<% end %>
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.time_sheet_manager == true %>
+        <p>
+            <a href="#_TIME_SHEET_MANAGER:"><strong>Timesheet Manager</strong></a>
+            <strong><u>:</u></strong>
+        </p>
+        <p>
+            Timesheet Manager of Effort Tracker has the following privileges/responsibilities
+        </p>
+        <p>
+            � Manage reports of classified/unclassified employees of CBIT
+        </p>
+        <p>
+            � Edit the number of billing hours as per requirement
+        </p>
+        <p>
+            � Create a new updated report with the billing hours
+        </p>
+        <ul>
+            <li>
+                Download reports as CSV
+            </li>
+            <li>
+                Search the reports
+            </li>
+        </ul>
+<% end %>
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.time_sheet_collaborator == true %>
+      <p>
+          <a href="#_TIME_SHEET_COLLABORATOR:"><strong>Timesheet Collaborator:</strong></a>
+      </p>
+      <p>
+          Timesheet Collaborator of Effort Tracker has the following privileges/responsibilities
+      </p>
+      <ul>
+          <li>
+              View the approved reports of Graduate assistants
+          </li>
+          <li>
+              Print the reports
+          </li>
+          <li>
+              Download reports as CSV
+          </li>
+      </ul>
+<% end %>
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.work_order_admin == true %>
+    <p>
+        <a href="#_WORKORDER_ADMIN:"><strong>Work Order Admin</strong></a>
+        <strong><u>:</u></strong>
+    </p>
+    <p>
+        Work Order Admin of Effort Tracker has the following privileges/responsibilities
+    </p>
+    <ul>
+        <li>
+            Activate/Deactivate a project
+        </li>
+        <li>
+            Edit a project
+        </li>
+        <li>
+            Archive a project
+        </li>
+        <li>
+            View archived projects
+        </li>
+        <li>
+            Review and approve/reject/hold a Work order
+        </li>
+        <li>
+            View Approved Work orders
+        </li>
+        <li>
+            View reports of the work orders
+        </li>
+    </ul>
+<% end %>
+
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.client == true %>
+      <p>
+          <strong><u>Client:</u></strong>
+      </p>
+      <p>
+          Client of Effort Tracker has the following privileges/responsibilities
+      </p>
+      <ul>
+          <li>
+              View approved Work Orders
+          </li>
+          <li>
+              Create a new work order
+          </li>
+      </ul>
+
+<% end %>
+
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.role =="GA" %>
+    <p>
+        <strong><u>Graduate Assistant:</u></strong>
+    </p>
+    <p>
+        Graduate assistant of Effort Tracker has the following privileges/responsibilities
+    </p>
+    <ul>
+        <li>
+            Submit report
+        </li>
+    </ul>
+<% end %>
+<p>
+    <strong><u> </u></strong>
+</p>
+
+
+<div style="clear:both">
+  
+</div>
+<br/>
+<p>
+    <strong>SCREENS:</strong>
+</p>
+<h2>
+    <a name="_Toc395208390">Login:</a>
+</h2>
+<p>
+    EffortTracker application consists of two different login pages, one for CBIT employee and one for client.
+</p>
+<p>
+    <a name="_Toc395208391">CBIT employee login page</a>
+    :
+</p>
+
+<div style="float:left;width:100%">
+    <img src="/assets/clip_image007.png" border="0" height="294" width="466"/><br/>
+  <br/>
+</div>
+
+<div style="both:clear">
+  </div>
+<br/>
+<% if @current_user.client == true %>
+    <h3>
+        <a name="_Toc395208392">Client login page:</a>
+    </h3>
+<% end %>
+<br/>
+<p>
+    Both Employee and client login pages render home screen on success, else error alert banner is rendered.
+</p>
+<div style="padding-top:20px;">
+    <strong>HOW TO CREATE AN ACCOUNT:</strong>
+</div>
+<p>
+    Each and every user should create their account inorder to access the EffortTracker application. Creating an acount can be done on clicking the create
+    account hyperlink just below the login button from the login page.
+</p>
+<p>
+    EffortTracker application has two different login screens for CBIT employees and for clients.
+</p>
+<p>
+    To create an account for cbit employees, Click the create account button on login page
+</p>
+<p>
+    To create an account for clients, Click the Visit our client login page button.
+</p>
+<div style="float:left;width:100%">
+    <img src="/assets/clip_image011.png" border="0" height="545" width="424"/>
+  <br/>
+</div>
+<br/>
+<p>
+    Correct and valid information must be provided at the time of creating an account. Failure to do so will result in the following screen
+</p>
+<div style="float:left">
+    <img src="/assets/clip_image013.png" border="0" height="547" width="376"/><br/>
+</div>
+<br/>
+<div>
+    All the errors are flashed in red. Until and unless all those errors were cleared, one cannot create an account on EffortTracker.
+</p>
+<div style="clear:both">
+</div>
+<br/>
+<h3>
+    <a name="_Toc395208393">With Valid Credentials:</a>
+</h3>
+<p>
+    Enter the valid credentials on login page, on success it is redirected to the welcome screen as shown below
+</p>
+<div style="float:left;padding-top:20px;">
+    <img src="/assets/clip_image015.png" border="0" height="342" width="598"/><br/>
+</div>
+<div style="clear:both">
+  
+</div>
+<br/>
+<div>
+    <a name="_Toc395208394">With Invalid Credentials:</a>
+  <br/>
+    <img src="/assets/clip_image017.png" border="0" height="282" width="654"/><br/>
+</div>
+<div style="clear:both;padding-top:40px;">
+  
+</div>
+<br/>
+<h2>
+    <a name="_Toc395208395">Confirmation email / resend confirmation email:</a>
+</h2>
+<p>
+    Creating an account with valid information leads to the following screen.
+</p>
+<div>
+    <img src="/assets/clip_image019.png" align="left" height="95" hspace="12" width="657"/><br/>
+  <br/>
+    <div>
+    The User will receive an email which contains a URL to activate the account.
+      </div>
+</div>
+<p>
+    The email looks as follows
+</p>
+<div>
+    <img src="/assets/clip_image021.jpg" border="0" height="372" width="624"/><br/>
+</div>
+<p>
+    If a user didn't receive an email, click resend button provided on the activation screen.
+</p>
+<div style="clear:both">
+  
+</div>
+<br/>
+<h2>
+    <a name="_Toc395208396">WHY ACTIVATION IS IMPORTANT:</a>
+</h2>
+<p>
+    All the users who would like to access the effort tracker application must create and activate their accounts. If a user creates an account and did not
+    activate it, at the time of login that user will encounter the following screen.
+</p>
+<div>
+    <img src="/assets/clip_image022.png" border="0" height="49" width="398"/><br/>
+</div>
+<div>
+    No user can access their account before it is activated.
+</div>
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.client != true %>
+        <h2>
+            <a name="_TIME_INPUT:"></a>
+            <br clear="all"/>
+            <a name="_Toc395208397">TIME INPUT:</a>
+        </h2>
+        <p>
+            <img src="/assets/clip_image024.jpg" border="0" height="239" width="624"/><br/>
+        </p>
+        <p>
+            On successful login, a user reaches the screen as shown above.
+        </p>
+        <p>
+            Time input Tab:
+        </p>
+        <p>
+            Select the date from datepicker
+        </p>
+        <p>
+            Select the project from the dropdown if the user was assigned any project
+        </p>
+        <p>
+            Clock the number of hours spent on that project for that corresponding day
+        </p>
+        <p>
+            Save the hours.
+        </p>
+        <p>
+            Click on �+� icon if one or more projects are assigned to a user
+        </p>
+        <p>
+            Click on edit button to edit the changes and save
+        </p>
+        <p>
+            Click on delete button to remove the clocked hours.
+        </p>
+        <p>
+            Use the scroll view present at the bottom of the page for a consolidated number of hours worked on each project for that week.
+        </p>
+
+      <div style="clear:both">
+      </div>
+      <br/>
+
+      <h3>
+          <a name="_Toc395208398">VALIDATIONS:</a>
+      </h3>
+      <p>
+          Clock the hours daily or atleast once in two days.
+      </p>
+      <p>
+          Inputting time will be locked, if the data doesnot been entered for three days consecutively.
+      </p>
+      <p>
+          Daily number of hours clocked should not exceed 24 hours
+      </p>
+      <h2>
+          <a name="_Toc395208399">TIME SUMMARIES:</a>
+      </h2>
+      <p>
+          This tab is used to viw the consolidated reports of all the hours that are clocked. These reports can be viewed on weekly basis, monthly and yearly.A user
+          can also provide custom dates in order to view the reports.
+      </p>
+      <p>
+          <img src="/assets/clip_image026.jpg" border="0" height="113" width="624"/><br/>
+      </p>
+
+<% end %>
+<div style="clear:both">
+</div>
+<br/>
+<h2>
+    <a name="_Toc395208400">LOGOUT :</a>
+</h2>
+<p>
+    Clicking logout button closes the session of effortracker application and redirects to the login page.
+</p>
+<div style="clear:both">  
+</div>
+<br/>
+<% if @current_user.role =="GA" %>
+      <p>
+          <a name="_Toc395208401">SUBMIT REPORT for GA�s</a>
+          :
+      </p>
+      <p>
+          Submit report button is flashed only when the GA has to submit the report normally it would be flashed at the end of a month. Whenever a Ga submits the
+          report, it appears in their corresponding manager�s account for reviewing to approve/reject.
+      </p>
+      <p>
+          <img src="/assets/clip_image028.jpg" border="0" height="239" width="624"/>
+          <br/>
+      </p>
+<% end %>
+<div style="clear:both">
+</div>
+<br/>
+<% if @current_user.admin == true %>
+  <h2>
+      <a name="_Toc395208402"></a>
+      <a name="_ADMIN_:"></a>
+      ADMIN :
+  </h2>
+        <p>
+            Admin has the privileges to edit/update a user details.
+        </p>
+        <p>
+            � Click on the edit button(which turns to update on clicking) inorder to edit User information, their access privileges(make him as a manager or time sheet
+            manager)
+        </p>
+        <p>
+            � Click on                     update to save the user details
+        </p>
+        <p>
+            � Click on delete to delete the user from the database
+        </p>
+        <p>
+            � An admin can also edit/update user details . The only difference would be a client cannot be a manager
+        </p>
+        <p>
+            <img src="/assets/clip_image030.jpg" border="0" height="293" width="623"/><br/>
+        </p>
+        <p>
+            � Admin can also update project details
+        </p>
+        <p>
+            <img src="/assets/clip_image032.jpg" border="0" height="174" width="623"/><br/>
+          <br/>
+        </p>
+        <p>
+            1) Admin has the privilege to activate or deactivate a project. To do this click on the activate/deactivate button.
+        </p>
+        <p>
+            2) Once a project is deactivated, an employee can no longer clock their efforts towards that project.
+        </p>
+        <p>
+            3) Clicking on edit buttons redirects to the following screen. Admin can change the managers for that corresponding project
+        </p>
+        <p>
+            <img src="/assets/clip_image034.jpg" border="0" height="162" width="624"/>
+          <br/><br/>
+        </p>
+        <p>
+            4) Clicking on Archive button, archives a project. Archiving is useful to access details of the projects that were finished in the past.
+        </p>
+        <p>
+            5) Clicking on �View Archived� button redirects the user to the following screen where the user can access all the archived projects. On clicking the icon
+            that is present just beside the project acct num will popup the details of the project like the team worked on that project, number of hours sent etc.,
+        </p>
+        <p>
+            <img src="/assets/clip_image036.jpg" border="0" height="124" width="624"/>
+            <br/>
+        </p>
+<% end %>
+
+
+<% if @current_user.manager == true %>
+<div style="clear:both">
+  </div>
+<br/>
+        <h2>
+            <a name="_Toc395208403"></a>
+            <a name="_MANAGER_:"></a>
+            MANAGER :
+        </h2>
+        <p>
+            Apart from clocking the time, a manger role has other privielegs too.
+        </p>
+        <br/>
+        <h3>
+            <a name="_Toc395208404">Manager home:</a>
+        </h3>
+        <p>
+            <img src="/assets/clip_image038.jpg" border="0" height="205" width="625"/>
+          <br/>
+        </p>
+        <p>
+            � Clicking on manager options tab dropsdown two choices. One is manager home and one is manage reports. Clicking manager home button result in the above
+            screen.
+        </p>
+        <p>
+            � Manager role will have the privilege to activate/deactivate a project and archive a project. This can be done on clicking activate/deactivate button and
+            archive buttons respectively.
+        </p>
+        <p>
+            � Manager will also have the privilege to assign a project to the users. This can be achieved by selecting some users and projects from the select
+            User(s),select project(s) box respectively and clicking assign project button. Multiple users can be assigned to multiple projects at a time.
+        </p>
+        <p>
+            � Manager can also remove the users that were assigned to a project. In order to do that, click on the checkbox corresponding the name of a team member and
+            click remove the User(s) button. Entire team working for that project can also be removed by clicking the checkbox corresponding to the projects name and
+            click remove the user(s) button.
+        </p>
+        <div style="clear:both">
+        </div>
+        <br/>
+        <h3>
+            <a name="_Toc395208405">Manage Reports:</a>
+        </h3>
+        <p>
+            � A manaer has to verify the submitted reports of their assigned Gradutae assistants. They need to be either approved or rejected. This is shown in the
+            following screens.
+        </p>
+        <p>
+            <img src="/assets/clip_image040.jpg" border="0" height="305" width="527"/>
+          <br/>
+        </p>
+        <p>
+            .
+        </p>
+        <p>
+            � Clicking Verify report leads to the following screen
+        </p>
+        <p>
+            <img src="/assets/clip_image042.jpg" border="0" height="250" width="622"/>
+            <br/>
+        </p>
+        <p>
+            � Checking the input signature check box &amp; clicking sign report button appends the signature of the manager at end of the report.
+        </p>
+        <p>
+            � After signing the report manager will be able to either approve the report or reject it. Just like the screen shown below
+        </p>
+        <p>
+            <img src="/assets/clip_image044.jpg" border="0" height="255" width="619"/>
+            <br/>
+        </p>
+        <p>
+            � On approval, the corresponding Ga user will receive an email
+        </p>
+        <p>
+            � On reject, it pops up a comments textbox, where the manager could be able to attach the reason with the email.
+        </p>
+<% end %>
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.time_sheet_manager == true %>
+      <h2>
+          <a name="_Toc395208406"></a>
+          <a name="_TIME_SHEET_MANAGER:"></a>
+          TIME SHEET MANAGER:
+      </h2>
+      <p>
+          Apart from time input and time summaries, timesheet manager will also have another privilege, that is managing the timesheets of all employees in the cbit.
+      </p>
+      <p>
+          <img src="/assets/clip_image046.jpg" border="0" height="252" width="623"/>
+        <br/>
+      </p>
+      <p>
+          � Actual hours in the report resembles the number of hours clocked by the employee for a project.
+      </p>
+      <p>
+          � Billing hours means the number of hours that are actually billed for the project.
+      </p>
+      <p>
+          � Clicking on the edit button present at the end of the table, enables the time sheet manager to edit the actual hours to the required billing hours.
+      </p>
+      <p>
+          � Clicking on updated report will generate new time sheet report with the edited billing hours.
+      </p>
+      <p>
+          � Search functionality is given on top of the page inorder to retrieve the previous reports.
+      </p>
+<% end %>
+
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.time_sheet_collaborator == true %>
+      <h2>
+          <a name="_Toc395208407"></a>
+          <a name="_TIME_SHEET_COLLABORATOR:"></a>
+          TIME SHEET COLLABORATOR:
+      </h2>
+      <p>
+          Time sheet collaborator will be responsible for consolidating all the submitted reports of Ga�s , print them and update the time sheet manager.
+      </p>
+      <p>
+          <img src="/assets/clip_image048.jpg" border="0" height="119" width="622"/>
+        <br/>
+      </p>
+      <p>
+          Clicking the time sheet reports tab redirects to the above screen, where they can view the report and print it.
+      </p>
+<% end %>
+<div style="clear:both">
+  
+</div>
+<br/>
+<% if @current_user.work_order_admin == true %>
+        <h2>
+            <a name="_Toc395208408"></a>
+            <a name="_WORKORDER_ADMIN:"></a>
+            WORKORDER ADMIN:
+        </h2>
+        <p>
+            Functionalies for work order admin
+        </p>
+        <p>
+            <a name="_Toc395208409">� Admin</a>
+            :
+        </p>
+        <p>
+            Refer Admin projects above.
+        </p>
+        <p>
+            <a name="_Toc395208410">� Work orders</a>
+            :
+        </p>
+        <p>
+            � All the work orders under require processing are the ones which needs to be reviewed.
+        </p>
+        <p>
+            � All the workorders under approved are the ones which are already approved and can be viewed.
+        </p>
+        <p>
+            <img src="/assets/clip_image050.jpg" border="0" height="252" width="624"/>
+          <br/>
+        </p>
+        <p>
+            � Clicking review button under require processing redirects to a page where the project details are reviewed and they are either approved or rejected.
+        </p>
+        <p>
+            <img src="/assets/clip_image052.jpg" border="0" height="248" width="626"/>
+          <br/>
+        </p>
+        <p>
+            � Click on approve button inorder to review the project details and assign team members.
+        </p>
+        <p>
+            <img src="/assets/clip_image054.jpg" border="0" height="281" width="598"/>
+          <br/>
+        </p>
+        <p>
+            � Click on reject or hold request in order to keep the work orders in pending. It will send an email to the client.
+        </p>
+        <p>
+            <img src="/assets/clip_image056.jpg" border="0" height="251" width="548"/>
+          <br/>
+        </p>
+        <p>
+            <a name="_Toc395208411">� Work tracking</a>
+            :
+        </p>
+        <p>
+            This tab is used to track all the work orders and the corresponding work done. All these reports can be viewed on weekly , monthly and yearly basis.
+        </p>
+        <p>
+            <img src="/assets/clip_image058.jpg" border="0" height="115" width="622"/>
+          <br/>
+        </p>
+<% end %>
+
+<div style="clear:both">
+</div>
+<br/>
+
+<% if @current_user.client == true %>
+      <p>
+          <a name="_Toc395208412">CLIENT</a>
+          :
+      </p>
+      <p>
+          Unlike CBIT employees, Functionalities of a client include
+      </p>
+      <ul>
+          <li>
+              Creating a new work order
+          </li>
+          <li>
+              View the approved work order
+          </li>
+          <li>
+              Edit the approved work order
+          </li>
+      </ul>
+      <p>
+          <img src="/assets/clip_image060.jpg" border="0" height="234" width="624"/>
+        <br/>
+      </p>
+<br/>
+<br/>
+<div style="clear:both">
+  
+</div>
+<br/>
+        <h3>
+            <a name="_Toc395208413">Creating a new work order:</a>
+        </h3>
+        <p>
+            Clicking on new work order button opens a form with all the required fields to create a work order just as shown below
+        </p>
+        <p>
+            <img src="/assets/clip_image062.jpg" border="0" height="252" width="623"/>
+            <br/>
+        </p>
+        <p>
+            After entering all the required information client would be able to submit a new work order.
+        </p>
+        <h3>
+            <a name="_Toc395208414">View Approved work orders:</a>
+        </h3>
+        <p>
+            Clicking on view button corresponding to a project in the approved field set, retrieves all the details of that workorder.
+        </p>
+        <p>
+            <img src="/assets/clip_image064.jpg" border="0" height="250" width="624"/>
+          <br/>
+        </p>
+<br/>
+<br/>
+    <h3>
+        <a name="_Toc395208415">Edit WorkOrder:</a>
+    </h3>
+    <p>
+        Clicking on edit redirects to a page where all the details of that project will be editable.
+    </p>
+    <p>
+        <img src="/assets/clip_image066.jpg" border="0" height="250" width="624"/>
+      <br/>
+    </p>
+<% end %>

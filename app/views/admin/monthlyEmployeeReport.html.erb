@@ -1,0 +1,160 @@
+<div id="timesheet_managerdata">
+  <%=hidden_field_tag 'month',Date.today.last_month.month %>
+  <%=hidden_field_tag 'year',Date.today.last_month.year %>
+<h4>Classified Users </h4>
+<table class="table table-striped table-bordered pull-left" style="width:50%">
+  <caption><div class="btn-group btn-group pull-right">	
+			<button class="btn btn-sm btn-default ts_csv" onclick="tsReportCSV(this)" id="classified"> Download CSV </button>
+			<a href="/newReport?type=classified&height=600&width=800" class="btn btn-sm btn-default thickbox" onclick = "addURLNoCSV(this)">Updated Report</a>
+  			</div>
+  </caption>
+  <thead>
+    <tr>
+      <th>
+        CLID
+      </th>     
+      <th>
+        Account Number
+      </th>
+      <th>
+        Actual Hours
+      </th>
+      <th>
+        Billing Hours
+      </th>
+      <th>
+        Name
+      </th>
+      <th>
+      </th>
+    </tr>
+  </thead>
+  <tbody>      
+<% @classifiedUserRows.each do |u, monthHours| %>
+	<%if !u.blank? %>
+	<%monthHours.each do |acct_number, hours| %>
+      <tr>
+        <td>
+          <%= u.email.split("@")[0] %>
+        </td>     
+        <td>
+			<%=acct_number%>
+        </td>   
+        <td>          
+          <%= hours[0] %>
+        </td>
+        <td>        
+        	<span>
+        	<%=hours[1]%>
+        	</span>
+          <div style="width:100%;">
+              <%=text_field_tag "hours",hours[1], :style => "width:80px;display:none", :class => "inlineEdit" %>            
+            </div>
+        </td>
+      
+      
+        <td>
+          <%=u.name %>
+        </td>
+     
+     
+        <td>
+          <img src="/assets/pensil.ico" alt="edit" style="width:18px;cursor:pointer;" class="pencil" onclick="$(this).parent().find('img.save').show();$(this).hide();$(this).parent().prev().prev().find('div').find('input').show();$(this).parent().prev().prev().find('span').hide();"  onclick1="showHoursPopup()" />
+          <%=hidden_field_tag "user", u.id,:id => "userId", :class => "userId" %>
+          <%=hidden_field_tag "project", hours[2] ,:id => "projectId", :class => "projectId" %>          
+          <img src="/assets/save.ico" alt="edit" style="width:18px;display:none;cursor:pointer;" class="save" onclick="saveHours($(this));"  />
+        </td>
+      </tr>    
+      <%end%>
+    <% end %>
+ <%end%> 
+  </tbody>
+</table>
+<div style="clear:both"></div>
+ 
+ 
+ <%if !@unclassifiedUserRows.blank?%>
+<h4>Unclassified Users</h4>
+<div>
+<table class="table table-striped table-bordered pull-left" style="width:50%">
+  <caption><div class="btn-group btn-group pull-right">	
+	<button class="btn btn-sm btn-default ts_csv" onclick="tsReportCSV(this)" id="unclassified"> Download CSV </button>
+	<a href="/newReport?type=unclassified&height=600&width=800" class="btn btn-sm btn-default thickbox"" onclick="addURLNoCSV(this)">Updated Report</a>
+	</div></caption>
+  <thead>
+    <tr>
+      <th>
+        CLID
+      </th>              
+      <th>
+        Account Number
+      </th>
+      <th>
+        Actual Hours
+      </th>
+      <th>
+        Billing Hours
+      </th>
+      <th>
+        Name
+      </th>
+      <th>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+<% @unclassifiedUserRows.each do |u, monthHours| %>
+	<%if u.blank? %>
+		<tr> yo</tr>
+	
+	<%else%>
+	<%monthHours.each do |acct_number, hours| %>
+      <tr>
+        <td>
+          <%= u.email.split("@")[0] %>
+        </td>     
+        <td>
+			<%=acct_number%>
+        </td>   
+        <td>          
+          <%= hours[0] %>
+        </td>
+        <td>        
+        	<span>
+        	<%=hours[1]%>
+        	</span>
+          <div style="width:100%;">
+              <%=text_field_tag "hours",hours[1], :style => "width:80px;display:none", :class => "inlineEdit" %>            
+            </div>
+        </td>
+      
+      
+        <td>
+          <%=u.name %>
+        </td>
+     
+     
+        <td>
+          <img src="/assets/pensil.ico" alt="edit" style="width:18px;cursor:pointer;" class="pencil" onclick="$(this).parent().find('img.save').show();$(this).hide();$(this).parent().prev().prev().find('div').find('input').show();$(this).parent().prev().prev().find('span').hide();"  onclick1="showHoursPopup()" />
+          <%=hidden_field_tag "user", u.id,:id => "userId", :class => "userId" %>
+          <%=hidden_field_tag "project", hours[2] ,:id => "projectId", :class => "projectId" %>          
+          <img src="/assets/save.ico" alt="edit" style="width:18px;display:none;cursor:pointer;" class="save" onclick="saveHours($(this));"  />
+        </td>
+      </tr>    
+      <%end%>
+    <% end %>
+ <%end%> 
+  </tbody>
+</table>
+  </div>
+<% end %>
+
+
+</div>  
+<script>
+  $(document).ready(function(){
+    tb_init('a.thickbox');
+  });
+  
+</script>  
+

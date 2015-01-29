@@ -1,0 +1,45 @@
+.photo {
+	text-align:center;
+	padding: 15px 0px;
+	
+}
+
+.photo_image {
+	margin-top: 10px;
+	margin-bottom: 10px;
+
+}
+
+.photo_comment_form {
+	margin-top: 10px;
+
+}
+
+.processing{
+	
+	display: table-cell;
+	vertical-align: middle;
+	padding-left: 15px;
+	width: 200px;
+	height: 200px;
+	color: #000000;
+}
+
+.photo_title {
+
+	font-family: 'Permanent Marker', cursive;
+	font-size: 28px;
+}
+
+.photo p {
+
+	font-family: 'Nothing You Could Do', cursive;
+	font-weight: bolder;
+	font-size: 20px;
+	line-height: 110%;
+}
+
+.align {
+	text-align: center;
+}
+

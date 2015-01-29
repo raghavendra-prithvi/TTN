@@ -1,0 +1,17 @@
+
+                            <p>Dear (Client's Name), </p><br />
+       <p> Processing for Work Order <%=@work_order.work_order_number%>, <%=@work_order.project_name%>,  has concluded with the status of 
+       	<%if @status== 'rejected'%><mark>selected status (pending or rejected)</mark><%else%><%=@status%><%end%>.</p>
+       <p> <div class="addWMessage"><textarea class="addedWMessage"></textarea></div></p>
+
+     <p><div class="hideMList">   Here are the CBIT managers leading your project:
+        	<div class="addManagers"></div>
+		                            	</div></p><br />
+                            
+                              <p>Thank you. <br/> <br/>
+                              Sincerely, <br/>
+                              <%=User.find(session[:user_id]).name%>
+                              </p>
+    
+
+

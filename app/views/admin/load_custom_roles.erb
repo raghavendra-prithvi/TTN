@@ -1,0 +1,32 @@
+<% @customRoles.each do |cr|%>
+<div class="custom_role_holder" id="<%=cr.id%>">
+<div class="col-xs-12">
+<div class="hide_role_edit">
+	<div class="checkbox">
+    <label>
+      <input type="checkbox" id="<%=cr.id%>" class="custom_role"> <%=cr.role_name%> 
+    </label>
+    <p style="text-indent: 5px;"><%=cr.description%></p> <br />
+    		<label>Ranking</label> <%=cr.ranking%>
+</div>
+</div>
+	<div class="hide_role_save" id="<%=cr.id%>">
+		<label>Role Name</label> <br />
+		<% if !@listOfRoles.include?(CustomRole.find(cr.id).role_name) %>
+		<input type="text" class="new_role_name" id="<%=cr.id%>" value="<%=cr.role_name%>"></input> <br />
+		<%else%>
+		<input type="text" class="new_role_name" id="<%=cr.id%>" value="<%=cr.role_name%>" disabled></input> <br />
+		<%end%>
+		<label> Role Description</label>   <br />  <textarea id="<%=cr.id%>" class="new_role_description" maxlength="200"><%=cr.description%></textarea> <br />
+        <label>Role Ranking</label><input class="new_ranking" id='<%=cr.id%>'" value=<%=cr.ranking%>></input>
+	</div>
+
+<% if !@listOfRoles.include?(CustomRole.find(cr.id).role_name) %>
+    <button class="delete_custom_role btn btn-sm btn-danger" id="<%=cr.id%>">Delete</button>
+<%end%>
+    <button class="hide_role_edit edit_custom_role btn btn-sm btn-primary" id="<%=cr.id%>">Edit</button>
+    <button class="hide_role_save save_custom_role btn btn-sm btn-primary" id="<%=cr.id%>">Save</button>
+
+</div>     
+</div>
+<%end%>

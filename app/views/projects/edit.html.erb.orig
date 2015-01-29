@@ -1,0 +1,93 @@
+<<<<<<< HEAD
+<div class="row">
+<div class="col-xs-12">
+  <div class="col-xs-12">
+<label>Project Name</label>
+<div class="hidden id"><%=@p.id%></div>
+<p><%=@p.name%>" </p>
+<label>Account Number:</label>
+<%=@p.acct_number%>
+</select>
+<br />
+    <label>Select Manager(s) </label><br/>
+	<select class="p_manager" multiple>
+	<%User.where(:manager => true).alpha.each do |p|%>          
+	<option value="<%=p.id%>" <%if @managers.include?(p.id)%> selected<%end%>><%=p.last_name + ', ' +  p.first_name%>
+	<%end%>
+</select>
+    <br/>
+    
+	<button type="button" class="btn btn-sm btn-info submitForm">Save Project</button>
+    <%= link_to 'Back to Index', projects_path, :class => "btn btn-sm" %>
+</div>
+</div>
+
+<script>
+$('.submitForm').click(function() {
+	 var managers = $('.p_manager').val();
+	 var id = $('.id').html();
+	 var dataStr = 'pid=' + id + '&managers=' + managers;
+	 
+	 $.ajax({
+	 	url: '/saveProject',
+	 	method: 'GET',
+	 	data: dataStr,
+	 	success: function() {
+	 		alert('Project successfully updated.');
+	 		window.location.href = '/admin/projects';
+	 	}
+	 });
+	
+});
+
+</script>
+=======
+<div class="row-fluid" style="margin-left:30%;margin-top:5%;">
+  <div class="span5 well">
+<%= form_for @project, :html => {:class => "form-horizontal", :multipart => true} do |f| %>
+  <% if @project.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@project.errors.count, "error") %> prohibited this project from being saved:</h2>
+      <ul>
+      <% @project.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <fieldset>
+          <legend>Edit Project</legend>
+          <div class="control-group">  
+            <%= f.label :name, :class=> "pull-left" %>
+            <div class="controls">          
+              <%= f.text_field :name,:readonly => true %>
+            </div>
+          </div>
+    
+          <div class="control-group">  
+            <%= f.label :acct_number , :class=> "pull-left"%>
+            <div class="controls">                 
+               <%= f.text_field :acct_number,:readonly => true %>
+            </div>
+        </div>
+      <div class="control-group">  
+        <label class="pull-left">Manager </label>
+            <div class="controls"> 
+                <%selectArray = [["Please Select", ""]] %>
+                <%User.where(:manager => true).each do |p|%>          
+                    <%selectArray << [p.name, p.id]%>          
+                <%end%>
+                <%=f.fields_for :project_managers do |pm| %>
+              		<%=pm.select :user_id, options_for_select(selectArray), :class => "project" %>        
+                <%end%>
+            </div>
+        </div>
+    <div class="form-actions" style="padding-left:0px;">    
+    <%= f.submit :class => "btn btn-primary" %>
+    <%= link_to 'Back to Index', projects_path, :class => "btn btn-primary" %>
+  </div>
+ </fieldset>
+<% end %>
+  </div>
+</div>
+>>>>>>> 07fca237765b2f453693a50b52bcf849d9a789c2

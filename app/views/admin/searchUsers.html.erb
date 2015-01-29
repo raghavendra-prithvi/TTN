@@ -1,0 +1,65 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+<fieldset>
+<legend>User Details</legend>
+
+<%if @managerManagedProjects.length > 0 || @managerAssignedProjects.length > 0 %>
+<fieldset>
+<b>Selected Managers</b> <br />
+<%@managerManagedProjects.each do |name, projectArray|%>
+		<%=name%> currently manages the following: <br />
+		<ul>
+			<%projectArray.each do |p|%>
+			<li class=""> <%=p%></li> 
+			
+			<%end%>
+		</ul><%end%> <br />
+<%@managerAssignedProjects.each do |name, projectArray|%>
+		<%=name%> is currently assigned to the following: <br />
+		<ul class="">
+			<%projectArray.each do |p|%>
+				&nbsp;<li class=""> <%=p%></li> <%end%>
+		</ul><%end%> <br />
+</fieldset>
+<%end%>
+
+<%if @employeeAssignedProjects.length > 0 %>
+<fieldset>
+	<b>Selected Employees</b> <br />
+	<%@employeeAssignedProjects.each do |name, projectArray|%>
+		<%=name%> is currently assigned to the following: <br />
+		<ul class="">
+			<%projectArray.each do |p|%><li class=""> <%=p%></li> <%end%>
+			</ul>
+	<%end%> 
+	</fieldset>
+<%end%>
+
+<%if @gaAssignedProjects.length > 0 %>
+	<fieldset>
+	<b>Selected GAs</b> <br />
+	<%@gaAssignedProjects.each do |name, projectArray|%>
+	
+		<%=name%> is currently assigned to the following: <br />
+		<ul class="list-groupt">
+			<%projectArray.each do |p|%><li class="list-group-item"> <%=p%></li> <%end%>
+			</ul>
+	<%end%>
+	</fieldset> 
+
+<%end%>
+  
+ <%if (@managerManagedProjects.length == 0) && (@managerAssignedProjects.length == 0) && (@employeeAssignedProjects.length == 0) && (@gaAssignedProjects.length == 0) %> 
+    <b> This User doesn't have any Projects assigned to him currently. </b>
+  <% end %> 
+</fieldset>
+</div>
+</div>
+
+
+<style>
+li {
+	margin-left: 20px !important;
+}
+
+</style>

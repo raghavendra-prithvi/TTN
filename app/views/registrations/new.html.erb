@@ -1,0 +1,68 @@
+
+<% if !current_page? root_path %>
+	<% provide :title do  %>
+		<% "Sign up" %>
+	<%end%>
+	<h1>Sign up</h1>
+<% end %>
+
+
+<% if current_page? root_path %>
+	<h3>
+	Generation315 is a platform for collective action. 	<br />	<br />
+	
+	<!--	The Internet has changed the world. 
+	Never has it been so easy to communicate, collaborate and  be heard. In the interconnected world, the ability to change policies, 
+	organizations and behavior are within reach. --!>
+	What would you change? Vote, and be heard! 	<br /><br />
+	<b><span class="yellow">3</span> Votes</b> will help launch...	<br />
+	<b><span class="orange">1</span> Campaign</b> based on popular vote. Sharing with...	<br />
+	<b><span class="red">5</span> Friends</b> is our request to help make this happen <br /><br />
+
+	Change315 is a non-profit with a goal of making the world a better place, through the use of social networks and an interconnected world. 
+	</h3>
+<% end %>
+
+
+<!-- Sign-up form --!>
+
+<% if !current_page? root_path %>
+	<h3>
+		Only 1 email will be delivered every 6 months. That's it!
+	</h3>
+
+
+		<%= form_for(@user) do |f| %>
+		  <%= render 'shared/error_messages', object: f.object %>
+
+		  <%= f.label :name %>
+		  <%= f.text_field :name %>
+
+		  <%= f.label :email %>
+		  <%= f.text_field :email %>
+
+		  <%= f.label :country %>
+		  <%= f.select :country, [['Canada','Canada'],['United States','United States'],['Mexico','Mexico'],['France','France'],['UK','UK']] %>
+		  
+		  <%= f.label :password %>
+		  <%= f.password_field :password %>
+
+		  <%= f.label :password_confirmation, "Confirmation" %>
+		  <%= f.password_field :password_confirmation %>
+
+		  <%= f.submit "Signup!", class: "btn btn-large btn-primary" %>
+		<% end %>
+
+<% end %>
+
+<!-- Skip signup form from root_path, or just Signin --!>
+
+<div class="votes">
+	<% if current_page? root_path %>
+		<%= link_to "Sign up!", signup_path, class: "btn btn-large btn-primary" %>
+		<%= link_to "Skip", petitions_path %>
+	<% end %>
+	<p>
+		Already a user? <%= link_to "Sign in!", signin_path %>
+	</p>
+</div>

@@ -1,0 +1,627 @@
+<%=form_for @work_order, :html => {:multipart => true, :role => 'form'} do |f| %> 
+<div class="wid hidden"><%=@work_order.id%></div>
+<div class="dueDate hidden"><%=@work_order.due_date%></div>
+<div class="develDate hidden"><%=@work_order.development_end_date%></div>
+<div class="closeDate hidden"><%=@work_order.close_date%></div>
+<div class="startDate hidden"><%=@work_order.ULL_start_date%></div>
+
+<div class="row">
+
+<div class="col-xs-12">
+ <table class="table ">
+ <thead><tr><th class="firstCol"></th><th class="secCol"></th></tr></thead>
+ <tbody>
+	<tr><td><label>Work Order Number</label></td>
+	<%if @show%>
+    <td ><%= f.text_field :work_order_number, :class=> 'form-control essential' %> </td></tr>
+    <%else%>
+    <td><%=@work_order.work_order_number%></td></tr>
+    <%end%>
+    <tr><td><label>Project Name</label></td>
+    <%if @show%>
+   <td> <%= f.text_field :project_name, :class=> 'form-control essential' %> </td></tr> 
+    <%else%>
+    <td> <%=@work_order.project_name%></td></tr>
+    <%end%>
+    <tr><td><label>Work Order Type</label></td>
+   <td> <%= f.select :work_order_type, options_for_select([["Please Select", ""], ["Project", "project"],
+    		["Maintenance", "maintenance"], ["Support", "support"], ["Administration", 'admin']], @work_order.work_order_type)%> </td></tr>
+
+    <tr><td><label>Program Office</label></td>
+    <td><%= f.select :program_office, options_for_select([["Please Select", ""], ["Medicaid", "medicaid"],
+    		["OS", "os"], ["OPH", "oph"], ["OBH", "obh"], ["OAAS", "oaas"], ["OCDD", "ocdd"]], @work_order.program_office)%> </td></tr>
+
+    
+    <tr><td><label>Project Manager</label></td>
+    <td><%= f.text_field :UNO_project_manager, :class=> 'form-control essential' %> </td></tr>
+    
+    <tr><td><label>Business Owner</label></td>
+   <td> <%= f.text_field :business_owner, :class=> 'form-control essential' %> </td></tr>
+        
+    <tr><td><label>Start Date</label></td>
+    <td><input id="txtDate2" class="datepicker essential" /> 
+    <input type="hidden" class="txtDate2hidden" id="work_order_ULL_start_date" name="work_order[ULL_start_date]" type="date" /></td></tr>
+   
+   <tr><td><label>Close Date</label></td>
+    <td><input id="txtDate4" class="datepicker essential" />
+        <input type="hidden" class="txtDate4hidden" id="work_order_close_date" name="work_order[close_date]" type="date" /></td></tr>
+
+
+    <tr><td><label>Due Date</label></td>
+    <td><input id="txtDate1" class="datepicker essential" />
+    <input type="hidden" class="txtDate1hidden" id="work_order_due_date" name="work_order[due_date]" type="date" /> </td></tr>
+
+        
+    <tr><td><label>Development End Date</label></td>
+    <td><input id="txtDate3" class="datepicker essential" />
+        <input type="hidden" class="txtDate3hidden" id="work_order_development_end_date" name="work_order[development_end_date]" type="date" /></td></tr>
+    
+    <tr><td><label>Estimated Hours</label></td>
+    <td><%= f.text_field :estimated_hours, :class=> 'form-control essential estHourInput' %> </td></tr>
+    
+    <tr><td><label>Contact</label></td>
+    <td><%= f.text_field :ULL_contact, :class=> 'form-control essential' %> </td> </tr>
+
+    <tr><td><label>Team Members</label></td>
+    <td> 
+    <button type="button" class="btn btn-success btn-sm addTeamMember">
+  		<span class="glyphicon glyphicon-plus"></span></button>
+  <button type="button" class="btn btn-danger btn-sm removeTeamMember"><span class="glyphicon glyphicon-minus"></span></button></td></tr>
+    <%= f.fields_for :ull_team_members do |u| %>
+    	<tr><td colspan=2 class="countMembers"><%= u.text_field :name, :class=> 'form-control' %> </td></tr>
+    <%end%>
+    
+
+
+
+    </tbody>
+</table>
+</div>
+ <div class="col-xs-12">
+ <%= f.label :summary %> <br />
+<%= f.text_area(:summary, :rows => 10, :style=> 'width:100% !important') %>
+</div> 
+    
+   <div class="col-xs-12"> <%= f.label :deliverables %> <br />
+    <%= f.text_area(:deliverables, :rows => 10, :style=> 'width:100% !important')%> </div>
+    
+    <div class="col-xs-12"> <%= f.label :comments %> <br />
+    <%= f.text_area(:comments, :rows => 10, :style=> 'width:100% !important')%> </div>
+
+  <div class='col-xs-12'>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+  </div>
+
+<% end %> <!-- form--!>
+
+	
+
+<div class="col-xs-12">
+<form action="/dropzone" id="attachments-dropzone" class="dropzone" enctype="multipart/form-data">
+  <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
+    <input type="hidden" name="work_order_id" value="<%=@work_order.id%>" />
+
+  <div class="fallback">
+    <input name="attachment" type="file" multiple />
+
+  </div>
+</form>
+</div>
+
+
+ <div class="col-xs-12">
+<%@work_order.attachments.each do |a| %>
+	<%if a.attachment.to_s != ''%>
+	<div class="toBeRemoved<%=a.id%> hidden">
+	<div class="attachTitle"><%=a.title%></div>
+	<div class="docTitle<%=a.id%>"><%=File.basename(a.attachment.to_s)%></div>
+<div class="attachDownloadLink<%=a.id%>"><%= link_to 'Download', a.attachment_url%></div>
+<div class="attachAbout"><%= a.about%></div>
+<div class="attachLastUpdated"><%=a.updated_at%></div>
+<div class="attachSize<%=a.id%>"><%=a.attachment.size%></div>
+<button type="button" class="deleteAttach" value="<%=a.id%>">Delete Uploaded Attachment</button>
+<%end%>
+</div>
+
+</div>
+
+
+  
+</div>
+
+
+
+
+<style>
+.essential , select{
+
+	border: #428bca 1px solid !important;
+
+}
+
+.requiredLabel {
+	width: 50px !important;
+}
+
+.colorSquare{
+    color: #428bca; 
+    border: 3px !important;
+
+}
+.table tbody tr:hover td,
+.table tbody tr:hover th {
+  background-color: transparent;
+}
+
+td {
+	border-top: white !important;
+}
+th{
+	border-bottom: white !important;
+}
+.dz-file.dz-file-preview {
+	width: 300px;
+	height:50px;
+
+}
+.dz-filename {
+	width:300px !important;
+	height:50px;
+	text-wrap:true;
+}
+.dz-details {
+	background-color: transparent !important;
+	width: 300px !important;
+	height: 50px !important;
+}
+
+
+table {
+  width: auto !important;
+  border-spacing: 30px !important;
+}
+
+
+
+.firstCol {
+	width:200 px !important;
+}
+
+.secCol{
+	width: 900px !important;
+}
+
+
+#txtDate1, #txtDate2, #txtDate3, #txtDate4 {
+	height: 34px !important;
+	width: 90px !important;
+	border-radius: 4px !important;
+}
+
+.estHourInput {
+	width: 90px !important;
+
+
+}
+
+
+</style>
+
+<script>
+    $(document).ready(function(){
+
+
+	$('.new_work_order, .edit_work_order').submit(function(event) {
+			var submit = true
+		$('.essential').each(function(index, value) {
+			if (value.value == ''){
+				$(value).css("cssText", "border: #FF0000 1px solid !important");
+				submit = false;
+			}
+
+		});
+		$('select').each(function(index, value) {
+			console.log(value);
+			if (value.value == ''){
+				$(value).css("cssText", "border: #FF0000 1px solid !important");
+				submit = false;
+			}
+			});
+		if (submit == false) {
+			alert('Please address required fields.');
+					event.preventDefault();
+		}
+		
+	
+	});
+	
+	
+$('body').on('keydown', '.estHourInput', function(event) {
+		var input = $(this);
+    	if (event.which == 38 || event.which == 104) {
+        		input.val((parseInt(input.val()) + 1));
+   		 } else if (event.which == 40 || event.which == 98) {
+   		 	if (input.val() > 0 ) {
+        	input.val((parseInt(input.val()) - 1));
+        	}
+
+    }
+    
+	});
+	
+$('body').on('focus', '.estHourInput', function() {
+	var input = $(this);
+	if (input.val() == ''){
+		input.val(0);
+	}
+});
+ 
+ $('body').on('click', '.estHourInput', function() {
+	var input = $(this);
+	input.select();
+});
+		
+	
+	
+
+
+
+
+
+    /* Manage all datepickers for form processing */
+    $('#txtDate1, #txtDate2, #txtDate3, #txtDate4').datepicker('setDate', 'today');
+    
+    /*Due Date*/
+	$("#txtDate1").datepicker({ showOtherMonths: true, selectOtherMonths: true,
+					onSelect: function() {
+					var selectedDate = $(this).datepicker('getDate');
+					$(".txtDate1hidden").val(selectedDate);
+					}
+	});
+	/*Start Date*/
+	$("#txtDate2").datepicker({ showOtherMonths: true, selectOtherMonths: true,	onSelect: function() {
+					var selectedDate = $(this).datepicker('getDate');
+					$(".txtDate2hidden").val(selectedDate);
+					}
+	});
+	/*Development End Date*/
+	$("#txtDate3").datepicker({ showOtherMonths: true, selectOtherMonths: true,
+					onSelect: function() {
+					var selectedDate = $(this).datepicker('getDate');
+					$(".txtDate3hidden").val(selectedDate);
+					}
+	});
+	/*Close Date*/
+	$("#txtDate4").datepicker({ showOtherMonths: true, selectOtherMonths: true,
+					onSelect: function() {
+					var selectedDate = $(this).datepicker('getDate');
+					$(".txtDate4hidden").val(selectedDate);
+					}
+	});
+	
+	$('#txtDate1, .txtDate1hidden').val($('.dueDate').html());
+	$('#txtDate2, .txtDate2hidden').val($('.startDate').html());
+	$('#txtDate3, .txtDate3hidden').val($('.develDate').html());
+	$('#txtDate4, .txtDate4hidden').val($('.closeDate').html());
+	
+	
+
+	
+	/*--------------------------*/
+	
+	/*Attachment Processing */
+	
+		$('.addTeamMember').click( function() {
+		var countMembers = $('.countMembers').length;
+		htmlStr = '<tr><td colspan=2 class="countMembers"><input id="work_order_ull_team_members_attributes_'+countMembers+'_name" name="work_order[ull_team_members_attributes]['+countMembers+'][name]" type="text" class="form-control"></td></tr>'
+		$('.countMembers:last').parent().after(htmlStr); 
+		$('.removeTeamMember').show();
+	
+	});
+	
+	$('.removeTeamMember').click( function() {
+		var countAttach = $('.countMembers').length;
+		if (countAttach > 1){
+			var remove_id = $('.countMembers:last input').attr('id');
+			var lastIndex = remove_id.lastIndexOf('_');
+			var new_id = remove_id.substring(0, lastIndex) + '_id';
+			$('#' + new_id, '#' + remove_id).remove();
+			$('.countMembers:last').remove();
+			if (countAttach == 2) {
+				$('.removeTeamMember').hide();
+			} 
+		}
+	});
+	
+	
+	
+	if ($('.countMembers').length < 2) {
+		$('.removeTeamMember').hide();
+	};
+	
+
+	
+	
+	  // myDropzone is the configuration for the element that has an id attribute
+  // with the value my-dropzone (or myDropzone)
+
+	/*--------------------------*/
+
+		
+uploadFiles = [];
+
+wid = $('.wid').html();
+Dropzone.options.attachmentsDropzone = { // The camelized version of the ID of the form element
+  // The configuration we've talked about above
+  paramName: 'attachment',
+  createImageThumbnails: true,
+  autoProcessQueue: true,
+  uploadMultiple: true,
+  parallelUploads: 100,
+  maxFiles: 100,
+  maxFilesize: 10000, //MB
+  addRemoveLinks: false,
+  dictCancelUpload: 'Cancel Upload',
+  autoQueue: true, // Make sure the files aren't queued until manually added
+  dictCancelUploadConfirmation: 'Confirm Removal of File?',
+    accept: function(file, done) {
+    done();
+  },
+
+
+  // The setting up of the dropzone
+  init: function() {
+    var myDropzone = this;
+    var fileAddCount = 0;
+	this.on('addedfile', function(file){
+		if ((fileAddCount == 0) && (file.name == undefined)){
+    		file.previewElement.remove();
+		}
+		fileAddCount += 1;
+	});
+
+    // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
+    // of the sending event because uploadMultiple is set to true.
+    this.on("sendingmultiple", function() {
+
+      // Gets triggered when the form is actually being sent.
+      // Hide the success button or the complete form.
+    });
+    this.on("successmultiple", function(files, response) {
+    	
+    	$.each(response, function(index, value) {
+    	
+    	var downloadURL = response[index].attachment.url;
+    	var aid = response[index].id;
+    	var _this = this;
+    	var file = files[index];
+
+    	$(file.previewElement).find('.uploadSingle').hide();
+    	$(file.previewElement).find('.removeBeforeUpload').hide();
+    	
+    	var downloadButton = Dropzone.createElement("<a href='" + downloadURL + "' class='downloadSingle btn btn-sm btn-success'>Download</a>");
+        var removeButton = Dropzone.createElement("<button type='button' class='deleteAttach btn btn-sm btn-danger' value='" + aid + "'>Delete Attachment</button>");
+		
+		file.previewElement.appendChild(downloadButton);
+        file.previewElement.appendChild(removeButton);
+        downloadButton.addEventListener("click", function(e) {
+          		// Make sure the button click doesn't submit the form:
+          		e.preventDefault();
+          		e.stopPropagation();
+    			window.location.href = $(this).attr('href');
+        	});
+		removeButton.addEventListener("click", function(e) {
+          // Make sure the button click doesn't submit the form:
+          
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Remove the file preview.
+          file.previewElement.remove();
+          // If you want to the delete the file on the server as well,
+          // you can do the AJAX request here.
+          	aid = $(this).val();
+			$.ajax({
+				method: 'GET',
+           		url: '/deleteAttachment',
+            	data : "aid="+aid,
+            	success: function(data){
+            		$('.toBeRemoved' + aid).remove();
+            		alert('Attachment successfully removed.');
+            	}
+			});
+		
+        });
+		});
+    });
+    
+    this.on("errormultiple", function(files, response) {
+    	fileTypes = [];
+    	$.each(files, function(index, file) {
+    		file.previewElement.remove();
+    		fileTypes.push(file.type);
+    	});
+    		htmlStr = '<br />';
+	    	alert(response + '\n' + fileTypes.join(', ') + '\n');
+    	
+      // Gets triggered when there was an error sending the files.
+      // Maybe show form again, and notify user of error
+    });
+
+ 
+    // Populate the dropzone with Attachments already uploaded to the server
+   $(function() {
+    	$.ajax({
+    		method: 'GET',
+          	data: 'work_order_id=' + wid,
+          	url: '/getAttachments',
+          	dataType: 'json',
+          	success: function(data){
+          		if (data.length != 0) {
+          		$.each(data, function(ind, value) {
+          		var fileName = $('.docTitle' + value.id).html();
+          		var fileSize = $('.attachSize' + value.id).html();
+          		var mockFile = { name: fileName, size: fileSize, onServer: true, aid: value.id};
+
+				// Call the default addedfile event handler
+				myDropzone.emit("addedfile", mockFile);
+				
+
+
+				// And optionally show the thumbnail of the file:
+
+				// If you use the maxFiles option, make sure you adjust it to the
+				// correct amount:
+    			});
+    			}
+    		}
+    });
+    
+    });
+    
+    $('.deleteAttach').click( function() {
+		aid = $(this).val();
+		$.ajax({
+			method: 'GET',
+            url: '/deleteAttachment',
+            data : "aid="+aid,
+            success: function(data){
+            	$('.toBeRemoved' + aid).remove();
+            	alert('Attachment successfully removed.');
+            	
+            }
+		});
+		
+	
+	});
+
+    
+    this.on("addedfile", function(file) {
+    
+    	$('.dz-details img').each(function(){
+		$(this).css("width", 100); // Set new width
+        $(this).css("height", 50);  
+	});
+        // Capture the Dropzone instance as closure.
+        var _this = this;
+
+    	console.log(file);
+        // Create the remove button
+        var downloadURL = '';
+        var alreadyExists = false;
+        (file.aid ? aid = file.aid : aid = '');
+        $.ajax({    	
+        	method: 'GET',
+          	data: 'work_order_id='+wid+'&file_name=' + file.name,
+          	url: '/checkAttachment',
+          	dataType: 'json',
+          	async: false,
+          	success: function(data){
+          		alreadyExists=data.already_exists;
+          		if (data.url){
+          			downloadURL = data.url;
+          			aid = data.aid;
+          		}
+          	}
+          });
+          
+          
+        function activateRemove() {
+			removeButton.addEventListener("click", function(e) {
+          // Make sure the button click doesn't submit the form:
+          
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Remove the file preview.
+          _this.removeFile(file);
+          // If you want to the delete the file on the server as well,
+          // you can do the AJAX request here.
+          if(file.onServer){
+          	aid = $(this).val();
+			$.ajax({
+				method: 'GET',
+           		url: '/deleteAttachment',
+            	data : "aid="+aid,
+            	success: function(data){
+            		$('.toBeRemoved' + aid).remove();
+            		alert('Attachment successfully removed.');
+            	}
+			});
+		}
+        });
+        }
+        if(file.onServer) {
+            var downloadButton = Dropzone.createElement("<a href='" + downloadURL + "' class='downloadSingle btn btn-sm btn-success'>Download</a>");
+        	var removeButton = Dropzone.createElement("<button type='button' class='deleteAttach btn btn-sm btn-danger' value='" + aid + "'>Delete Attachment</button>");
+		    file.previewElement.appendChild(downloadButton);
+        	file.previewElement.appendChild(removeButton);
+        	
+        	downloadButton.addEventListener("click", function(e) {
+          		// Make sure the button click doesn't submit the form:
+          		e.preventDefault();
+          		e.stopPropagation();
+          		 window.location.href = $(this).attr('href');
+        	});
+
+
+        	activateRemove();
+
+		}
+		
+		else if (alreadyExists) {
+			alert("A file named " + file.name + " has already been uploaded for this work order.");
+	        _this.removeFile(file);
+        }
+        else {
+            var uploadButton = Dropzone.createElement("<button class='uploadSingle btn btn-sm btn-info'>Upload</button>");
+        	var removeButton = Dropzone.createElement("<button class='btn btn-sm btn-danger removeBeforeUpload'>Remove file</button>");        
+        	file.previewElement.appendChild(uploadButton);
+        	file.previewElement.appendChild(removeButton);
+        	
+        	uploadButton.addEventListener("click", function(e) {
+         		// Make sure the button click doesn't submit the form:
+          		e.preventDefault();
+          		e.stopPropagation();
+          		_this.processFile(file);
+          	
+        	});
+        	
+        	activateRemove();
+        }
+		
+	
+        		
+      });
+
+    
+
+    	$(".cancel").click(function() {
+		alert('what');
+        myDropzone.removeAllFiles(true);
+      });
+      
+    $('.upload').click (function() {
+    	myDropzone.processQueue();
+    });
+}// dropzone init
+	
+	} // dropzone
+	
+	
+	$('.dz-remove').click(function(){
+		alert($(this).val());
+	});
+	
+
+		});
+
+	
+
+   
+    
+
+</script>
+<%end%>

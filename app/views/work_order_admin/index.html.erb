@@ -1,0 +1,181 @@
+
+<% if session[:user_id] %>  
+  <%@user = User.find(session[:user_id]) %>
+<div class="row">
+<div class="col-xs-6">
+<div class="col-xs-12">
+<% if !@submitted_work_orders.blank?%>     	
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border" style="color:blue">Requires Processing</legend>
+<table class="table table-condensed">
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th></th>
+  		<th>Client Name(s)</th>
+  	</thead>
+  <tbody>
+    <% @submitted_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%></td>
+        <td><%= link_to 'Review', "/work_order_review/" + w.id.to_s, class: "btn btn-sm btn-info" %></td>
+      	<td><%w.work_order_clients.each do |client|%>
+        		<%user = client.user%>
+        		<%=user.last_name + ', ' + user.first_name %>
+        		<%end%>
+        </td>
+      </tr>
+
+    <% end %>
+      </fieldset>
+  </tbody>
+</table>
+   
+    <%else%>
+    <p><b>There are no Work Orders pending review.</b></p>
+    <%end%>
+</div>
+</div>
+
+<div class='col-xs-6'>
+<div class="col-xs-12">
+<% if !@approved_work_orders.blank?%>
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border" style="color:green">Approved</legend>
+
+<table class="table table-condensed">
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th>Latest Feedback To Client</th>
+  		<th></th>
+  		<th>Client Name</th>
+  	</thead>
+  <tbody>
+
+    <% @approved_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+        <%if !w.work_order_feedbacks[-1].nil?%>
+        <td><%=w.work_order_feedbacks[-1].feedback%></td>
+        <% else %>
+        <td></td>
+        <%end%>
+        <td><%= link_to 'View', "/work_order_review/" + w.id.to_s, class: "btn btn-sm btn-info" %></td>
+      	<td><%w.work_order_clients.each do |client|%>
+        		<%if !client.user.nil?%>
+        		<%user = client.user%>
+        		<%=user.last_name + ', ' + user.first_name %>
+        		<%end%>
+        		<%end%>
+        </td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+    </fieldset>
+    <%end %>
+</div>
+<div class="col-xs-12">
+<% if !@resubmit_work_orders.blank?%>     	
+  <fieldset class="scheduler-border">
+    <legend class="scheduler-border" style="color:red">Waiting for Resubmission</legend>
+
+<table class="table table-condensed">
+  <tbody>
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th>Latest Feedback To Client(s)</th>
+		<th>Client Name(s)</th>
+  	</thead>
+    <% @resubmit_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+      		<%if !w.work_order_feedbacks[-1].nil?%>
+        <td><%=w.work_order_feedbacks[-1].feedback%></td>
+        	<% else %>
+        <td><%w.work_order_clients.each do |client|%>
+        		<%user = client.user%>
+        		<%=user.last_name + ', ' + user.first_name %>
+        		<%end%>
+    	 </td>
+        	<%end%>
+
+        <td><%= link_to 'View', "/work_order_review/" + w.id.to_s, class: "btn btn-sm btn-info" %></td>
+      </tr>
+
+    <% end %>
+  </tbody>
+</table>
+    <%end %>
+    </fieldset>
+</div>
+<div class="col-xs-12">
+<% if !@cancelled_work_orders.blank?%>     	
+<fieldset class="scheduler-border">
+    <legend class="scheduler-border">Cancelled</legend>
+<table class="table table-condensed ">
+  	<thead>
+  		<th>Work Order Number</th>
+  		<th> Project Name</th>
+  		<th></th>
+  		<th></th>
+  	</thead>
+  <tbody>
+    <% @cancelled_work_orders.each do |w| %>
+      <tr>
+      	<td> <%=w.work_order_number%> </td>
+      	<td> <%=w.project_name%> </td>
+      	<td></td>
+        <td><%= link_to 'View', "/work_order_review/" + w.id.to_s, class: "btn btn-sm btn-info" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+  </fieldset>
+  <% end %>
+</div>
+</div>
+</div>
+<%end%>
+
+<style>
+  fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    border-radius: 8px !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+  }
+
+  legend.scheduler-border {
+      font-size: .9em !important;
+	  border-bottom: 0px !important;
+  }  
+  
+  legend.scheduler-border {
+    width:inherit; /* Or auto */
+    padding:0px; /* To give a bit of padding on the left and right */
+    /*border-bottom:none; */
+}
+
+.table {
+	margin-bottom: 0px !important;
+}
+
+
+.btn {
+	color: white !important;
+}
+
+</style>
+
+
+
+

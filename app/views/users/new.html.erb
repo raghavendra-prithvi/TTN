@@ -1,0 +1,94 @@
+
+<% if !current_page? root_path %>
+	<% provide :title do  %>
+		<% "Sign up" %>
+	<%end%>
+	<h1>Sign up</h1>
+<% end %>
+
+
+<% if current_page? root_path %>
+	<br/>
+	<h1> What's important to <i>you</i>?  </h1>	
+	
+	<div class="row">
+		<div class="span5">
+			<img src="/images/front page logo.png" />
+		</div>
+			
+	
+		
+			
+		<div class="span6">	
+			<h3>
+				 <br />
+				<div id="logo2">GENERATION</div>
+				<div id="logo2" class="yellow">3</div>
+				<div id="logo2" class="orange">1</div>
+				<div id="logo2" class="red">5</div>
+				&nbsp is a platform for <i>collective action</i>. Follow these 3 steps to start making a difference!<br /><br />
+				
+				<!--If you could change <i>anything</i>, what would it be?	<br /><br />--!>
+				
+				<div class="row">
+					<div class="span2">
+					</div>
+					<div class="span10">
+						1) Distribute <b><span class="yellow">3</span> Votes </b>	<br />
+						2) Participate in <b><span class="orange">1</span> Campaign</b>	<br />
+						3) Share with <b><span class="red">5</span> Friends</b> <br />
+					</div>
+				</div>
+			</h3>
+		</div>
+
+	
+<% end %>
+
+
+<!-- Sign-up form --!>
+
+<% if !current_page? root_path %>
+<div>*You will <b>only</b> receive 1 email if a campaign you voted for is launched.* <br /><i>(We <u>also</u> hate spam!)</i></div><br/><br/>
+
+
+		<%= form_for(@user) do |f| %>
+		  <%= render 'shared/error_messages', object: f.object %>
+
+		  <%= f.label :name %>
+		  <%= f.text_field :name %>
+
+		  <%= f.label :email %>
+		  <%= f.text_field :email %>
+
+		  <%= f.label :country %>
+		  <%= f.select :country, [['Canada','Canada'],['United States','United States'],['Mexico','Mexico'],['France','France'],['UK','UK']] %>
+		  
+		  <%= f.label :password %>
+		  <%= f.password_field :password %>
+
+		  <%= f.label :password_confirmation, "Confirmation" %>
+		  <%= f.password_field :password_confirmation %>
+			<div class="votes">
+		  <%= f.submit "Signup!", class: "btn btn-large btn-primary" %>
+		  </div>
+		<% end %>
+
+<% end %>
+
+<!-- Skip signup form from root_path, or just Signin --!>
+
+	<div class="row">
+		<div class="span5">
+		</div>
+		<div class="span6">	
+	<div id="right">
+	<% if current_page? root_path %>
+		<%= link_to "Start!", petitions_path, class: "btn btn-large btn-primary", id: "belowbutton" %>
+	<% end %><br /><br /><br />
+		<div id="right2">Already a user? <%= link_to "Sign in!", signin_path%><br />
+		Click <%= link_to "here", about_path %> to learn more! </div>
+	</div>
+	</div>
+	</div>
+

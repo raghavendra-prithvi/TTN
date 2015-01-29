@@ -1,0 +1,306 @@
+class WorkOrderAdminController < ApplicationController
+ before_filter :require_login, :except => ["activate_user"]
+ before_filter :require_activation, :except => ["activate_user","test_mail"]
+ before_filter :require_work_order_admin
+ 
+ 
+ def index
+ 	puts params
+ 	@work_orders = WorkOrder.where(:submitted => true)
+    @submitted_work_orders = @work_orders.submitted
+    @approved_work_orders = @work_orders.approved
+    @resubmit_work_orders = @work_orders.resubmit
+    @rejected_work_orders = @work_orders.rejected
+    @projects = @approved_work_orders.is_type_project
+ end
+ 
+def assignment
+	@users = User.where(:id != session[:user_id])
+ 	@work_order = WorkOrder.find(params[:id])
+	
+end
+
+ def review
+ 	puts params
+ 	puts 'review'
+ 	@work_order = WorkOrder.find(params[:id])
+ 	@managers = User.where(:manager => 't').alpha
+ 	@employees = User.where(:client => 'f').alpha
+ end
+ 
+ def approve
+ 	data = {}
+ 	@work_order = WorkOrder.find(params[:id])
+ 	@work_order.approved = true
+	if @work_order.save
+  		data[:success]= true
+  		render :json => data.to_json
+  	else
+  		data[:success] = false
+  		render :json => data.to_json
+  	end   		
+ end
+ 
+ def work_order_tracking
+ 	@work_orders = WorkOrder.all
+ 	@projects = @work_orders.is_type_project
+ 	@maintenance = @work_orders.is_type_maintenance
+ 	@support = @work_orders.is_type_support
+ 	
+
+ 	
+ 
+ end
+ 
+ def get_emails
+ 	data = {}
+ 	puts "check Emails"
+ 	puts params
+ 	ids = params[:ids].split(',')
+ 	ids.each do |i|
+ 		u = User.find(i.to_i)
+ 		data[i] = u.email
+ 	end
+ 	render :json, data.to_json
+ end
+ 
+ def get_WO_data
+ 
+<<<<<<< HEAD
+ 		puts "********************************Project Report******************************"   		
+ 		@work_orders = WorkOrder.where(:submitted => true)
+ 	
+    	@submitted_work_orders = @work_orders.submitted
+    	@approved_work_orders = @work_orders.approved
+    	@resubmit_work_orders = @work_orders.resubmit
+    	@rejected_work_orders = @work_orders.rejected
+   		
+		timeRowArray = []
+		today = params[:today].to_date
+		view = params[:view]
+		hourTotals = []
+		if view == "weekly"
+			date = (today.beginning_of_week(start_day = :sunday)).to_s
+			weekTotal = userTable.getProjectOnWeek(pID, startDate)
+			weekTotal << dayTotal
+		end
+	
+		if view == "monthly"
+
+=======
+ 		puts "********************************Project Report******************************"
+   		puts params.inspect
+   		   		   
+		timeRowArray = []
+		hourTotals = []
+		today = params[:today].to_date
+		work_order_id = params[:wid]
+		work_order= WorkOrder.find(work_order_id)
+		userTable = work_order.work_order_project.project.time_tables
+		view = params[:view]
+		dateSections = []
+		hourTotals = []
+		if view == "weekly"
+		
+      startDate = (today.beginning_of_week(start_day = :sunday)).to_s
+      endDate = (today.end_of_week(start_day = :sunday)).to_s
+			startDate.to_date.upto(endDate.to_date) do |date|
+				dateSections << date
+				dayTotal = userTable.getDayTotal(date)
+				hourTotals << dayTotal
+			end
+		end
+	
+		if view == "monthly"
+			startDate = today.beginning_of_month.to_s
+			endDate = today.end_of_month.to_s
+			date = startDate.to_date
+			while date.end_of_week < endDate.to_date
+				dateSections << date
+				weekTotal= userTable.viewDate(date, date.next_week).getTotal
+				hourTotals << weekTotal
+				date = date.next_week
+			end	
+>>>>>>> 31d6e640cb431e6be040b4a9456145f99a7b713b
+		end
+		if view == "yearly"
+			startDate = today.beginning_of_year.to_s
+			endDate = today.end_of_year.to_s
+			date = startDate.to_date
+		
+			while date.end_of_month <= endDate.to_date
+				dateSections << date
+				monthTotal = userTable.viewDate(date, date.next_month).getTotal
+				hourTotals << monthTotal
+				date = date.next_month
+			end
+		end
+		
+		startTime = standJTime(startDate)
+		endTime = standJTime(endDate)
+		
+		dateSpan = userTable.viewDate(startDate.to_date, endDate.to_date)
+		
+		timeInfo = {}
+		timeRow = dateSpan.alpha.group_by(&:project_id)
+	timeRow.each do |key, value|
+		project = Project.find(key)
+		timeInfo[project.name] = []
+		
+			for i in 0..(dateSections.length - 1) do
+				if view == "weekly"
+					hours = userTable.getProjectOnDayTotal(key, dateSections[i])
+					total = userTable.getProjectOnWeekTotal(key, dateSections[0])
+				
+			end
+				if view == "monthly"
+				hours = userTable.getProjectOnWeekTotal(key, dateSections[i])
+				total = userTable.getProjectOnMonthTotal(key, dateSections[0])				
+			end
+				if view == "yearly"
+				hours = userTable.getProjectOnMonthTotal(key, dateSections[i])
+				total = userTable.getProjectOnYearTotal(key, dateSections[0])
+			end
+				timeInfo[project.name] << {projectHours: hours, projectDate: standJTime(dateSections[i])}
+			end
+			timeInfo[project.name] << {projectHours: total}
+end
+
+		totalHours = dateSpan.getTotal
+		puts "total"
+		puts totalHours
+		hourTotals << totalHours
+	timeRowArray << {dates: dateSections.map(&method(:standJTime))}
+	timeRowArray << timeInfo		
+	timeRowArray << {totals: hourTotals}
+	
+		
+			puts "Time Array"
+			puts timeRowArray
+		
+	render :json => timeRowArray.to_json
+ 
+ end
+ 
+ 
+ def process_report
+  	@work_order = WorkOrder.find(params[:wid])
+
+
+ 	
+ 	approved = params[:approved]
+ 	
+ 	if approved == 'true'
+ 		puts 'check1'
+ 	 	#Work Order Request has been approved
+		@work_order.approved = true
+ 		@work_order.save
+ #Once account numbers are being updated every 15, this will match the project by account number
+ 		@project = Project.new
+ 		@project.name = @work_order.project_name
+ 		if !params[:acct_number].blank?
+ 			@project.acct_number = params[:acct_number]
+ 		end
+ 		@project.category = @work_order.work_order_type
+ 		@project.save
+ 		@work_order_project = WorkOrderProject.new
+ 		@work_order_project.project_id = @project.id
+ 		@work_order_project.work_order_id = @work_order.id
+ 		@work_order_project.save
+ 		
+ 		if !params[:project_managers].blank?
+ 			managers = params[:project_managers].split(",").map(&:to_i)
+ 			managers.each do |p|
+ 				@project_manager= ProjectManager.new
+ 				@project_manager.user_id = p
+ 				@project_manager.project_id = @project.id
+ 				@project_manager.save
+ 			end
+ 		end
+ 		
+ 		if !params[:assigned_employees].blank?
+ 			employees = params[:assigned_employees].split(",").map(&:to_i)
+			employees.each do |a|
+ 		 		@assigned_projects = AssignedProject.new
+ 				@assigned_projects.project_id = @project.id
+ 				@assigned_projects.user_id = a
+ 				@assigned_projects.save
+ 			end
+ 		end 
+ 		
+ 	   @actual_work_order = ActualWorkOrder.new
+ 	   @actual_work_order.work_order_id = @work_order.id
+	   @actual_work_order.save
+	   
+	   (!params[:includePMList].blank?) ? includePMList = true : includePMList = false
+	   (!params[:includeEMList].blank?) ? includeEMList = true : includeEMList = false
+	   (!params[:wmMessage].blank?) ? wmMessage = params[:wmMessage] : wmMessage = false	   	
+	   (!params[:pmMessage].blank?) ? pmMessage = params[:pmMessage] : pmMessage = false
+	   (!params[:emMessage].blank?) ? emMessage = params[:emMessage] : emMessage = false
+
+		if !wmMessage.blank?
+ 			@feedback = WorkOrderFeedback.new
+ 			@feedback.work_order_id = @work_order.id
+ 			@feedback.admin_id = session[:user_id]
+ 			@feedback.feedback = wmMessage
+ 			@feedback.save
+ 		end
+		
+	   
+	   @work_order.work_order_clients.each do |c|
+	   	client = User.find(c.user_id)
+	   	WelcomeMailer.WO_request_response(client, @work_order, wmMessage, includePMList).deliver
+	   end
+	   
+	   managers.each do |m|
+	   	WelcomeMailer.project_manager_assignment(User.find(m), @work_order, pmMessage).deliver
+	   end
+	   employee_message = params[:messageE]
+	   employees.each do |e|
+	   	WelcomeMailer.employee_assignment(User.find(e), @work_order, emMessage, includeEMList).deliver
+	   end
+	   
+		
+	   
+ 	elsif approved == 'false'
+ 	 puts 'check2'
+
+ 	#Work Order Request has been rejected with feedback
+
+ 		@work_order.approved = false
+ 		@work_order.submitted = nil
+ 		@work_order.save
+ 		
+ 		(!params[:wmMessage].blank?) ? wmMessage = params[:wmMessage] : wmMessage = false	   	
+ 		
+ 		@work_order.work_order_clients.each do |c|
+ 			WelcomeMailer.WO_request_response(User.find(c.user_id), @work_order, wmMessage).deliver
+ 		end
+
+
+ 		
+ 	else
+ 	 		puts 'check3'
+
+ 	#Work Order Request has been taken back to pending with feedback
+ 		@work_order.submitted = false
+ 		@work_order.approved = nil
+ 		@work_order.save
+
+ 		(!params[:wmMessage].blank?) ? wmMessage = params[:wmMessage] : wmMessage = false	   	
+ 		
+ 		@work_order.work_order_clients.each do |c|
+ 			WelcomeMailer.WO_request_response(User.find(c.user_id), @work_order, wmMessage).deliver
+ 		end
+ 	end
+ 	
+ 	render :js => "window.location = '/work_order_admin'"
+
+
+ 	
+ end
+ 
+
+	
+ 
+end

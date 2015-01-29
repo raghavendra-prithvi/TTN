@@ -1,0 +1,176 @@
+
+---
+identities:
+  columns:
+  - id
+  - name
+  - email
+  - password_digest
+  - created_at
+  - updated_at
+  records: 
+  - - 1
+    - xxx
+    - a
+    - "$2a$10$IDjNNDGRtATVLabKUf4qI.IgCzixaMVyfCHjWmz6M5.lh9984XVw6"
+    - '2014-05-22 15:16:01.809628'
+    - '2014-05-22 15:16:01.809628'
+  - - 2
+    - xxx
+    - g
+    - "$2a$10$5yMn3oBTK3SGRXmFU78tyuFE8MG/AmZV8rXG5JBZmwFjU9kvBdXpu"
+    - '2014-05-22 15:17:41.872604'
+    - '2014-05-22 15:17:41.872604'
+
+---
+projects:
+  columns:
+  - id
+  - name
+  - category
+  - project_id
+  - acct_number
+  - active
+  - user_id
+  - created_at
+  - updated_at
+  records: 
+  - - 1
+    - EffortTracker
+    - CBIT
+    - 
+    - '001'
+    - true
+    - 1
+    - '2014-05-22 15:18:46.582974'
+    - '2014-05-22 15:18:46.582974'
+  - - 2
+    - Budget
+    - Finance
+    - 
+    - '002'
+    - true
+    - 1
+    - '2014-05-22 15:19:04.906558'
+    - '2014-05-22 15:19:04.906558'
+
+---
+users:
+  columns:
+  - id
+  - name
+  - email
+  - role
+  - created_at
+  - updated_at
+  - reporter
+  - reported_by
+  - client
+  - work_order_admin
+  - token
+  - password_digest
+  - remember_token
+  - avatars
+  - country
+  - admin
+  - confirmed
+  - signer
+  - shares
+  - provider
+  - uid
+  - manager
+  - updated
+  - active
+  - first_name
+  - last_name
+  - time_sheet_manager
+  records: 
+  - - 1
+    - Admin Last
+    - a@louisiana.edu
+    - Classified
+    - '2014-05-22 15:16:02.035155'
+    - '2014-05-22 15:16:36.115294'
+    - 
+    - 
+    - false
+    - false
+    - VYyhtfpr5Jcojs3PrgQTfA
+    - 
+    - 
+    - 
+    - 
+    - true
+    - t
+    - 
+    - 
+    - identity
+    - '1'
+    - true
+    - false
+    - false
+    - Admin
+    - Last
+    - false
+  - - 2
+    - Graduate Assistant
+    - g@louisiana.edu
+    - GA
+    - '2014-05-22 15:17:41.880779'
+    - '2014-05-22 15:18:12.464650'
+    - 1
+    - 
+    - false
+    - false
+    - npn7k4TdWkE_Btbm9VHWeg
+    - 
+    - 
+    - 
+    - 
+    - false
+    - t
+    - 
+    - 
+    - identity
+    - '2'
+    - false
+    - false
+    - false
+    - Graduate
+    - Assistant
+    - false
+
+---
+reporters:
+  columns:
+  - id
+  - reporter_id
+  - reported_id
+  - submitted
+  - approved
+  records: 
+  - - 1
+    - 1
+    - 2
+    - false
+    - false
+
+---
+assigned_projects:
+  columns:
+  - id
+  - project_id
+  - user_id
+  - created_at
+  - updated_at
+  records: 
+  - - 1
+    - 1
+    - 2
+    - '2014-05-22 15:19:40.781742'
+    - '2014-05-22 15:19:40.781742'
+  - - 2
+    - 2
+    - 2
+    - '2014-05-22 15:19:40.815642'
+    - '2014-05-22 15:19:40.815642'

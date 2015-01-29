@@ -1,0 +1,342 @@
+<style>
+  .inlineEdit{
+    background-color: #FFFFFF;
+    border: 2px solid #5292F7;
+    border-radius: 0;
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.4);
+    color: #000000;
+    display: inline-block;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: inherit;
+    line-height: 1.3em;
+    margin: 0;
+    outline-width: 0;
+    padding: 1px 4px 0 2px;
+    resize: none;
+  }
+</style>
+
+		<% flash.each do |key, value| %>
+		    <div class="flash <%= flash_class(key)%> pull-right"> 
+                          <div class="hideThis"><%= value %> <br /><a id="close">[close]</a></div>
+              </div> 
+              <% end %>
+              
+              
+<% if @user.time_sheet_manager == true %>
+<%  @months = [['-', '']] %>
+<% (1..12).each {|m| @months << [Date::MONTHNAMES[m], m]} %>
+<%  @years = [['-', '']] %>
+<% (2012..2025).each {|m| @years << [m, m]} %>
+
+Month : <%= select_tag('month', options_for_select(@months, selected: Date.today.month.to_s )) %>
+Year : <%=  select_tag('year', options_for_select(@years, selected: Date.today.year )) %>
+
+<br/>
+<script>
+  function monthlyClassifiedReport(){
+    dataStr = "month="+$("#month").val() + "&year="+ $("#year").val();
+        $.ajax({
+              type: 'GET',
+              url: '/monthlyClassifiedReport',
+              data : dataStr,
+              success: function(dt){
+                $("#timesheet_managerdata").html(dt);   
+              },
+              failure: function() {
+              	alert('oh no');
+              }
+          });
+    }
+    
+	$('body').on('change', '#year, #month', function() {
+		monthlyClassifiedReport();
+	});
+    function addURLNoCSV(element){           
+       $(element).attr('href', function() {
+            return this.href + "&month="+$("#month").val() + "&year="+ $("#year").val();
+       });
+    }
+  
+  
+    function printPage(){
+                  var docprint=window.open(window.location.href, "_blank", "toolbar=yes, scrollbars=yes, resizable=yes, top=300, left=500, width=400, height=300");
+                  var oTable = document.getElementById("resultTbl");
+                  docprint.document.open(); 
+                  docprint.document.write('<html><head><title></title>'); 
+                  docprint.document.write('</head><body><center>');
+                  docprint.document.write(oTable.parentNode.innerHTML);
+                  docprint.document.write('</center></body></html>'); 
+                 // docprint.document.close(); 
+                  docprint.print();
+                  docprint.close();
+    }
+    
+        function tsReportCSV(element){
+    	var type = $(element).attr('id');
+    	var dataHash = {"format":"csv", "month":$("#month").val(), "year": $("#year").val(), "type":type};
+    	var url = '/ts_manager_csvReport?format=csv&month=' + $("#month").val() + '&year=' + $("#year").val() + '&type=' + type;
+       	$.ajax({
+			url: url,
+			data: dataHash,
+			type: 'GET',
+			success: function(){
+				window.location = url;
+			}
+			});
+    }
+  
+</script>
+<div id="timesheet_managerdata">
+  <%=hidden_field_tag 'month',Date.today.last_month.month %>
+  <%=hidden_field_tag 'year',Date.today.last_month.year %>
+<fieldset style="width:50%">
+<legend><h4>Classified Users </h4></legend>
+<table class="table table-striped table-bordered pull-left" >
+  <caption><div class="btn-group btn-group pull-right">	
+			<button class="btn btn-sm btn-default ts_csv" onclick="tsReportCSV(this)" id="classified"> Download CSV </button>
+			<a href="/newReport?type=classified&height=600&width=800" class="btn btn-sm btn-default thickbox" onclick = "addURLNoCSV(this)">Updated Report</a>
+  			</div>
+  </caption>
+  <thead>
+    <tr>
+      <th>
+        CLID
+      </th>     
+      <th>
+        Account Number
+      </th>
+      <th>
+        Actual Hours
+      </th>
+      <th>
+        Billing Hours
+      </th>
+      <th>
+        Name
+      </th>
+      <th>
+      </th>
+    </tr>
+  </thead>
+  <tbody>      
+<% @classifiedUserRows.each do |u, monthHours| %>
+	<%if !u.blank? %>
+	<%monthHours.each do |acct_number, hours| %>
+      <tr>
+        <td>
+          <%= u.email.split("@")[0] %>
+        </td>     
+        <td>
+			<%=acct_number%>
+        </td>   
+        <td>          
+          <%= hours[0] %>
+        </td>
+        <td>        
+        	<span>
+        	<%=hours[1]%>
+        	</span>
+          <div style="width:100%;">
+              <%=text_field_tag "hours",hours[1], :style => "width:80px;display:none", :class => "inlineEdit" %>            
+            </div>
+        </td>
+      
+      
+        <td>
+          <%=u.name %>
+        </td>
+     
+     
+        <td>
+          <img src="/assets/pensil.ico" alt="edit" style="width:18px;cursor:pointer;" class="pencil" onclick="$(this).parent().find('img.save').show();$(this).hide();$(this).parent().prev().prev().find('div').find('input').show();$(this).parent().prev().prev().find('span').hide();"  onclick1="showHoursPopup()" />
+          <%=hidden_field_tag "user", u.id,:id => "userId", :class => "userId" %>
+          <%=hidden_field_tag "project", hours[2] ,:id => "projectId", :class => "projectId" %>          
+          <img src="/assets/save.ico" alt="edit" style="width:18px;display:none;cursor:pointer;" class="save" onclick="saveHours($(this));"  />
+        </td>
+      </tr>    
+      <%end%>
+    <% end %>
+ <%end%> 
+  </tbody>
+</table>
+  </fieldset>
+<div style="clear:both"></div>
+ 
+ 
+<%if !@unclassifiedUserRows.blank?%>
+<div>
+<fieldset style="width:50%">
+<legend><h4>Unclassified Users </h4></legend>
+<table class="table table-striped table-bordered pull-left">
+  <caption><div class="btn-group btn-group pull-right">	
+	<button class="btn btn-sm btn-default ts_csv" onclick="tsReportCSV(this)" id="unclassified"> Download CSV </button>
+	<a href="/newReport?type=unclassified&height=600&width=800" class="btn btn-sm btn-default thickbox" onclick="addURLNoCSV(this)">Updated Report</a>
+	</div></caption>
+  <thead>
+    <tr>
+      <th>
+        CLID
+      </th>              
+      <th>
+        Account Number
+      </th>
+      <th>
+        Actual Hours
+      </th>
+      <th>
+        Billing Hours
+      </th>
+      <th>
+        Name
+      </th>
+      <th>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+<% @unclassifiedUserRows.each do |u, monthHours| %>
+	<%if u.blank? %>
+		<tr> yo</tr>
+	
+	<%else%>
+	<%monthHours.each do |acct_number, hours| %>
+      <tr>
+        <td>
+          <%= u.email.split("@")[0] %>
+        </td>     
+        <td>
+			<%=acct_number%>
+        </td>   
+        <td>          
+          <%= hours[0] %>
+        </td>
+        <td>        
+        	<span>
+        	<%=hours[1]%>
+        	</span>
+          <div style="width:100%;">
+              <%=text_field_tag "hours",hours[1], :style => "width:80px;display:none", :class => "inlineEdit" %>            
+            </div>
+        </td>
+      
+      
+        <td>
+          <%=u.name %>
+        </td>
+     
+     
+        <td>
+          <img src="/assets/pensil.ico" alt="edit" style="width:18px;cursor:pointer;" class="pencil" onclick="$(this).parent().find('img.save').show();$(this).hide();$(this).parent().prev().prev().find('div').find('input').show();$(this).parent().prev().prev().find('span').hide();"  onclick1="showHoursPopup()" />
+          <%=hidden_field_tag "user", u.id,:id => "userId", :class => "userId" %>
+          <%=hidden_field_tag "project", hours[2] ,:id => "projectId", :class => "projectId" %>          
+          <img src="/assets/save.ico" alt="edit" style="width:18px;display:none;cursor:pointer;" class="save" onclick="saveHours($(this));"  />
+        </td>
+      </tr>    
+      <%end%>
+    <% end %>
+ <%end%> 
+  </tbody>
+</table>
+  </fieldset>
+  </div>
+<% end %>
+
+
+</div>  
+<%end%>
+
+ <%if @user.manager%> 
+<h4>GA Reports</h4>
+<% if !@submitted_reports.empty?%>
+<table class="table table-striped table-bordered" style="width:50%">
+  <thead>
+    <tr>
+      <th>
+        Name
+      </th>
+      <th>
+        Report Action
+      </th>
+    </tr>
+  </thead>
+  <tbody>    
+  <% @submitted_reports.each do |u| %>    
+      <tr>
+        <td>
+          <%= User.find(u.report_for).name %>
+        </td>        
+       <% if u.visited == false %>
+          <td style="background-color:yellow">
+            <%= link_to "Verify Report", "/verify_report?rid="+u.id.to_s %>
+          </td>
+        <% else %>
+           <td>
+            <%= link_to "Verify Report", "/verify_report?rid="+u.id.to_s %>
+          </td>
+        <% end %>
+      </tr> 
+  <% end %>
+    </tbody>
+</table>
+<% else %>
+    <div class="panel panel-default panelInfo">
+    <div class="panel-body"><p>You have no Submitted Reports to sign currently.</p> </div>
+ 	</div>
+<%end%>
+<p> GAs who have not submitted reports this month - </p>
+<%@missing_report.each do |m|%>
+ 	<label><%= m.last_name + ', ' + m.first_name%> </label> <input class="btn btn-info" type="button" value="sendReminder" onclick="sendReminder(this.id)" id=<%=m.id%> ></input> <br />
+ <%end%>
+<%end%>
+
+
+
+<script>
+
+  function sendReminder(id){                            
+    $.ajax({
+                type: 'GET',
+                url: '/sendReportReminder?id='+id,                
+                success: function(){                  
+                  alert("Reminder has been sent successfully");
+                }
+      });
+  }
+  
+  function showHoursPopup(){
+    thisObj = $(this);    
+    hours = thisObj.parent().prev().prev().find("div").find("input").val();
+    userId = thisObj.parent().find("input.userId").val();
+    projectId = thisObj.parent().find("input.projectId").val();
+   /* new Messi('<div><input type="text" name="hours" id="project_hours" style="width:50%;padding-left:50px;" /><input type="hidden" name="projectId" value="'+projectId+'" /><input type="hidden" name="userId" value="'+userId+'" /> <input type="hidden" name="userId" value="'+userId+'" /> <br/><br/><button class="btn btn-info pull-right" onclick="RejectReportWithComment(this)" >Update Hours</button> </div>', {title: 'Hours'}); */
+  }
+  
+  
+  
+  function saveHours(thisObj){
+    thisObj.parent().find('img.pencil').show();        
+    thisObj.hide();    
+    input = thisObj.parent().prev().prev().find('div').find('input');
+    input.hide();
+    span = thisObj.parent().prev().prev().find('span');
+    span.show();
+    span.html(input.val());
+    hours = thisObj.parent().prev().prev().find("div").find("input").val();
+    userId = thisObj.parent().find("input.userId").val();
+    projectId = thisObj.parent().find("input.projectId").val();
+    month = $("#month").val();
+    year = $("#year").val();
+    dataStr = "hours="+hours+"&user="+userId+"&projectId="+projectId+"&month="+month+"&year="+year;
+    console.log(dataStr);
+    $.ajax({
+                type: 'POST',
+                url: '/saveModifiedHours',
+                data : "hours="+hours+"&user="+userId+"&projectId="+projectId+"&month="+month+"&year="+year,
+                success: function(dt){                  
+                  alert(dt);
+                }
+            });
+  }
+  
+</script>

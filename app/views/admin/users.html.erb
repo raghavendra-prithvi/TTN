@@ -1,0 +1,1404 @@
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>	
+<div class="row"><div class="col-xs-12">
+<div class="usersTable">
+<form role="dayform" id="dayForm">
+<div class="scrollT">
+<div class="form-group">
+
+<table id="myTable" class="table table-striped table-bordered table-condensed tablesorter" >
+<caption class="text-left">Users</caption>  
+  <thead>
+    <tr>
+      <th>
+        Last Name
+      </th>
+            <th>
+        First Name
+      </th>
+
+      <th>
+        Email
+      </th>
+      <th>
+        Reporter        
+      </th>
+      <th>
+        Employee Type
+      </th>
+      <%if !@viewOnly%>
+      <th>
+      </th><%end%>
+      <%if @time_sheet_lock %>
+      <th> 
+      Time Input <br /><button type="button" class="btn btn-danger btn-sm lock_all_users" value="lock">Lock</button>
+<button type="button" class="btn btn-success btn-sm unlock_all_users" value="unlock">Unlock</button> </th>
+<th>
+ Previous Month<br />
+ <button type="button" class="btn btn-danger btn-sm lock_all_prev_month" value="lock">Lock</button>
+<button type="button" class="btn btn-success btn-sm unlock_all_prev_month" value="unlock">Unlock </button>
+</th>
+
+      </th>
+      <%end%>
+    </tr>
+  </thead>
+<tbody>
+
+<% @users.each do |u| %>
+    <tr>
+      <td>
+        <span class="hidden"><%=u.last_name%></span><input id="last_name<%=u.id%>" name="last_name" type="text" placeholder="Last Name" disabled="true" class="name today form-control" value=<%=u.last_name %>  ></input>
+      </td>
+            <td>
+        <span class="hidden"><%=u.first_name%></span><input id="first_name<%=u.id%>" name="first_name" type="text" placeholder="First Name" disabled="true" class="name today form-control" value=<%=u.first_name%>  ></input>  
+              <input id="userId" name="Id" type="hidden" disabled="true" class="today form-control" value=<%=u.id%>  />
+
+      </td>
+
+      <td>
+      	<% email = u.email %>
+      	<% email.slice! "@louisiana.edu" %>
+        <span class="hidden"><%=u.email%></span><input id="email<%=u.id%>" name="email" type="text" placeholder="CLID" disabled="true" class="email today form-control" value='<%=u.email%>'  />
+      </td>
+      <td>
+      	<select class="reporter" id="reporter<%=u.id.to_s%>" disabled>
+      	<option value="">Please Select</option>
+      	<%@selectArrayReporter.each do |manager|%>
+      		<option value="<%=manager.id%>" <%if manager.id == u.reporter%> selected <%end%>> <%=manager.last_name%>, <%=manager.first_name%></option>
+      	<%end%>
+      	</select>
+      </td>
+      <td>
+        <% selectArray = ["","GA","Classified","Unclassified"] %>
+        <%= select_tag 'project', options_for_select(selectArray,u.role), :disabled => true, :class => "role", :id => "role" + u.id.to_s%>        
+      </td>
+      <%if !@viewOnly%><td><div class="<%if !@user.time_sheet_manager%>pull-left <%end%>"><%if @permissions['edit_users']%><input type="button" class="btn btn-sm btn-success save-btn update-project-btn" id="<%=u.id%>" value="Edit" ></input><%end%>
+      <%if @permissions['remove_users'] && u.id != @user.id%><input type="button" class="btn btn-sm btn-warning user-disable" id="<%=u.id%>" value="Archive"></input>
+      									 <% if u.allow_delete%><input type="button" class="btn btn-sm btn-danger user-delete" id="<%=u.id%>" value="Delete"></input><%end%><%end%></div>
+     <%if @permissions['edit_users']%><div <% if !@time_sheet_lock%>class="pull-right"<%end%>><input type="button" class=" btn btn-sm btn-primary edit_permissions <%if !@time_sheet_lock%>toggle_css<%end%>" id="<%=u.id%>" value="Roles<%if !@time_sheet_lock%>/Permissions<%end%>" <%if u.role == 'GA'%> style="display:none"<%end%>></input></div><%end%></td><%end%>
+	<% if @time_sheet_lock %> 
+		<td> 
+			<button type="button" class="btn btn-sm btn-danger lock_user" id="<%=u.id%>" <%if u.locked %> style="display:none" <%end%> value="lock">Lock</button>
+			<button type="button" class="btn btn-sm btn-success unlock_user" id="<%=u.id%>" <%if !u.locked %> style="display:none" <%end%> value="unlock">Unlock</button>
+		</td>
+		<td>
+				 	<button type="button" class="btn btn-sm btn-danger lock_user_prev_month" id="<%=u.id%>" <%if u.prev_month_locked %> style="display:none" <%end%> value="lock">Lock</button>
+		 	<button type="button" class="btn btn-sm btn-success unlock_user_prev_month" id="<%=u.id%>" <%if !u.prev_month_locked %> style="display:none" <%end%> value="unlock">Unlock</button>
+		</td>
+	<%end%>
+  </tr>
+<% end %>
+  </tbody>
+</table>
+<%if !@viewOnly%>
+  <%if !@clients.blank? %>
+<table id="myTable" class="table table-striped table-bordered table-condensed tablesorter" >
+<caption class="text-left">Clients</caption>  
+  <thead>
+    <tr>
+      <th>
+        Last Name
+      </th>
+            <th>
+        First Name
+      </th>
+
+      <th>
+        Email
+      </th>
+    <%if !@viewOnly%>  <th colspan=2>
+      </th><%end%>
+    </tr>
+  </thead>
+<% @clients.each do |u| %>
+<tbody>
+    <tr>
+      <td>
+        <input id="last_name" name="last_name" type="text" placeholder="Last Name" disabled="true" class=" clientLN<%=u.id%> name today form-control" value=<%=u.last_name %>  ></input>
+      </td>
+      <td>
+         <input id="first_name" name="first_name" type="text" placeholder="First Name" disabled="true" class=" clientFN<%=u.id%> name today form-control" value=<%=u.first_name%>  ></input>  
+      </td>
+      <td>
+        <span class="hidden"><%=u.email%></span><input id="email" name="email" type="text" placeholder="CLID" disabled="true" class=" clientE<%=u.id%> email today form-control" value=<%=u.email%>  />
+      </td>
+   <td><%if @permissions['edit_users']%>  <input type="button" class="btn btn-sm btn-success save-btn client-update-project-btn" id="<%=u.id%>" value="Edit" ></input>
+      <%if @permissions['remove_users']%><input type="button" class="btn btn-sm btn-warning user-disable" id="<%=u.id%>" value="Archive" onclick="deleteUsers()"></input>
+      									 <%if u.allow_delete%><input type="button" class="btn btn-sm btn-danger user-delete" id="<%=u.id%>" value="Delete"></input><%end%><%end%></td><%end%>
+  </tr>
+  </tbody>
+<%end%>
+</table>
+<% end %>
+
+<%end%>
+
+
+<!-- Archived Users List --!>
+  <%if !@disabled_users.blank? %>
+<table id="myTable" class="table table-striped table-bordered table-condensed tablesorter" >
+<caption class="text-left">Archived Users</caption>  
+  <thead>
+    <tr>
+      <th>
+        Last Name
+      </th>
+      <th>
+        First Name
+      </th>
+      <th>
+        Email
+      </th>
+      <th>
+      Role
+      </th>
+      <th>
+      </th>
+    </tr>
+  </thead>
+<tbody>
+<% @disabled_users.each do |u| %>
+    <tr>
+      <td>
+      	<%=u.last_name %>  
+      </td>
+            <td>
+     <%=u.first_name%>  
+      </td>
+
+      <td>
+        <%=u.email%> 
+      </td>
+            <td>
+       <%=u.role%>
+      </td>
+
+     <td> <%if @permissions['remove_users']%><input type="button" class="btn btn-sm btn-success user-enable" id="<%=u.id%>" value="Enable"></input>
+      									 <%end%></td>
+  
+  </tr>
+<% end %>
+  </tbody>
+</table>
+<%end%>
+
+
+
+</div>
+</div>
+</form>
+</div> <!-- end of rendered users_table--!>
+</div>
+</div>
+
+
+<div id="edit_permissions">
+<div class="row-fluid">
+
+<div class="col-xs-6"> 
+	<b>Roles</b>
+<div class="scrollingSection">
+<div class="custom_role_elements">
+<% @customRoles.each do |cr|%>
+<div class="custom_role_holder" id="<%=cr.id%>">
+<div class="col-xs-12">
+<div class="hide_role_edit">
+	<div class="checkbox">
+    <label>
+      <input type="checkbox" id="<%=cr.id%>" class="custom_role"> <%=cr.role_name%>
+    </label>
+    <p style="text-indent: 5px;"><%=cr.description%> <br /> <br />
+    <label>Role Ranking</label> <%=cr.ranking%><br />
+
+<br /><% if !@listOfRoles.include?(CustomRole.find(cr.id).role_name) %>
+        <button class="delete_custom_role btn btn-sm btn-danger" id="<%=cr.id%>">Delete</button>
+<%end%>
+    <button class="hide_role_edit edit_custom_role btn btn-sm btn-primary" id="<%=cr.id%>">Edit</button>
+    </p> </div>
+</div>
+	<div class="hide_role_save" id="<%=cr.id%>">
+	<label>Role Name</label> <br />
+<% if !@listOfRoles.include?(CustomRole.find(cr.id).role_name) %>
+		<input type="text" class="new_role_name" id="<%=cr.id%>" value="<%=cr.role_name%>"></input>
+<%else%>	
+		<input type="text" class="new_role_name" id="<%=cr.id%>" value="<%=cr.role_name%>" disabled></input>
+<%end%>		
+<br />
+		<label> Role Description</label>   <br />  <textarea id="<%=cr.id%>" class="new_role_description" maxlength="200"><%=cr.description%></textarea> <br />
+        <label>Role Ranking</label><input class="new_ranking" id='<%=cr.id%>'" value=<%=cr.ranking%>></input>
+		
+	    <button type="button" class="hide_role_save save_custom_role btn btn-sm btn-primary" id="<%=cr.id%>">Save</button>
+	    <button type="button" class="hide_role_save back_custom_role btn btn-sm btn-danger" id="<%=cr.id%>">Back</button>		
+
+	</div>
+
+
+</div>     
+</div>
+<%end%>
+</div>
+	<div class="new_role_input"></div>
+</div>
+		<button class="pull-left btn btn-success create_new_role">Create New Role</button>
+		<button class="pull-left btn btn-success save_new_role">Save New Role</button>
+		<button class="pull-left btn btn-danger back_from_create">Back</button>
+</div>
+<div class="col-xs-6"> <!--User Permissions-->
+	<b>Permissions</b>
+<div class="scrollingSection">
+	
+	<div class='permissions_checkboxes'>
+
+    <div class="col-xs-12 holder">
+    <div class="checkbox">
+    <label>
+      <div class="checkGroupAll"><input type="checkbox" id="allCheck"  class="all_access"> All Access </div>
+    </label>
+  </div>
+</div>
+<div class="col-xs-12">Activate/Deactivate Projects</div>
+    <div class="col-xs-6 holder">
+    <div class="checkbox">
+    <label>
+		<input type="checkbox" id="allCheck"  class="activate_all_projects"> All
+    </label>
+  </div>
+  </div>
+<div class="col-xs-6 holder">
+    <div class="checkbox">
+    <label>
+		<input type="checkbox" id="managed" class="activate_managed_projects"> Managed
+    </label>
+  </div>
+  
+  
+</div>
+<div class="col-xs-12">Archive Projects</div>
+<div class="col-xs-6 holder">
+    <div class="checkbox">
+    <label>
+    	<input type="checkbox" id="allCheck"  class="archive_all_projects"> All 
+    </label>
+  </div>
+  </div>
+  <div class="col-xs-6 holder">
+    <div class="checkbox ">
+    <label>
+    	<input type="checkbox" id="managed" class="archive_managed_projects"> Managed 
+    </label>
+  </div>
+  </div>
+<div class="col-xs-12 ">Assign Users to Projects</div>
+<div class="col-xs-6 holder">
+    <div class="checkbox">
+    <label>
+    	<input type="checkbox" id="allCheck" class="assign_users_all_projects"> All 
+    </label>
+  </div>
+  </div>
+  <div class="col-xs-6 holder">
+    <div class="checkbox ">
+    <label>
+    	<input type="checkbox" id="managed" class="assign_users_managed_projects"> Managed 
+    </label>
+  </div>
+  </div>
+<div class="col-xs-12 holder">
+    <div class="checkbox">
+    <label>
+    	<input type="checkbox" id="projectDestroyCreate" class="create_projects"> Create Projects 
+    </label>
+  </div>
+  </div>
+<div class="col-xs-12 holder">
+    <div class="checkbox">
+    <label>
+    	<input type="checkbox" id="projectDestroyCreate" class="edit_projects"> Edit Projects 
+    </label>
+  </div>
+  </div>
+
+  </div> <!-- permissions_checkboxes-->
+<div class="user_admin_checkboxes">
+<div class="col-xs-12 holder">
+    <div class="checkbox">
+    <label>
+    	<input type="checkbox" id="" class="edit_users"> Edit Users 
+    </label>
+  </div>
+  </div>
+<!-- <div class="col-xs-12 holder">
+    <div class="checkbox">
+    <label>
+    	<input type="checkbox" id="" class="add_users"> Add Users 
+    </label>
+  </div>
+</div> --!>
+<div class="col-xs-12 holder">
+    <div class="checkbox">
+    <label>
+    	<input type="checkbox" id="" class="remove_users"> Remove Users 
+    </label>
+  </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+</div>
+</div>
+
+<style>
+.email{
+	box-sizing: border-box;
+	width: 120px !important;
+	height: 25px !important;
+	padding:0;
+	margin:0 !important;
+}
+
+.name{
+	box-sizing: border-box;
+	width: 200px !important;
+	height: 25px !important;
+	padding:0;
+	margin:0 !important;
+}
+
+.role{
+	height:25px !important;
+	width:150px;
+	padding: 0;
+}
+
+.reporter{
+	height:25px !important;
+	width:200px;
+	padding: 0;
+}
+.scrollT {
+overflow:auto;
+height:100%;
+padding-bottom:5px;
+margin-top:0px;
+}
+
+.btn{
+   width:50px !important;
+   	padding:0;
+	margin:0 !important;
+	height:25px !important;
+}
+
+.btn.toggle_css {
+	width: 120px !important;
+	margin-left: 5px !important;
+}
+
+.btn.create_new_role, .btn.save_new_role {
+	width: 140px !important;
+
+}
+
+
+
+.pTableBtn{
+	width:139px !important;
+	text-align:left;
+	height: 40px !important;
+}
+.pTableInfo{
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
+}
+.project {
+
+}
+
+table {
+width:auto !important;
+}
+
+
+th {
+padding:3px !important;
+font-weight:normal !important;
+}
+
+td {
+padding:3px !important;
+text-align:center !important;
+
+}
+
+
+.cellClick {
+	cursor:default;
+	width:141px !important;
+	padding:0px !important;
+	text-align:left !important;	
+}
+
+
+
+.cellTotal {
+	float:right;
+	vertical-align:bottom !important;
+	border:solid;
+}
+
+.datepicker {
+
+   	width:90px;
+   	padding:0;
+	margin:0;
+	height:25px;
+
+}
+
+.scrollingSection {
+	overflow:auto;
+	height: 515px;
+	padding-bottom:0px;
+	margin-top:0px;
+	margin-bottom:0px !important;
+	width: auto;
+}	
+
+textarea {
+	width: 100% !important;
+	height: 105px !important;
+	margin-bottom: 5px !important;
+}
+.latest_role_name {
+	width: 100% !important;
+}
+.new_ranking, .latest_ranking {
+	width: 50px !important;
+}
+
+.unlock_user_prev_month, .lock_user, .lock_user_prev_month, 
+.unlock_user{
+	height: 100% !important;
+	width:105px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	
+}
+
+.lock_all_users, .unlock_all_users, .unlock_all_prev_month,
+.lock_all_prev_month {
+	height: 18px !important;
+}
+
+</style>
+<script>
+
+ $(document).ready(function(){
+ 	var dHeight = 682;
+	var dWidth = 1000;
+	var dPosition = [0, 0];
+	var userPermissions = [];
+	var role_user_id;
+	var prevRoleRank = 0;
+	var prevRoleId;
+	var custom_role_open= false;
+
+	
+	//Set Mapping for permissions allowed to user roles
+	var rolePermissionSet = {};
+
+
+	
+	
+	var customRolePermissionSet = {};
+
+	function loadUserTable() {
+	
+    	$.ajax({
+        	url: '/users_table',
+          	type: 'GET',
+          	success: function(table) {
+          		$(".usersTable").html(table);
+          	}
+          });	
+	}	
+
+$('body').on('click', '.update-project-btn', function(){
+    	input =  $(this);
+        var user_id = input.attr('id');
+        var roleSelect = $('#role' + user_id);
+        var reporterSelect = $('#reporter' + user_id);
+        var emailInput = $('#email' + user_id);
+        var firstNameInput = $('#first_name' + user_id);
+        var lastNameInput = $('#last_name' + user_id);
+        
+        if(input.attr('value') == "Edit"){
+          input.attr('value', "Update");
+          //time_sheet_manager.attr('disabled',false);
+          //manager.attr('disabled',false);
+          roleSelect.attr('disabled',false);
+          emailInput.attr('disabled',false);
+          firstNameInput.attr('disabled',false);
+          lastNameInput.attr('disabled',false);
+          reporterSelect.attr('disabled',false);
+        }
+        else{
+          dataStr = "first_name=" + firstNameInput.val() + "&last_name=" + lastNameInput.val() + "&email=" + emailInput.val() + "&role=" + roleSelect.val() + "&id="+ user_id+"&reporter="+reporterSelect.val();// + "&manager="+manager.prop("checked") +"&time_sheet_manager="+time_sheet_manager.prop("checked") ;
+          console.log(dataStr);
+          $.ajax({
+              method: 'POST',
+              url: '/updateUser',
+              data : dataStr,
+              success: function(dt){
+                alert(dt);
+                //time_sheet_manager.attr('disabled',true);
+               // manager.attr('disabled',true);
+                /*roleSelect.attr('disabled',true);
+                emailInput.attr('disabled',true);
+                firstNameInput.attr('disabled',true);
+                lastNameInput.attr('disabled',true);
+                reporterSelect.attr('disabled',true);
+                input.attr('value','Edit');*/
+                loadUserTable();
+              }
+          });
+        }
+      });
+
+  
+ 
+      
+      
+      //$('body').on('.client-update-project-btn', 'click', function() {
+     $('.client-update-project-btn').click(function(){
+      	var input = $(this);
+		var id = input.attr('id');
+        var email = $('.clientE' + id);
+        var first_name = $('.clientFN' + id);
+        var last_name = $('.clientLN' + id);
+        if(input.attr('value') == "Edit"){
+          input.attr('value', "Update");
+          email.attr('disabled',false);
+          first_name.attr('disabled',false);
+          last_name.attr('disabled',false);
+        }
+        else{
+          dataStr = "first_name=" + first_name.val() + "&last_name=" + last_name.val() + "&email=" + email.val() + "&id="+ id;
+          console.log(dataStr);
+          $.ajax({
+              method: 'POST',
+              url: '/updateUser',
+              data : dataStr,
+              success: function(dt){
+                alert(dt);
+                email.attr('disabled', true);
+                first_name.attr('disabled',true);
+                last_name.attr('disabled',true);
+                input.attr('value','Edit');
+				loadUserTable();
+              }
+          });
+        
+        }
+      
+      });
+      
+      $('body').on('click', '.user-delete', function() {
+          if (confirm('Are you sure you want to delete this client from Effort Tracker? This cannot be undone.')){
+          var input = $(this);
+		  var id = input.attr('id');
+          $.ajax({
+              method: 'GET',
+              url: '/delete_user',
+              data : {'user_id' : id} ,
+              success: function(dt){
+                alert('User successfully removed from Effort Tracker.');
+				loadUserTable();
+              }
+          });
+          }
+      });
+      
+        $('body').on('click', '.user-disable', function() {
+          if (confirm('Are you sure you want to disable this user from using Effort Tracker?')){
+          var input = $(this);
+		  var id = input.attr('id');
+          $.ajax({
+              method: 'GET',
+              url: '/disable_user',
+              data : {'user_id' : id},
+              success: function(dataHash){
+              	if (dataHash.disabled) {
+                	alert('User successfully disabled from using Effort Tracker.');
+           			loadUserTable();
+           			//window.location.href = "/admin/users";
+                }
+        
+              }
+          });
+          
+          }
+
+      
+      });
+      
+   $('body').on('click', '.user-enable', function() {
+          if (confirm('Are you sure you want to enable this user to use Effort Tracker?')){
+          var input = $(this);
+		  var id = input.attr('id');
+          $.ajax({
+              method: 'GET',
+              url: '/enable_user',
+              data : {'user_id' : id},
+              success: function(dataHash){
+              	if (dataHash.enabled) {
+                	alert('User successfully enabled.');
+           			loadUserTable();
+           			//window.location.href = "/admin/users";
+                }
+      
+              }
+          });
+          
+          }
+
+      
+      });
+      
+
+
+// Jquery Dialog, opens permission/ role editor    
+  $( "#edit_permissions" ).dialog({
+      autoOpen: false,
+      height: dHeight,
+      width: dWidth,
+      positon: dPosition,
+      modal: true,
+          minHeight: 700,
+
+      buttons: {
+      
+      
+        "Revert": function() {
+  		dataStr = 'uid=' + role_user_id;
+    	$.ajax({	
+    		url: '/get_user_permissions',
+    		data: dataStr,
+    		method: 'GET',
+    		async: false,
+    		success: function(user_info) {
+
+    			clearCheckboxes();
+    			/*
+    			$.each(user_info.permissions, function(permission, value) {
+    				if (value == true) {
+    					$('.' + permission).prop('checked', true);
+    				}
+    				else {
+    					$('.' + permission).prop('checked', false);
+    				}    			
+    			});
+    			*/
+    	    	$.each(user_info.roles, function(index, role) {
+   					$('#'+role+'.custom_role').click();
+    			});
+    			}
+    });	
+        
+        },
+
+        "Save": function(e) {
+        	if (custom_role_open) {
+        		alert('Please save or back out of Role Editor');
+        		e.preventDefault();
+        	
+        	}
+        	else {
+        	var dataString = "";
+        	permissions = [];
+        	$('.permissions_checkboxes input[type=checkbox]:checked').each(function() {
+        		var permissionName = $(this).attr('class');
+        	//	dataString += permissionName + '=true&';
+        		permissions.push(permissionName);
+        	});
+        	$('.user_admin_checkboxes input[type=checkbox]:checked').each(function() {
+        		var permissionName = $(this).attr('class');
+        		dataString += permissionName + '=true&';
+        		permissions.push(permissionName);
+        	});
+
+        	var roles = [];
+        	
+        	$('.custom_role_elements input:checked').each(function(index, value) {
+        		if (index == 0) {
+        			dataString += '&roles=';
+        		}
+        		var roleName = $(this).attr('class');
+        		var roleId = $(this).attr('id');
+        		dataString += roleName + ',';
+        		roles.push(roleId);
+        	});
+        	
+        	dataString += '&user_id=' + role_user_id;
+			$.ajax({
+				url: '/editUserPermissions',
+				method: 'GET',
+				data: {'roles': roles, 'permissions': permissions, 'user_id': role_user_id},
+				success: function(data) {
+					if (data == "success") {
+						alert('User Permissions and Roles successfully Edited');
+						}
+				}
+			});
+			loadUserTable();
+			$(this).dialog('close');
+        }
+        }
+      	
+      }
+      
+    });
+    
+   $('body').on('click',  '.edit_permissions',function() {
+    	role_user_id = $(this).attr('id');
+    	dataStr = 'uid=' + role_user_id;
+    	$.ajax({	
+    		url: '/get_user_permissions',
+    		data: dataStr,
+    		method: 'GET',
+    		async: false,
+    		success: function(user_info) {
+
+    			clearCheckboxes();
+    			
+    			$('.ui-dialog-title').html('Role Editor / Assign ' + user_info.name + "'s Roles");
+
+				console.log(user_info);
+				
+    		/*	$.each(user_info.permissions, function(permission, value) {
+    				if (value == true) {
+    					$('.' + permission).prop('checked', true);
+    				}
+    				else {
+    					$('.' + permission).prop('checked', false);
+    				}    			
+    			});
+    			*/
+    			$.each(user_info.roles, function(index, role) {
+   					$('#'+role+'.custom_role').click();
+    			});
+    			}
+    });			
+              	$('#edit_permissions').dialog('open');
+   });
+//-----------------------------
+
+// Set actions of checkboxes when clicked
+   function processClicks(classStr, thisCheckedValue) {
+   		$(classStr).each( function(ind, value) {
+   			value = '.' + value;
+			$(value).prop('checked', thisCheckedValue);
+			if ($(value).attr('id') == 'managed') {
+				$(value).closest('.holder').prev().find('input#allCheck').prop('checked', false);
+			}
+			else if ($(value).attr('id') == 'allCheck') {
+				if ($(value).hasClass('all_access')) {
+					allAccessClick($(value));
+				}
+				else {
+					$(value).closest('.holder').next().find('input#managed').prop('checked', false);
+				}
+			}
+		});   
+   }
+   
+function allAccessClick(elem) {
+	if (elem.prop('checked')) {
+   		$('input#allCheck').prop('checked', true);
+   		$('input#allCheck').closest('.holder').next().find('input#managed').prop('checked', false);
+   		$('input#projectDestroyCreate').prop('checked', true);
+   	}
+   	else {
+   		$('.permissions_checkboxes input[type=checkbox]').prop('checked', false);
+   		$('#projectDestroyCreate').prop('checked', false);
+   	}
+   	}
+   	
+$('body').on('click', '.all_access', function() {
+   	allAccessClick($(this));
+   });
+   
+function nextToHighestRankingRole() {
+   	firstRoleId = '';
+   	firstRoleRank = 0;
+   	$('.custom_role_elements input:checked').each( function() {
+   		var roleId = $(this).attr('id');
+		//var classStr = rolePermissionSet[roleName][0];
+		arrayLength = rolePermissionSet[roleId].length;
+		var roleRank = rolePermissionSet[roleId][arrayLength - 1];
+		if (roleRank >= firstRoleRank) {
+			firstRoleRank = roleRank;
+			firstRoleId = roleId;
+		}
+   	});	
+   	return firstRoleId;	
+   }
+   
+
+
+$('input#managed').click(function() {
+   		$(this).closest('.holder').prev().find('input#allCheck').prop('checked', false);
+   });
+$('input#allCheck').click(function() {
+   		$(this).closest('.holder').next().find('input#managed').prop('checked', false);
+   });   
+//-----------------------------
+
+// GA's do not have user permissions
+	$('body').on('change', '.role', function() {
+		if ($(this).val() == 'GA') {
+			$(this).parent().next().find('.edit_permissions').hide();	
+		}
+		else {
+			$(this).parent().next().find('.edit_permissions').show();
+		}
+	});
+//-------------
+	
+// Users are not allowed to be tsmanager and tscollab
+	$('.time_sheet_manager').click(function() {
+		if ($('.time_sheet_collaborator').prop('checked') && $(this).prop('checked')) {
+			$('.time_sheet_collaborator').prop('checked', false);
+		}
+	});
+
+	
+	$('.time_sheet_collaborator').click(function() {
+		if ($('.time_sheet_manager').prop('checked') && $(this).prop('checked')) {
+			$('.time_sheet_manager').prop('checked', false);
+		}
+	});
+//---------------------------
+	
+// Custom Role Editing
+	$('body').on('click', '.edit_custom_role', function() {
+		custom_role_open = true;
+		var role_id = $(this).attr('id');
+		$(this).hide();
+		$('.hide_role_save').show();
+		$('.hide_role_edit').hide();
+		$('.create_new_role').hide();
+		//$('.custom_role#' + role_id).hide();
+		
+		unlockCheckboxes();
+
+		$('.custom_role_holder:not(.custom_role_holder#' + role_id + ')').hide();
+		$('.user_roles').hide();
+		
+		$.ajax({
+			url: '/get_custom_role_permissions',
+			method: 'GET',
+			data: 'role_id=' + role_id,
+    		success: function(user_info) {
+
+				clearCheckboxes();
+									
+    			$.each(user_info.permissions, function(permission, value) {
+    				
+    				if (value == true) {
+    			
+    					$('.' + permission).prop('checked', true);
+    				}
+    				else {
+    					$('.' + permission).prop('checked', false);
+    				}    			
+    			});
+
+    			}
+		});
+
+	});
+	
+	$('body').on('click', '.back_custom_role', function() {
+			custom_role_open= false;
+			$('.hide_role_save').hide();
+			$('.hide_role_edit').show();
+			$('.create_new_role').show();
+			$('.custom_role_holder').show();
+			$('.user_roles').show();
+			loadCustomRoles();
+			loadUserRoles();	
+	});
+	
+	$('body').on('click', '.save_custom_role', function() {
+		var role_id = $(this).attr('id');
+		var new_name = $('#'+role_id+'.new_role_name').val();
+		var new_descript =  $('#'+role_id+'.new_role_description').val();
+		var new_ranking = $('#'+role_id+'.new_ranking').val();
+		$('.hide_role_save').hide();
+		$('.hide_role_edit').show();
+				$('.create_new_role').show();
+		$('.custom_role_holder').show();
+		$('.user_roles').show();
+			dataStr = 'role_id=' + role_id;
+			
+        	$('.permissions_checkboxes input[type=checkbox]:checked').each(function() {
+        		var permissionName = $(this).attr('class');
+        		dataStr += '&' + permissionName + '=true';
+        	});
+        	$('.user_admin_checkboxes input[type=checkbox]:checked').each(function() {
+        		var permissionName = $(this).attr('class');
+        		dataStr += '&' + permissionName + '=true';
+        	});
+        	
+        	dataStr += '&role_name=' + new_name + '&description=' + new_descript + '&ranking=' + new_ranking;
+        	console.log(dataStr);
+        	$.ajax({
+				url: '/edit_custom_role',
+				method: 'GET',
+				data: dataStr,
+				success: function() {
+					alert('Custom Role Successfully Edited');
+					custom_role_open= false;
+					                loadUserTable();
+					loadCustomRoles();
+					loadUserRoles();	
+					
+				}
+			});
+	
+	});
+
+	$('body').on('click', '.delete_custom_role', function() {
+		var role_id = $(this).attr('id');
+	        	$.ajax({
+				url: '/delete_role',
+				method: 'GET',
+				data: 'role_id=' + role_id,
+				success: function() {
+					$('#'+role_id+'.custom_role_holder').remove();
+					alert('Custom Role Successfully Removed');
+				}
+			});
+	});
+//-----------------------------
+	
+	function loadUserRoles() {
+	
+  		dataStr = 'uid=' + role_user_id;
+    	$.ajax({	
+    		url: '/get_user_permissions',
+    		data: dataStr,
+    		method: 'GET',
+    		async: false,
+    		success: function(user_info) {
+
+    			clearCheckboxes();
+
+    	    	$.each(user_info.roles, function(index, role) {
+   					$('#'+role+'.custom_role').click();
+    			});
+    			}
+    });	
+	
+	
+	}
+	
+	
+// New Custom Role Creation
+	$('.create_new_role').click(function() {
+		clearCheckboxes();
+		$.ajax({
+			url: '/load_new_role',
+			method: 'GET',
+			success: function(htmlElement) {
+				$('.new_role_input').append(htmlElement);
+			}
+		});
+		$(this).hide();
+		$('.save_new_role').show();
+		$('.back_from_create').show();
+		$('.hide_role_edit').hide();
+		unlockCheckboxes();
+		
+		$('.custom_role_holder').hide();
+		$('.user_roles').hide();
+	
+		$('.permissions_checkboxes input[type=checkbox]:checked').each(function() {
+        		var permissionName = $(this).attr('class');
+        		dataStr += '&' + permissionName + '=true';
+        	});
+        	$('.user_admin_checkboxes input[type=checkbox]:checked').each(function() {
+        		var permissionName = $(this).attr('class');
+        		dataStr += '&' + permissionName + '=true';
+        	});
+        	
+       // 	dataStr += '&role_name=' + new_name + '&description=' + new_descript;
+        /*	
+        	$.ajax({
+				url: '/edit_custom_role',
+				method: 'GET',
+				data: dataStr,
+				success: function() {
+					alert('Custom Role Successfully Edited');
+					
+				}
+			});
+	*/
+	});
+
+	$('body').on('click', '.save_new_role', function() {
+      		var role_name = $('.latest_role_name').val();
+      		var role_descript = $('.latest_role_description').val();
+      		var rank = $('.latest_ranking').val();
+      		dataStr = 'role_name=' + role_name + '&description=' + role_descript + '&ranking=' + rank;
+        	$('.permissions_checkboxes input[type=checkbox]:checked').each(function() {
+        		var permissionName = $(this).attr('class');
+        		dataStr += '&' + permissionName + '=true';
+        	});
+        	$('.user_admin_checkboxes input[type=checkbox]:checked').each(function() {
+        		var permissionName = $(this).attr('class');
+        		dataStr += '&' + permissionName + '=true&';
+        	});
+      		$.ajax({	
+    			url: '/save_new_role',
+    			data: dataStr,
+    			method: 'GET',
+    			async: false,
+    			success: function(role) {
+    				alert('Role Successfully Saved');
+    				$('.destroy_new_input').remove();
+    				$('.back_from_create').hide();
+      			}
+      			
+      		});
+      		clearCheckboxes();
+      		loadCustomRoles();
+	
+	});
+
+
+// ----------------------------------------
+
+
+
+// Populates the Role list with Custom Roles
+	function loadCustomRoles() {
+		    $.ajax({
+      			url: '/load_custom_roles',
+      			method: 'GET',
+      			dataType: 'html',
+      			async: false,
+      			success: function(htmlData) {
+      					$('.custom_role_elements').empty();
+      					$('.custom_role_elements').append(htmlData);
+      				    $('.hide_role_save').hide();
+						$('.hide_role_edit').show();
+						$('.custom_role_holder').show();
+						$('.user_roles').show();
+						$('.destroy_new_input').remove();
+						$('.save_new_role').hide();
+						$('.back_from_create').hide();
+						$('.create_new_role').show();
+						lockCheckboxes();
+						},
+				failure: function(){
+              alert("There was an error getting data from the server.");
+            }
+      });
+	
+	}
+// ---------------------------------	
+
+
+// Populate the custom roles permissions
+	
+	$('body').on('click', '.custom_role_elements input:checkbox', function() {
+		getRoleHierarchy();
+
+		var thisCheckedValue = $(this).prop('checked');
+		role_id = $(this).attr('id');
+
+		var classStr = rolePermissionSet[role_id].slice(0, -1);
+		arrayLength = rolePermissionSet[role_id].length;
+		var roleRank = rolePermissionSet[role_id][arrayLength - 1];
+		//alert(thisCheckedValue);
+		processClicks(classStr, thisCheckedValue);
+	//	prevRoleRank = roleRank;
+	//	prevRoleId = role_id;
+
+
+		$('.custom_role_elements input:checked').each(function() {
+		var thisCheckedValue = $(this).prop('checked');
+		role_id = $(this).attr('id');
+
+		var classStr = rolePermissionSet[role_id].slice(0, -1);
+		arrayLength = rolePermissionSet[role_id].length;
+		var roleRank = rolePermissionSet[role_id][arrayLength - 1];
+		//alert(thisCheckedValue);
+		processClicks(classStr, thisCheckedValue);
+		prevRoleRank = roleRank;
+		prevRoleId = role_id;
+		});
+		
+		
+/*		if (thisCheckedValue == true && roleRank >= prevRoleRank) {
+			processClicks(classStr, thisCheckedValue);
+			prevRoleRank = roleRank;
+			prevRoleId = role_id;
+	}*/	
+	/*	else if (thisCheckedValue == false && nextToHighestRankingRole() != '') {
+			prevRoleId = nextToHighestRankingRole();
+			processClicks(classStr, false);
+			arrayLength = rolePermissionSet[prevRoleId].length;
+			prevRoleRank = rolePermissionSet[prevRoleId][arrayLength - 1];
+			classStr = rolePermissionSet[nextToHighestRankingRole()].slice(0, -1);
+			processClicks(classStr, true);
+		}
+		else if (thisCheckedValue == false && nextToHighestRankingRole() == '') {
+			processClicks(classStr, false);
+		}
+		*/
+		});
+		
+		/*$.ajax({
+			url: '/get_custom_role_permissions',
+			method: 'GET',
+			data: 'role_id=' + role_id,
+    		success: function(user_info) {
+
+    			$('.permissions_checkboxes input[type=checkbox]').prop('checked', false);
+				$('.user_admin_checkboxes input[type=checkbox]').prop('checked', false);
+				
+				
+					console.log(user_info.permissions);
+    			$.each(user_info.permissions, function(permission, value) {
+    				
+    				if (value == true) {
+    			
+    					$('.' + permission).prop('checked', true);
+    				}
+    				else {
+    					$('.' + permission).prop('checked', false);
+    				}    			
+    			});
+
+    			}
+		});
+	*/
+
+// ---------------------------------	
+	
+	
+// Functions for managing the Checkboxes
+
+	function unlockCheckboxes() {
+		$('#edit_permissions').find('.permissions_checkboxes input:checkbox').prop('disabled', false);
+		$('#edit_permissions').find('.user_admin_checkboxes input:checkbox').prop('disabled', false);
+	}
+	
+	function lockCheckboxes() {	
+		$('#edit_permissions').find('.permissions_checkboxes input:checkbox').prop('disabled', true);
+		$('#edit_permissions').find('.user_admin_checkboxes input:checkbox').prop('disabled', true);
+	}
+	function clearCheckboxes() {
+		$('.permissions_checkboxes input[type=checkbox]').prop('checked', false);
+		$('.user_admin_checkboxes input[type=checkbox]').prop('checked', false);
+		$('.custom_role_elements input[type=checkbox]').prop('checked', false);
+	}
+// ---------------------------------	
+
+
+//Edit and save preset Roles
+
+	$('.edit-preset-role').click( function() {
+		container = $(this).closest('.checkbox');
+		checkBox = container.find('input:checkbox');
+		container.css({'border-right':'2px solid #428bca', 'border-bottom': '2px solid #428bca'});
+		unlockCheckboxes();
+	});
+	
+	$('.save-preset-role').click(function() {
+		container = $(this).closest('.checkbox');
+		checkBox = container.find('input:checkbox');
+		container.css({'border-right':'0', 'border-bottom': '0'});
+		lockCheckboxes();
+	});
+// ---------------------------------	
+
+// Get Refreshed role hierarchy
+
+	function getRoleHierarchy () {
+		$.ajax({ 
+		url : '/get_role_hierarchy',
+		method: 'GET',
+		async: false,
+		success: function(hash) {
+			$.each(hash, function(roleName, info) {
+				permissionInfo = [];
+				$.merge(permissionInfo, info.permissions);
+				permissionInfo.push(info.ranking);
+				rolePermissionSet[roleName] = permissionInfo;
+			});
+			console.log(rolePermissionSet);
+
+			}
+		});
+	}
+//---------
+
+
+$('.back_from_create').click(function() {
+	loadCustomRoles();
+
+});
+
+
+// Functions for Time Locking
+
+  $('body').on('click', '.lock_all_users, .unlock_all_users',  function() {
+  	var lockStatus = $(this).val();
+  	if (confirm('Are you sure you want to ' + lockStatus + ' all users from editing their Time Sheets?')) {
+  		if (lockStatus == 'lock') {
+  			var lockParam = 'true';
+  		}
+  		else {
+  			var lockParam = 'false';
+  		}
+  		$.ajax({
+  			url: '/update_all_locks',
+  			data: {'locked': lockParam},
+  			method: 'GET',
+  			success: function() {
+  				if (lockParam == 'true') {
+  					$('.unlock_user').show();
+  					$('.lock_user').hide();
+  				}
+  				else {
+  					$('.unlock_user').hide();
+  					$('.lock_user').show();
+  				}	
+  				alert('All Users locked from editing their Time Sheets.');
+  			}
+		});
+  	}
+  });
+  
+
+  
+  
+    $('body').on('click', '.lock_user, .unlock_user', function() {
+      	var lockStatus = $(this).val();
+  	if (confirm('Are you sure you want to ' + lockStatus + ' this user from editing their Time Sheets?')) {
+  		 if (lockStatus == 'lock') {
+  			var lockParam = 'true';
+  		}
+  		else {
+  			var lockParam = 'false';
+  		}
+  	  	var user_id = $(this).attr('id');
+  		$.ajax({
+  			url: '/update_user_lock',
+  			data: {'locked': lockParam, 'user_id' : user_id},
+  			method: 'GET',
+  			success: function() {
+  			  	if (lockParam == 'true') {
+  					$('#'+ user_id + '.unlock_user').show();
+  					$('#'+ user_id + '.lock_user').hide();
+
+  				}
+  				else {
+  					$('#'+ user_id + '.lock_user').show();
+  					$('#'+ user_id + '.unlock_user').hide();
+  				}
+  				alert("This user's ability to edit any Time Sheets has been " + lockStatus + "ed.");
+  			}
+		});
+  	}
+  });
+
+
+
+$('body').on('click',  '.unlock_user_prev_month, .lock_user_prev_month',function() {
+    var lockStatus = $(this).val();
+  	if (confirm('Are you sure you want to ' + lockStatus + ' this user from editing last months Time Sheets?')) {
+  		 if (lockStatus == 'lock') {
+  			var lockParam = 'true';
+  		}
+  		else {
+  			var lockParam = 'false';
+  		}
+  		var user_id = $(this).attr('id');
+  		$.ajax({
+  			url: '/update_prev_month_user_lock',
+  			data: {'locked': lockParam, 'user_id' : user_id},
+  			method: 'GET',
+  			success: function() {
+  			  	if (lockParam == 'true') {
+  					$('#' + user_id + '.unlock_user_prev_month').show();  					
+  					$('#' + user_id + '.lock_user_prev_month').hide();
+  				}
+  				else {
+  					$('#' + user_id + '.unlock_user_prev_month').hide();
+  					$('#' + user_id + '.lock_user_prev_month').show();
+  				}
+  				alert(" This User's ability to edit last month's time inputs has been " + lockStatus + "ed.");
+  			}
+		});
+  	}
+  });
+  
+$('body').on('click', '.unlock_all_prev_month, .lock_all_prev_month', function() {
+      var lockStatus = $(this).val();
+  		 if (lockStatus == 'lock') {
+  			var lockParam = 'true';
+  		}
+  		else {
+  			var lockParam = 'false';
+  		}
+  	if (confirm('Are you sure you want to lock all users from editing their Time Sheets for the previous month?')) {
+  		$.ajax({
+  			url: '/update_prev_month_all_lock',
+  			data: {'locked': lockParam},
+  			method: 'GET',
+  			success: function() {
+ 				if (lockParam == 'true') {
+  					$('.unlock_user_prev_month').show();  					
+  					$('.lock_user_prev_month').hide();
+
+  				}
+  				else {
+  					$('.unlock_user_prev_month').hide();  					
+  					$('.lock_user_prev_month').show();
+  				}  				
+  				$(this).hide();
+  				alert( "All Users' abilities to edit last month's time inputs has been " + lockStatus + "ed.");
+  			}
+		});
+  	}
+  });
+  
+  
+
+//-------------------------------
+
+// Initial Settings
+	
+	getRoleHierarchy();
+	lockCheckboxes();
+	$('.hide_role_save').hide();
+	$('.save_new_role').hide();
+	$('.back_from_create').hide();
+// ---------------------------------	
+
+
+      });
+
+</script>

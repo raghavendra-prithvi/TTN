@@ -1,0 +1,114 @@
+class ProjectsController < ApplicationController
+  before_filter :require_admin
+  before_action :set_project, only: [:show, :edit, :update, :destroy]
+
+  # GET /projects
+  def index
+    @projects = Project.all
+  end
+
+  # GET /projects/1
+  def show
+    @project = Project.find(params[:id])
+    respond_to do |format|
+      format.html # show.html.erb
+      format.pdf do
+        render :pdf => "2", :save_to_file => Rails.root.join('pdfs', "#{@project.name}.pdf")
+      end
+    end
+  end
+
+  # GET /projects/new
+  def new
+    @internal_project = InternalProject.new
+  end
+
+  # GET /projects/1/edit
+  def edit
+  end
+
+  def activate
+    @project = Project.find(params[:id])
+    @project.active = true
+    @project.save
+    render :text => "success"
+  end
+  
+  def deactivate
+    @project = Project.find(params[:id])
+    @project.active = false
+    @project.save
+    render :text => "success"
+  end
+  
+  # POST /projects
+  def create
+    if project_params[:name].nil?
+      render :text => project_params.to_s
+    end
+    @project = Project.new()
+    @project.name = params[:project][:name]
+    @project.category = params[:project][:category]
+    @project.project_id = params[:project][:project_id]
+    @project.acct_number = params[:project][:acct_number]
+    @project.user_id = params[:user_id]
+    if @project.save!
+      redirect_to projects_path, notice: 'Project was successfully created.'
+    else
+      render action: 'new'
+    end
+  end
+# PATCH/PUT /projects/1
+  def update    
+    @project.name = params[:project][:name]
+    @project.category = params[:project][:category]
+    @project.project_id = params[:project][:project_id]
+    @project.acct_number = params[:project][:acct_number]
+    @project.user_id = params[:user_id]
+    if @project.update(project_params)
+      redirect_to projects_path, notice: 'Project was successfully updated.'
+    else
+      render action: 'edit'
+    end
+  end
+
+  # DELETE /projects/1
+  def destroy
+    @project.destroy
+    redirect_to projects_url, notice: 'Project was successfully destroyed.'
+  end
+  
+  def create_report
+    @user = User.find(session[:user_id])
+    respond_to do |format|
+      format.html # show.html.erb
+      format.pdf do
+        render :pdf => "#{@user.name}",
+        :save_to_file => Rails.root.join('pdfs', "#{@user.name}.pdf")
+      end
+    end
+  end 
+
+  def assign
+    @usr = User.find(params[:id])
+    @projects = Project.where(:active => true)
+  end
+  
+ 
+  
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_project
+      @project = Project.find(params[:id])
+    end
+
+    # Only allow a trusted parameter "white list" through.
+    def project_params
+<<<<<<< HEAD
+      params.require(:project).permit(:name, :category,:project_id,:acct_number)
+
+=======
+      params.require(:project).permit(:name, :category,:project_id,:acct_number,:user_id)
+>>>>>>> 39cfce9e79a0c627e0d6c98f681d8874e6dde69a
+    end
+end
