@@ -2,11 +2,11 @@
 <html>
 	<head>
 		<title>Time Tracker</title>
-      <%= javascript_include_tag "application" %>
-      <%= javascript_include_tag "//www.google.com/jsapi" %>
-      <%= stylesheet_link_tag    "application", media: "all" %>
-      <%= csrf_meta_tags %>
-      <%= render 'layouts/shim' %>
+    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "//www.google.com/jsapi" %>
+    <%= stylesheet_link_tag    "application", media: "all" %>
+    <%= csrf_meta_tags %>
+    <%= render 'layouts/shim' %>
     	
 <script src="/assets/jquery.jqGrid.src.js" ></script>
 <script src="/assets/jquery.periodicalupdator.js" ></script>
@@ -215,7 +215,7 @@
     		return true;
     	}
     }
-	
+	  
    
    var data = [[48803, "DSK1", "", "02200220", "OPEN"], [48769, "APPR", "", "77733337", "ENTERED"]];
 
@@ -545,9 +545,9 @@ ul.main-alerts > li {
   </div>
 </div>
 </body>
-        <script>
+<%= render partial: 'layouts/footer'%>
 
-		
+        <script>
           $(document).ready(function(){
             $.ajaxSetup({
               beforeSend: function(xhr) {

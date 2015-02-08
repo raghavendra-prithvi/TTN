@@ -1,6 +1,5 @@
 <script type="text/javascript">
-        $(document).ready(function() {
-            
+        $(document).ready(function() {            
             $('.accordion').accordion({
             	header: ".panelHB"}
             	); //some_id section1 in demo
@@ -8,12 +7,9 @@
         	      window.location = $(this).attr('href');
       			  return false;
         	});
-        
-        
         });
 </script>
 <% i = 0%>
-
     <fieldset class="scheduler-border">
     <legend class="scheduler-border">Current Projects</legend>
 <%if !@currentProjects.blank?%>

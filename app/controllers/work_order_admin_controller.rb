@@ -5,7 +5,6 @@ class WorkOrderAdminController < ApplicationController
  
  
  def index
- 	puts params
  	@work_orders = WorkOrder.where(:submitted => true)
     @submitted_work_orders = @work_orders.submitted
     @approved_work_orders = @work_orders.approved
