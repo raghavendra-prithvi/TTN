@@ -173,6 +173,9 @@ MusicFeedApp::Application.routes.draw do
   get 'login', to: 'welcome#index'
   
   
+  #Version Management
+  get '/versionUpdates', to: 'versions#index'
+  
   #Exception Handling
   get '404', to: redirect('/')
   

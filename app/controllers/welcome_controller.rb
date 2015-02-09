@@ -10,7 +10,6 @@ class WelcomeController < ApplicationController
   
   
   def index
-  
     today = Date.today
     @todayRecs = TimeTable.where(:date => today,:user_id => session[:user_id])    
     @user = User.find(session[:user_id])
@@ -126,15 +125,14 @@ def loadToDay
   
   
   def check_TS_locks
-	ts_locks = {}
+	  ts_locks = {}
   	user = User.find(session[:user_id])
-	ts_locks['prev_month'] = user.prev_month_locked
-	ts_locks['user'] = user.locked
-	render :json => ts_locks.to_json
+	  ts_locks['prev_month'] = user.prev_month_locked
+	  ts_locks['user'] = user.locked
+	  render :json => ts_locks.to_json
   end
   
   def approve_report    
-
     @sr = SubmittedReport.find(params[:rid])
     @sr.approved = true
     @sr.save
@@ -634,6 +632,8 @@ def report
 		@viewable_users = User.alpha.gas
 	end		
 end
+
+
 
 end	
 

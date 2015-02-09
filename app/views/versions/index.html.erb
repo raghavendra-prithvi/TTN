@@ -1,0 +1,21 @@
+<style>
+ .fieldset{
+   width:50%;
+   float:center;
+   padding:20px;
+   background-color: #AAD0FA;
+   -webkit-box-shadow: 7px 5px 7px 0px rgba(91, 70, 63, 1);
+-moz-box-shadow:    7px 5px 7px 0px rgba(91, 70, 63, 1);
+box-shadow:         7px 5px 7px 0px rgba(91, 70, 63, 1);
+   
+   
+ }
+  ol{    
+    padding-left:20px;    
+  }
+  
+</style>  
+
+<h2>Updates in the Current Version1 </h2>
+<%= render partial:"p_"+params[:v].gsub(".","_").to_s%>
+

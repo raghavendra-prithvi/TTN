@@ -1,5 +1,5 @@
 <script src="/assets/jquery-ui.min.js" ></script>
-    <%= stylesheet_link_tag    "jquery-ui.min.js" %>
+    <%= stylesheet_link_tag    "jquery-ui.min" %>
 <script>
   function searchUser(){
       user_search = $("#user_search").val();
@@ -34,7 +34,7 @@
             }, function (data) {                
                 response(data);
             });
-        }, appendTo: '#menu-container',
+        },appendTo: '#menu-container',
         minLength: 3
     });    
     $("input#user_search").change(function(){
