@@ -1,0 +1,163 @@
+.modal-body {
+    height: 700px;
+}
+
+.ui-accordion .ui-accordion-header {
+  cursor: pointer;
+  position: relative;
+  margin-top: 1px;
+  zoom: 1;
+}
+.ui-accordion .ui-accordion-li-fix {
+  display: inline;
+}
+.ui-accordion .ui-accordion-header-active {
+  border-bottom: 0 !important;
+}
+.ui-accordion .ui-accordion-header a {
+  display: block;
+  font-size: 1em;
+  padding: .5em .5em .5em .7em;
+}
+/* IE7-/Win - Fix extra vertical space in lists */
+.ui-accordion a {
+  zoom: 1;
+}
+.ui-accordion-icons .ui-accordion-header a {
+  padding-left: 2.2em;
+}
+.ui-accordion .ui-accordion-header .ui-icon {
+  position: absolute;
+  left: .5em;
+  top: 50%;
+  margin-top: -8px;
+}
+.ui-accordion .ui-accordion-content {
+  padding: 1em 2.2em;
+  border-top: 0;
+  margin-top: -2px;
+  position: relative;
+  top: 1px;
+  margin-bottom: 2px;
+  overflow: auto;
+  display: none;
+  zoom: 1;
+}
+.ui-accordion .ui-accordion-content-active {
+  display: block;
+}
+  
+  
+  .customHeight {
+		height:10px !important;
+		line-height:10px !important;
+		vertical-align:middle !important;
+  }
+		
+	.navPill:visited, .navPill, .navPill:hover {
+		color:#428bca;
+	}
+	
+	a.downloadSingle:visited {
+		color:white;
+	}
+	
+	.flashContainer {
+		height: 52px;
+	}
+	
+	.active > .dropdown-toggle:hover, .nav .open .active > a:focus, .nav .open .active > a:hover{
+		color: white !important;
+		background-color: #428bca !important;
+	}
+
+	.nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+		color: #428bca;
+	}
+	
+	.keepBlue {
+		background-color: #428bca !important;
+	}
+
+.nav-pill-container{
+	margin-bottom: 10px;
+}
+
+.noticeButton, .helpButton{
+  vertical-align: middle;
+		height: 34px !important;
+		width: 25px !important;
+
+}
+
+.manual {
+	font-size: 19px !important;
+}
+
+	.row {
+ width: 100% !important;
+}
+
+button#dLabel{
+	vertical-align:middle;
+	margin-bottom: 10px;
+	width: 150px !important;
+}
+
+.alertBanner, .lockButton{
+	height: 25px !important;
+	line-height: 25px;
+	vertical-align: middle;
+	margin-bottom: 	10px;
+	padding-left: 0px;
+}
+
+ul.main-alerts {
+	width: 100%;
+}
+
+ul.main-alerts > li {
+	height:25px;
+	vertical-align:middle;
+	line-height: 25px;
+	width: 1200px;
+	padding-left: 10px;
+	margin-bottom: 2px;
+
+}
+.lockButton .open>.dropdown-menu {
+	width: 1200px;
+}
+	
+.flash {
+    position: absolute;
+    z-index: 101;
+    top: 0;
+    right: 0;
+    text-align: center;
+    overflow: hidden; 
+    -webkit-box-shadow: 0 0 5px black;
+    -moz-box-shadow:    0 0 5px black;
+    box-shadow:         0 0 5px black;
+    width: 300px;
+}
+
+.cssanimations.csstransforms #close {
+      display: none;
+    }
+    
+@-webkit-keyframes slideDown {
+    0%, 100% { -webkit-transform: translateY(-100px); }
+    10%, 90% { -webkit-transform: translateY(0px); }
+}
+@-moz-keyframes slideDown {
+    0%, 100% { -moz-transform: translateY(-100px); }
+    10%, 90% { -moz-transform: translateY(0px); }
+}
+
+.cssanimations.csstransforms .flash {
+    -webkit-transform: translateY(-100px);
+    -webkit-animation: slideDown 2.5s 1.0s 1 ease forwards;
+    -moz-transform:    translateY(-100px);
+    -moz-animation:    slideDown 2.5s 1.0s 1 ease forwards;
+}

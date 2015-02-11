@@ -4,7 +4,7 @@ class WelcomeController < ApplicationController
   before_filter :require_client_restrict, :except => ["send_mail", "activate_user"]
 
   def help
-    
+    render :html => "help", :layout => false
   end
   
   

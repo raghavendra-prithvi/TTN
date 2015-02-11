@@ -5,393 +5,52 @@
     <%= javascript_include_tag "application" %>
     <%= javascript_include_tag "//www.google.com/jsapi" %>
     <%= stylesheet_link_tag    "application", media: "all" %>
+    <%= javascript_include_tag "common_functions" %>
+    <%= stylesheet_link_tag    "common_styles" %>
     <%= csrf_meta_tags %>
-    <%= render 'layouts/shim' %>
-    	
-<script src="/assets/jquery.jqGrid.src.js" ></script>
-<script src="/assets/jquery.periodicalupdator.js" ></script>
-
-<style>
-  .ui-accordion .ui-accordion-header {
-  cursor: pointer;
-  position: relative;
-  margin-top: 1px;
-  zoom: 1;
-}
-.ui-accordion .ui-accordion-li-fix {
-  display: inline;
-}
-.ui-accordion .ui-accordion-header-active {
-  border-bottom: 0 !important;
-}
-.ui-accordion .ui-accordion-header a {
-  display: block;
-  font-size: 1em;
-  padding: .5em .5em .5em .7em;
-}
-/* IE7-/Win - Fix extra vertical space in lists */
-.ui-accordion a {
-  zoom: 1;
-}
-.ui-accordion-icons .ui-accordion-header a {
-  padding-left: 2.2em;
-}
-.ui-accordion .ui-accordion-header .ui-icon {
-  position: absolute;
-  left: .5em;
-  top: 50%;
-  margin-top: -8px;
-}
-.ui-accordion .ui-accordion-content {
-  padding: 1em 2.2em;
-  border-top: 0;
-  margin-top: -2px;
-  position: relative;
-  top: 1px;
-  margin-bottom: 2px;
-  overflow: auto;
-  display: none;
-  zoom: 1;
-}
-.ui-accordion .ui-accordion-content-active {
-  display: block;
-}
-  
-</style>  
-<script>
-  
-  var alertObject = {};
-  
-  /* ajax setup for csrf token */
-  $.ajaxSetup({
-      headers: {
-        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-      }
-    });
-  
-  /* ajax setup for Global Errors */
-   $(function () {
-        //setup ajax error handling
-        $.ajaxSetup({
-            error: function (x, status, error) {
-                if (x.status == 403) {
-                    alert("Sorry, your session has expired. Please login again to continue");
-                    window.location.href ="/";
-                }
-                else {
-                    alert("status: " + status + ". Message: " + error);
-                }
-            }
+    <%= render 'layouts/shim' %>    	
+    <script src="/assets/jquery.jqGrid.src.js" ></script>
+    <script src="/assets/jquery.periodicalupdator.js" ></script>  
+    <script>
+        $(document).ready(function(){
+          $("#myModal").modal('hide');               
         });
-   });
-   
-   
-  
-   /*------ Grab colors from Report Controller------- */
-   
-
-   function grabColors() {
-    $.ajax({
-  		async: false,
-        method: 'GET',
-		url: '/project_colors',
-        dateType: 'json',
-        success: function(data){
-        	var empty = [];
-			$.each(data, function (key, value) { 
-				empty.push([key, value]);
-				
-			});
-			colorHash = empty;
-			console.log('color hash: ' + colorHash);
-		        }
-    });
-    }
-    
-     function assignColors(array) {
-    	var colors = [];
-    	$(array).each(function(i, value){
-    		$(colorHash).each(function(j, obj) {
-    			if ($.inArray(value[0], obj) != -1){
-    				colors.push(obj[1]);
-    			}
-    		});
-    	});
-    	return colors;
-    }
-    
-    
-    google.load("visualization", "1", {packages:["corechart"]});
-    //google.setOnLoadCallback(drawChart);
-	var pieArray;
-	var colorArray;
-	
-    var  currentBannerClass = 'alert-info';
-
-
-    /*------- Create Google Pie Chart with date from pieChart trigger -----*/
-    function createPieChart(pieHash) {
-    	if (pieHash != 'blank'){
-    	pieArray = [['Project Title', 'Hours']];
-    	colorArray = assignColors(pieHash);
-    	pieArray = $.merge(pieArray, pieHash);
-    	drawChart(false);	
-    	}
-    	else {
-    		drawChart(true);
-    	}
-	}
-          	
-      	function drawChart(blank) {
-      		if (blank == false){
-        		var data = google.visualization.arrayToDataTable(pieArray);
-       		 	var options = {
-        			colors: colorArray,
-        			chartArea: {width: 1000, height:150}
-       	 		};
-			}
-			else {
-				var data = google.visualization.arrayToDataTable([['header','fake'],['fake', 0]]);
-				options = {};
-			}
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-        chart.draw(data, options);
-        
-        
-       
-      }          	
-      
-  
-	function updateAlerts() {
-	console.log(alertObject);
-	// msg, and type, class= function called from
-	// when fixed, remove from.
-	//if alertObject.length == 0 , hide alert
-	var banner = $('.alertBanner');
-	var alertDropDown = $('.alert-dropdown');
-	var length = Object.keys(alertObject).length;
-	if (length == 0) {
-		banner.hide();
-		alertDropDown.hide();
-	}
-	else if (length == 1) {
-		alertDropDown.hide();
-		$.each(alertObject, function(alert, infoArray) {
-			banner.addClass('alert-' + infoArray[0]).html(infoArray[1]).show();
-		});
-	}
-	else if (length > 1) {
-			banner.hide();
-
-		$('.alert-count').html(length);
-		var alertHtml = '';
-		$.each(alertObject, function(alert, infoArray) {
-			alertHtml += '<li class="alert-' + infoArray[0] + '">' + infoArray[1] + '</li>';
-		});
-		$('ul.main-alerts').html(alertHtml);
-		alertDropDown.show();
-				}
-       } 
-    
-
-
-	    
-	function validateHours(lastInput) {
-    	lastInput = parseFloat(lastInput);   
-    	if ((lastInput % 0.25) != 0) {
-    		alert('Hourly input must be in increments of .25 (Example: 3:00pm to 4:15pm is 1.25 hours.)');
-    		return false;
-    	}
-    	var sumDayHours = 0.0;  
-    	$('.today').each( function() {
-    		sumDayHours += parseFloat($(this).val());
-    	});
-    	if ((sumDayHours) > 24.0) {
-    	    alert('Daily hours may not exceed 24.');
-    		return false;
-    	}
-    	else {
-    		return true;
-    	}
-    }
-	  
-   
-   var data = [[48803, "DSK1", "", "02200220", "OPEN"], [48769, "APPR", "", "77733337", "ENTERED"]];
-
-$("#grid").jqGrid({
-    datatype: "local",
-    height: 250,
-    colNames: ['Inv No', 'Thingy', 'Blank', 'Number', 'Status'],
-    colModel: [{
-        name: 'id',
-        index: 'id',
-        width: 60,
-        sorttype: "int"},
-    {
-        name: 'thingy',
-        index: 'thingy',
-        width: 90,
-        sorttype: "date"},
-    {
-        name: 'blank',
-        index: 'blank',
-        width: 30},
-    {
-        name: 'number',
-        index: 'number',
-        width: 80,
-        sorttype: "float"},
-    {
-        name: 'status',
-        index: 'status',
-        width: 80,
-        sorttype: "float"}
-    ],
-    caption: "Stack Overflow Example",
-    // ondblClickRow: function(rowid,iRow,iCol,e){alert('double clicked');}
-});
-
-var names = ["id", "thingy", "blank", "number", "status"];
-var mydata = [];
-
-for (var i = 0; i < data.length; i++) {
-    mydata[i] = {};
-    for (var j = 0; j < data[i].length; j++) {
-        mydata[i][names[j]] = data[i][j];
-    }
-}
-
-for (var i = 0; i <= mydata.length; i++) {
-    $("#grid").jqGrid('addRowData', i + 1, mydata[i]);
-}
-
-
-$("#grid").jqGrid('setGridParam', {ondblClickRow: function(rowid,iRow,iCol,e){alert('double clicked');}});
-
-	
-</script>
-
-	<style>
-	.customHeight {
-		height:10px !important;
-		line-height:10px !important;
-		vertical-align:middle !important;
-  }
-		
-	.navPill:visited, .navPill, .navPill:hover {
-		color:#428bca;
-	}
-	
-	a.downloadSingle:visited {
-		color:white;
-	}
-	
-	.flashContainer {
-		height: 52px;
-	}
-	
-	.active > .dropdown-toggle:hover, .nav .open .active > a:focus, .nav .open .active > a:hover{
-		color: white !important;
-		background-color: #428bca !important;
-	}
-
-	.nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
-		color: #428bca;
-	}
-	
-	.keepBlue {
-		background-color: #428bca !important;
-	}
-
-.nav-pill-container{
-	margin-bottom: 10px;
-}
-
-.noticeButton, .helpButton{
-  vertical-align: middle;
-		height: 34px !important;
-		width: 25px !important;
-
-}
-
-.manual {
-	font-size: 19px !important;
-}
-
-	.row {
- width: 100% !important;
-}
-
-button#dLabel{
-	vertical-align:middle;
-	margin-bottom: 10px;
-	width: 150px !important;
-}
-
-.alertBanner, .lockButton{
-	height: 25px !important;
-	line-height: 25px;
-	vertical-align: middle;
-	margin-bottom: 	10px;
-	padding-left: 0px;
-}
-
-ul.main-alerts {
-	width: 100%;
-}
-
-ul.main-alerts > li {
-	height:25px;
-	vertical-align:middle;
-	line-height: 25px;
-	width: 1200px;
-	padding-left: 10px;
-	margin-bottom: 2px;
-
-}
-.lockButton .open>.dropdown-menu {
-	width: 1200px;
-}
-	
-.flash {
-    position: absolute;
-    z-index: 101;
-    top: 0;
-    right: 0;
-    text-align: center;
-    overflow: hidden; 
-    -webkit-box-shadow: 0 0 5px black;
-    -moz-box-shadow:    0 0 5px black;
-    box-shadow:         0 0 5px black;
-    width: 300px;
-}
-
-.cssanimations.csstransforms #close {
-      display: none;
-    }
-    
-@-webkit-keyframes slideDown {
-    0%, 100% { -webkit-transform: translateY(-100px); }
-    10%, 90% { -webkit-transform: translateY(0px); }
-}
-@-moz-keyframes slideDown {
-    0%, 100% { -moz-transform: translateY(-100px); }
-    10%, 90% { -moz-transform: translateY(0px); }
-}
-
-.cssanimations.csstransforms .flash {
-    -webkit-transform: translateY(-100px);
-    -webkit-animation: slideDown 2.5s 1.0s 1 ease forwards;
-    -moz-transform:    translateY(-100px);
-    -moz-animation:    slideDown 2.5s 1.0s 1 ease forwards;
-}
-
-
-	</style>
-    
+        function loadHelpManual(){       
+                if(window.location.pathname == "/welcome/index"){
+                  manual_src = "/assets/time_input_of_Effort_Tracker.pdf";
+                }
+                else if(window.location.pathname == "/manager"){
+                  manual_src = "/assets/manager_home.pdf";
+                }
+                else if(window.location.pathname == "/admin/users"){
+                  manual_src = "/assets/Admin_users.pdf";
+                }
+                else if(window.location.pathname == "/admin/projects"){
+                  manual_src = "/assets/Admin_projects.pdf";
+                }
+                $("#help_manual_frame").attr("src",manual_src);
+                $("#myModal").modal('show');
+         }      
+    </script>  
 	</head>
 <body>
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                  <iframe id="help_manual_frame" width="100%" height="100%" src="/assets/time_input_of_Effort_Tracker.pdf"></iframe>
+            </div>
+<!--             <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div> -->
+        </div>
+    </div>
+</div>
 
 <div class="container-fluid" id="body">
     <table id="grid"></table>
@@ -434,8 +93,7 @@ ul.main-alerts > li {
              </ul>
          </div>
      
-     
-     
+        
          <div class='col-xs-12 col-md-7'>
      <ul class="nav nav-pills">
        <li class="pull-right">
@@ -454,7 +112,7 @@ ul.main-alerts > li {
                       <% elsif @current_user.client == true %><a href="/assets/EffortTrackerManualWoAdmin.docx" onmouseover="this.style.backgroundColor='#FFF'">
                       <% else @current_user.role =="GA" %><a href="/assets/EffortTrackerManualGa.docx" onmouseover="this.style.backgroundColor='#FFF'"> 
                 <%end%>        -->
-         <a href="/help" target="_blank" onmouseover="this.style.backgroundColor='#FFF'">
+         <a href="#help" onmouseover="this.style.backgroundColor='#FFF'" id="help_link" onclick="loadHelpManual()">
                       <%=image_tag('/assets/questionMark.png', :class=> 'helpButton', :style => "height: 25px ! important; margin-top: -4px;")%></a></li>
 <!--        <li class="dropdown pull-right"> 
     	<a href="#" target="_blank" onmouseover="this.style.backgroundColor='#FFF'" data-toggle="dropdown" class="dropdown-toggle">
@@ -547,57 +205,4 @@ ul.main-alerts > li {
 </body>
 <%= render partial: 'layouts/footer'%>
 
-        <script>
-          $(document).ready(function(){
-            $.ajaxSetup({
-              beforeSend: function(xhr) {
-                xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
-              }
-
-           
-            });
-            
-                       
-                
-            
-            var colorHash = [];
-			
-			blinking($('.blink'));
-			blinkedOut($('.blinkedOut'));
-			
-			function blinkedOut(elm) {
-				elm.css({backgroundColor:'#d2322d', color: 'white' });
-			}
-			
-			 function quitBlink(elm) {
-        		setTimeout( function() {
-        			clearInterval(timer);
-        			elm.css({backgroundColor:'#d2322d', color: 'white' });
-        			}, 3000 );
-        	
-        	}
-			function blinking(elm) {
-    			var colors = ['#d2322d', 'white'];
-    			var textColors = ['white', '#428bca'];
-    			timer = setInterval(blink, 250);
-    			quitBlink(elm);
-    			var count = 0;
-    			function blink() {
-    				(count == 0)? count=1:count=0;
-    				setTimeout(function() { elm.css({backgroundColor: colors[count]});
-    										elm.css({color: textColors[count]});}, 0);
-        		}
-        		   				elm.css({backgroundColor:'#d2322d', color: 'white' });
-        		}
-        	
-    		  $('.active > a').addClass('keepBlue');		
-    		  
- close = $("#close");
- close.trigger('click', function() {
-   note = $(".flash");
-   note.hide();
- });
- 
-    		});
-   </script>
 </html>

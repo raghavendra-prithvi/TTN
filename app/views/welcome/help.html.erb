@@ -1,16 +1,28 @@
-<input >
+<%=javascript_include_tag "/assets/pdfObject.js" %>
+<object data="myfile.pdf" type="application/pdf" width="100%" height="100%">
+ 
+  <p>It appears you don't have a PDF plugin for this browser.
+  No biggie... you can <a href="/assets/time_input_of_Effort_Tracker.pdf">click here to
+  download the PDF file.</a></p>
+  
+</object>
+
+
 <script type="text/javascript">
-      window.onload = function (){
-        var success = new PDFObject({ url: "/assets/EffortTrackerManualAdmin.pdf" }).embed();
+      window.onload = function (){          
+        var success = new PDFObject({ url: "/assets/time_input_of_Effort_Tracker.pdf" }).embed();
       };
-    </script>
+</script>
 
 
 
 
 <%= javascript_tag do %>
   window.onload = function (){
-      <% if @current_user.admin == true%>
+<% if params[:page] == "/welcome/index"%>
+  var success = new PDFObject({ url: "/assets/time_input_of_Effort_Tracker.pdf"}).embed();
+<% end %>
+<!--       <% if @current_user.admin == true%>
                   var success = new PDFObject({ url: "/assets/EffortTrackerManualAdmin.pdf" }).embed();                    
       <% elsif @current_user.time_sheet_manager == true %>
               var success = new PDFObject({ url: "/assets/EffortTrackerManualtsm.pdf" }).embed();         
@@ -30,7 +42,7 @@
       <% else @current_user.role =="GA" %>
                         var success = new PDFObject({ url: "/assets/EffortTrackerManualGa.pdf" }).embed();
                         
-      <%end%> 
+      <%end%>  -->
       
   }
 <% end %>
