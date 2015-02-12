@@ -151,6 +151,7 @@ MusicFeedApp::Application.routes.draw do
     get '/approve_report', to: 'welcome#approve_report'
     get "/manager", to: "admin#manager"
   get "/manageReports", to: "admin#manageReports"
+  get "/tsmanageReports", to: "admin#manageReports"
   get "/ts_manager_csvReport", to: "admin#ts_manager_csvReport"
   get '/renderUserData', to: 'admin#render_user_data'
   

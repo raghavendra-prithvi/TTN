@@ -23,11 +23,37 @@
                   manual_src = "/assets/manager_home.pdf";
                 }
                 else if(window.location.pathname == "/admin/users"){
-                  manual_src = "/assets/Admin_users.pdf";
+                  manual_src = "/assets/admin_users.pdf";
                 }
                 else if(window.location.pathname == "/admin/projects"){
                   manual_src = "/assets/Admin_projects.pdf";
                 }
+                else if(window.location.pathname == "/ProjectsPersonnel"){
+                  manual_src = "/assets/projects_personnel.pdf";
+                }
+                else if(window.location.pathname == "/TimeSummaries"){
+                  manual_src = "/assets/time_summaries.pdf";
+                }
+                else if(window.location.pathname == "/manageReports"){
+                  manual_src = "/assets/manager_verify_reports.pdf";
+                }
+                else if(window.location.pathname == "/tsmanageReports"){
+                  manual_src = "/assets/tsmanagermanagereports.pdf";
+                }
+                else if(window.location.pathname == "/time_sheet_reports"){
+                  manual_src = "/assets/tscollabtsreports.pdf";
+                }
+                else if(window.location.pathname == "/submit_report"){
+                  manual_src = "/assets/submit_reports.pdf";
+                }
+                else if(window.location.pathname == "/work_order_admin"){
+                  manual_src = "/assets/wo_admin.pdf";
+                }
+                else if(window.location.pathname == "/WorkOrderTracking"){
+                  manual_src = "/assets/woadmin_wotracking.pdf";
+                }
+          
+                  
                 $("#help_manual_frame").attr("src",manual_src);
                 $("#myModal").modal('show');
          }      
@@ -39,7 +65,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Confirmation</h4>
+                <h4 class="modal-title">Help Manual</h4>
             </div>
             <div class="modal-body">
                   <iframe id="help_manual_frame" width="100%" height="100%" src="/assets/time_input_of_Effort_Tracker.pdf"></iframe>
@@ -88,7 +114,7 @@
                       <li class="<%= is_active?('/time_sheet_reports') %>"><a class="navPill" href="/time_sheet_reports">Time Sheet Reports</a></li>
                   <%end%>
                   <%if @current_user.time_sheet_manager %>
-                      <li class="<%= is_active?('/manageReports') %>"><a class="navPill" href="/manageReports">Manage Reports</a></li>
+                      <li class="<%= is_active?('/tsmanageReports') %>"><a class="navPill" href="/tsmanageReports">Manage Reports</a></li>
                   <% end %>
              </ul>
          </div>

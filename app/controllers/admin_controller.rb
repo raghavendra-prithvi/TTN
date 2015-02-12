@@ -145,10 +145,8 @@ class AdminController < ApplicationController
       end
     end
     @user.role = params[:role]
-    end
-    
-    @user.save
-    
+    end    
+    @user.save    
     render :text => "saved successfully"
   end
 
