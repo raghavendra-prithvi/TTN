@@ -1,11 +1,15 @@
 var alertObject = {};
+  $(document).ready(function(){
+    /* ajax setup for csrf token */
+    $.ajaxSetup({
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        }
+      ,
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))}
+      });
+  });
   
-  /* ajax setup for csrf token */
-  $.ajaxSetup({
-      headers: {
-        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-      }
-    });
   
   /* ajax setup for Global Errors */
    $(function () {
