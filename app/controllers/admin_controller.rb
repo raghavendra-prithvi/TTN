@@ -69,7 +69,6 @@ class AdminController < ApplicationController
     @users = User.alpha
     @r_users= []
     @cmonth = Date::MONTHNAMES[date.last_month.month]
-
     if params[:type] == "classified"
     	@users = @users.classified
     	@titleUsers = "Classified"

@@ -8,16 +8,14 @@ class WelcomeController < ApplicationController
   end
   
   
-  
   def index
     today = Date.today
     @todayRecs = TimeTable.where(:date => today,:user_id => session[:user_id])    
     @user = User.find(session[:user_id])
     @aps = @user.assigned_projects
-	@managedProjects = @user.project_managers
-	@locked = @user.locked
-   @todayRecsProjectDatas = []
-
+	  @managedProjects = @user.project_managers
+	  @locked = @user.locked
+    @todayRecsProjectDatas = []
     @weekRecs = TimeTable.where(:date => today.beginning_of_week..today.end_of_week, :user_id => @user.id).group_by(&:project_data_id)
    @selectArray = []
    if !@aps.nil?
@@ -64,65 +62,64 @@ class WelcomeController < ApplicationController
 	
   end
 
-def loadToDay
-   today = Date.strptime(params[:toDay], '%m/%d/%Y')
-    @user = User.find(session[:user_id])
-   @todayRecs = TimeTable.where(:date => today, :user_id => @user.id)
-   @weekRecs = TimeTable.where(:date => today.beginning_of_week..today.end_of_week, :user_id => @user.id).group_by(&:project_data_id)
-   @todayRecsProjectDatas = []
-   @aps = @user.assigned_projects
-   	@managedProjects = @user.project_managers
+  def loadToDay
+     today = Date.strptime(params[:toDay], '%m/%d/%Y')
+      @user = User.find(session[:user_id])
+     @todayRecs = TimeTable.where(:date => today, :user_id => @user.id)
+     @weekRecs = TimeTable.where(:date => today.beginning_of_week..today.end_of_week, :user_id => @user.id).group_by(&:project_data_id)
+     @todayRecsProjectDatas = []
+     @aps = @user.assigned_projects
+      @managedProjects = @user.project_managers
 
-   @locked = @user.locked
-   if today < today.beginning_of_month && @user.prev_month_locked
-   		@prev_month_locked = true
-   else
-   		@prev_month_locked = false
-   	end
-   	
-   @selectArray = []
-   if !@aps.nil?
-	   	@aps.each do |a|
-			pid = a.project_data_id.to_i
-			if !a.project_data.nil?
-   				if a.project_data.active && !a.project_data.locked
-     				@selectArray << [a.project_data.name, pid]
-     			end
-     		end
-   		end
-   	end	
+     @locked = @user.locked
+     if today < today.beginning_of_month && @user.prev_month_locked
+        @prev_month_locked = true
+     else
+        @prev_month_locked = false
+      end
 
-	if !@weekRecs.blank?
-	@weekRecs.each do |key, value|
-		pid = key.to_i
-   		@todayRecsProjectDatas << pid
-   	if AssignedProject.where(:project_data_id => pid, :user_id => @user.id).blank? && !is_archived(pid)
-   		project = ProjectData.find(pid)
-   		if project.active && !project.locked
-			@selectArray << [project.name, pid]
-   		end
-   	end
-   end	
-	end
-   if !@managedProjects.blank?
-   	@managedProjects.each do |m|
-   		project = m.project_data
-   		if !project.blank?
-   			if project.active && !project.locked
-   				@selectArray << [project.name,  project.id.to_i]
-   			end
-   		end
-   	end
+     @selectArray = []
+     if !@aps.nil?
+        @aps.each do |a|
+        pid = a.project_data_id.to_i
+        if !a.project_data.nil?
+            if a.project_data.active && !a.project_data.locked
+              @selectArray << [a.project_data.name, pid]
+            end
+          end
+        end
+      end	
+
+    if !@weekRecs.blank?
+    @weekRecs.each do |key, value|
+      pid = key.to_i
+        @todayRecsProjectDatas << pid
+      if AssignedProject.where(:project_data_id => pid, :user_id => @user.id).blank? && !is_archived(pid)
+        project = ProjectData.find(pid)
+        if project.active && !project.locked
+        @selectArray << [project.name, pid]
+        end
+      end
+     end	
+    end
+     if !@managedProjects.blank?
+      @managedProjects.each do |m|
+        project = m.project_data
+        if !project.blank?
+          if project.active && !project.locked
+            @selectArray << [project.name,  project.id.to_i]
+          end
+        end
+      end
+     end
+
+     @selectArray.sort_by! {|a| a[0].downcase}
+    @selectArray.unshift(["Please Select", ""])
+
+
+
+     render :html => "loadToDay", :layout => false
    end
-	
-   @selectArray.sort_by! {|a| a[0].downcase}
-	@selectArray.unshift(["Please Select", ""])
-
-
- 	
-   render :html => "loadToDay", :layout => false
- end
-  
   
   def check_TS_locks
 	  ts_locks = {}

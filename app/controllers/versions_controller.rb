@@ -5,6 +5,4 @@ class VersionsController < ApplicationController
     render :html => params[:v].to_s+".html.erb"
   end
   
-  
-
 end

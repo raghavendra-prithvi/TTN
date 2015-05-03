@@ -1,6 +1,5 @@
 class AttachmentsController < ApplicationController
 
-  
   # GET /work_orders
   def index
     @attachments = Attachment.all
