@@ -9,9 +9,6 @@ class UsersController < ApplicationController
     #redirect_to petitions_path
   end
 
-
-
-
   def create
   	puts 'User create'
     @user = User.new(params[:user])
@@ -24,10 +21,9 @@ class UsersController < ApplicationController
     end
   end
 
-
   def edit
   	@user = User.find(params[:id])
-	@status = @user.confirmed
+    @status = @user.confirmed
 		if @status == "false"
 			session[:user_id] = @user.id
 			confirm @user
@@ -36,20 +32,17 @@ class UsersController < ApplicationController
 		end
   end
 
-
   def update
-	if current_user.update_attributes(params[:user])
-		flash[:success] = "Modified Account!"
-		redirect_to petitions_path
-	else
-		flash[:success] = "NOT Modified Account!"
-		redirect_to petitions_path
-	end
+      if current_user.update_attributes(params[:user])
+        flash[:success] = "Modified Account!"
+        redirect_to petitions_path
+      else
+        flash[:success] = "NOT Modified Account!"
+        redirect_to petitions_path
+      end
   end
 
   def registered
-	@user = current_user
+    @user = current_user
   end
-
-
 end

@@ -1,0 +1,164 @@
+<style>
+  table tbody tr td{
+  	padding-right:50px !important;
+  }
+  
+  table{
+  overflow:auto !important;
+  width: auto !important;
+  }
+  
+  .table th, .table td { 
+     border-top: none !important; 
+ }
+ .top-buffer { margin-top:20px; }
+ 
+.scrollT {
+	overflow:auto;
+	height:450px !important;
+	padding-bottom:5px;
+	margin-top:0px;
+}
+
+.projectHours, td.projectHours {
+	padding-right: 0px !important;	
+	text-align: right;
+}
+.btn{
+    width:100px !important;
+   	padding:0;
+	margin:0 !important;
+	height:25px !important;
+	vertical-align:middle !important;
+	line-height: 25px !important;
+	
+}
+.signature {
+	height: 25px !important;
+}
+</style>
+<% if session[:user_id] %>
+  <% @user = User.find(session[:user_id]) %>
+  <div class="container">
+<div class="row">
+	<div class= "col-xs-12 col-md-6">
+	         	<b> Employee: </b> <%=@user_name %> 
+  <div class=" scrollT">
+		<div id="dvData">
+    <table class="table table-condensed table-responsive" id="timeTable">     
+       <thead>
+       <th>
+          Date
+        </th>
+        <th>
+          Project
+        </th>
+        <th class="projectHours">
+          Hours
+        </th>        
+      </thead>
+      <tbody>
+        <% @monthdays.each do |t|%>  
+        
+        <%if t.date.to_date == t.date.to_date.beginning_of_week && 
+        		 t.date.to_date.beginning_of_week <= t.date.to_date.end_of_month %>
+
+        	<tr class="top-buffer"><td></td><td></td><td></td></tr>
+        <%end%>
+    	<%if t.hours != 0 %>
+       <tr>
+        	<td><%=Date.strptime(t.date.to_s, '%Y-%m-%d').strftime("%m/%d/%Y")%></td>
+          <td>
+            <%if !t.project_data.nil?%>
+            <% if t.project_data_id != 0 %>
+               <% @p = ProjectData.where(:id => t.project_data_id)[0] || ArchievedProject.where(:project_id => t.project_id.to_s)[0]%>
+              <%= @p.name %>
+            <% end %>
+            <%end%>
+          </td>
+          <td class="projectHours">
+            	<%=t.hours%>
+          </td>
+        </tr>  
+        <% end %>
+        <% end %>
+        </tbody>
+        </table>
+        </div>
+        <b class="pull-left">Total No of Hours: <%= @total_hours%></b> <br/><br />
+        <u><div class="signatureBottom"></div></u><br/>
+        <a href="#" class="export btn btn-sm btn-default">Download CSV</a>
+		<a class="approveReport btn btn-sm btn-success" href="/approve_report?rid=<%=params[:rid].to_s%>">Approve Report</a>
+     <a class="approveReport btn btn-sm btn-danger" href="#" id="reject_report">Reject Report</a> 
+    <%=hidden_field_tag "rid",params[:rid],{:id=>"rid_val"} %>
+    <!-- <a class="approveReport btn btn-sm btn-danger" href="/reject_report?rid=<%=params[:rid].to_s%>">Reject Report</a> -->
+        </div>
+        </div>
+        <div class="col-md-6">
+         <div class="col-xs-12">
+         	
+        <input class="signature"/><br />
+		<input type="checkbox" class="autoSign" name="autoSign"/> Input signature <br /> <br />
+		<button class="signButton btn btn-sm btn-default">Sign Report</button> 
+
+         <div class="col-xs-12 pull-down">
+        
+           
+     
+         <script>
+           $(document).ready(function(){
+             $("#reject_report").click(function(){
+                  new Messi('<textarea cols="100" rows="5" name="feedback" id="reject_feed_back" style="width:100%" /><br/><br/><button class="btn btn-info pull-right" onclick="RejectReportWithComment()" >Send Comments</button> ', {title: 'Comments'});
+           });
+          });
+         function RejectReportWithComment(){            
+          dataStr = "rid="+$("#rid_val").val()+"&comment="+$("#reject_feed_back").val();           
+            $(".messi-closebtn").click();
+             $.ajax({
+                method: 'POST',
+                url: '/rejectReport',
+                data : dataStr,
+             /*   success: function(dt){
+                  new Messi(dt);
+                  window.location.href= "/";
+               } */
+            });
+         }
+           </script>
+  			<!--<a class="btn btn-sm btn-success pull-right" href="/send_report">Submit</a>--!>
+		</div>
+      </div>
+  </div>
+  <% end %>
+  <script>
+  $(document).ready( function() {
+
+  $('.approveReport').hide();
+  $('.signButton').click(function() {
+  	if ($('.signature').val() == '') {
+  		alert('Please type or automatically input your name.');
+  	}
+  	else {
+  		signedName = $('.signature').val();
+  	  	htmlStr = 'Manager Signature: ' + signedName;
+  	  	$('.signatureBottom').html(htmlStr);
+  		alert('The signature, ' + signedName + ", has been added to the bottom of <%=@user_name%>'s report.");
+  		$('.approveReport').show();
+  }
+  });
+  
+  $('.autoSign').click( function() {
+  	var name = '<%= @manager_name %>';
+  	if  (!$(this).prop('checked')) {
+		$('.signature').val('');
+	}
+  	else{
+  		$('.signature').val(name);
+  	}
+ });
+  
+  
+});
+	
+  </script>
+ 

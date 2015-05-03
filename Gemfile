@@ -69,7 +69,7 @@ gem 'icheck-rails'
 
 # Deploy
 gem 'capistrano'
-gem 'rvm-capistrano'
+gem 'rvm-capistrano',  require: false
 
 #Testing 
 gem 'capybara'

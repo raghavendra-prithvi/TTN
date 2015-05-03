@@ -4,87 +4,92 @@ MusicFeedApp::Application.routes.draw do
   # See how all your routes lay out with "rake routes".
   get '/admin/hoursWorked'
   #Resources
-  	root 'sessions#new'
-    resources :sessions, only: [:new, :create, :destroy]
-    resources :users
-    resources :work_orders
-    resources :attachments
-    resources :ull_team_members
-    resources :password_resets
+  root 'sessions#new'
+  resources :sessions, only: [:new, :create, :destroy]
+  resources :users
+  resources :work_orders
+  resources :attachments
+  resources :ull_team_members
+  resources :password_resets
 
-    scope "/admin" do
-      resources :projects do
-        collection do
-          get 'assign'
-        end
+  scope "/admin" do
+    resources :projects do
+      collection do
+        get 'assign'
       end
     end
+  end
     
-    scope "/admin" do
-      resources :project_datas do
-        collection do
-          get 'assign'
-        end
-      end
-    end
-
-    
+  scope "/admin" do
     resources :project_datas do
-    	member do
-     		 get 'project_managers'
-    	end
-  	end
-  # You can have the root of your site routed with "root"
-  #Login
-  
-    get '/monthlyClassifiedReport', to: 'admin#monthlyEmployeeReport'
+      collection do
+        get 'assign'
+      end
+    end
+  end
 
-    get '/registration', to: 'registrations#new'
-    get '/view_report', to: 'welcome#view_report'
-    get '/send_mail', to: 'welcome#send_mail' 
-    get '/activate_user', to: "welcome#activate_user"
-    get '/time_sheet_reports', to: "welcome#time_sheet_reports"
-    match '/auth/:provider/callback' => 'sessions#create' , via: [:get, :post]
-    match "/auth/failure" => "sessions#failure", via: [:get, :post]
-    get '/signin',  to: 'sessions#new'
-    get '/help', to: 'welcome#help'
-    get '/signout', to: 'sessions#destroy'
-    get '/signup', to: 'users#new'
-    get '/Client', to: 'sessions#new_client'
-    get '/renderRoleInfo', to: 'sessions#render_role_info'
     
-  get "/sendErrorMail", to: 'login#send_mail'
+  resources :project_datas do
+    member do
+       get 'project_managers'
+    end
+  end
 
-  #Effort Tracker Home
-  	get 'welcome/index', to: 'welcome#index'
-    get '/load_today_data', to: 'welcome#loadToDay'
-    post '/saveTimeSheets', to: 'welcome#saveTime'
-    post '/saveDayTimesheets', to: 'welcome#saveDayTime'
-    get 'welcome/weekFunc', to: 'welcome#weekFunc'
-    get '/createPieChart', to: 'welcome#createPieChart'
-  	get '/checkPrevTimeSheets', to: 'welcome#checkPrevTimeSheets'
-  	match '/deleteDayTimesheets', :to => 'welcome#deleteDayTimesheets', via: [:get, :post]
-   	get '/UserGuide', :to => 'welcome#user_guide'
-   	get '/ProjectsPersonnel', :to => 'projects#project_page'
+  #Welcome Controller # Effort Tracker Home
+  get 'login', to: 'welcome#index'
+  get '/help', to: 'welcome#help'
+  get 'welcome/index', to: 'welcome#index'
+  get '/load_today_data', to: 'time_sheets#loadToDay'
+  post '/saveTimeSheets', to: 'time_sheets#saveTime'
+  post '/saveDayTimesheets', to: 'time_sheets#saveDayTime'
+  get 'welcome/weekFunc', to: 'time_sheets#weekFunc'
+  get '/createPieChart', to: 'time_sheets#createPieChart'
+  get '/checkPrevTimeSheets', to: 'time_sheets#checkPrevTimeSheets'
+  match '/deleteDayTimesheets', :to => 'time_sheets#deleteDayTimesheets', via: [:get, :post]
+  get '/UserGuide', :to => 'time_sheets#user_guide'
+  get '/ProjectsPersonnel', :to => 'projects#project_page'
+
+
+  ######################################################
+  ############## Authentication ########################
+  match '/auth/:provider/callback' => 'sessions#create' , via: [:get, :post]
+  match "/auth/failure" => "sessions#failure", via: [:get, :post]
+  get '/signin',  to: 'sessions#new'
+  get '/signout', to: 'sessions#destroy'
+  get '/signup', to: 'users#new'
+  get '/Client', to: 'sessions#new_client'
+  get '/renderRoleInfo', to: 'sessions#render_role_info'
+
+  ## Employee User Actions
+  get '/monthlyClassifiedReport', to: 'admin#monthlyEmployeeReport'
+  get '/registration', to: 'registrations#new'
+  get '/view_report', to: 'time_sheets#view_report'
+  get '/send_mail', to: 'time_sheets#send_mail'
+  get '/activate_user', to: "time_sheets#activate_user"
+  get '/time_sheet_reports', to: "time_sheets#time_sheet_reports"
+  
+  
+  
+  
+    
+
+  
+    
     
 
   #Report Data
     get "/project_colors", to: 'report#project_colors'
     get '/createReportPieChart', to: 'report#createReportPieChart'
     get '/createCustomReport', to: 'report#createCustomReport'
-    get '/TimeSummaries', to: 'welcome#report'
+    get '/TimeSummaries', to: 'time_sheets#report'
     get '/projectReport', to: 'report#projectReport'
     get '/sendReportReminder', to: 'report#reminder'
   
   #Report Handling
-    get '/send_report', to: "welcome#send_report"
-    get '/submit_report', to: 'welcome#submit_report'
-    get '/verify_report', to: 'welcome#verify_report'
-    get '/approve_report', to: 'welcome#approve_report'
-    get '/reject_report', to: 'welcome#reject_report'
-    post '/rejectReport', to: 'welcome#reject_report'
-    get '/weeklyTimeView', to: 'welcome#weekly_time_view'
-    get '/checkPrevWeekHours', to: 'welcome#check_prev_week_hours'
+    get '/send_report', to: "time_sheets#send_report"
+    get '/submit_report', to: 'time_sheets#submit_report'
+    get '/weeklyTimeView', to: 'time_sheets#weekly_time_view'
+    get '/checkPrevWeekHours', to: 'time_sheets#check_prev_week_hours'
 
 
   #Work Order Maintence/Handling
@@ -114,12 +119,12 @@ MusicFeedApp::Application.routes.draw do
 		
 
   #Admin Controls
-    get "/admin", to: 'admin#index'
-    get "/admin/users", to: 'admin#users'
-    post "/updateUser", to: 'admin#updateUser'
-    get "/reportingusers", to: "admin#assign_users"   
-    post "/activateProject", to: "projects#activate"
-    post "/deactivateProject", to: "projects#deactivate"
+  get "/admin", to: 'admin#index'
+  get "/admin/users", to: 'admin#users'
+  post "/updateUser", to: 'admin#updateUser'
+  get "/reportingusers", to: "admin#assign_users"
+  post "/activateProject", to: "projects#activate"
+  post "/deactivateProject", to: "projects#deactivate"
   get "/archived_projects", to: "projects#archived"
   get "/archivedProjectdetails", to: "projects#archivedProjectDetails"
   get '/saveProject', to: 'projects#save_project'
@@ -151,12 +156,13 @@ MusicFeedApp::Application.routes.draw do
   get '/getUsersList', :to => 'manager#getUsersList'
   
   #Time Sheet Repoer Manager 
-      get '/verify_report', to: 'welcome#verify_report'
-      get '/approve_report', to: 'welcome#approve_report'      
-      get "/manageReports", to: "admin#manageReports"
-      get "/tsmanageReports", to: "admin#manageReports"
-      get "/ts_manager_csvReport", to: "admin#ts_manager_csvReport"
-      get '/renderUserData', to: 'admin#render_user_data'
+  get '/verify_report', to: 'time_sheets#verify_report'
+  get '/approve_report', to: 'time_sheets#approve_report'
+  get '/reject_report', to: 'time_sheets#reject_report'
+  get "/manageReports", to: "admin#manageReports"
+  get "/tsmanageReports", to: "admin#manageReports"
+  get "/ts_manager_csvReport", to: "admin#ts_manager_csvReport"
+  get '/renderUserData', to: 'admin#render_user_data'
   
   
   #timesheet Managers
@@ -170,11 +176,11 @@ MusicFeedApp::Application.routes.draw do
   get '/update_all_project_locks', to: 'admin#update_all_project_locks'
   get '/update_prev_month_all_lock', to: 'admin#update_prev_month_all_lock'
   get '/update_prev_month_user_lock', to: 'admin#update_prev_month_user_lock'
-  get '/check_TS_locks', to: 'welcome#check_TS_locks'
+  get '/check_TS_locks', to: 'time_sheets#check_TS_locks'
   #resources :identities  
   match 'active'  => 'sessions#active',  via: :get
   match 'timeout' => 'sessions#timeout', via: :get
-  get 'login', to: 'welcome#index'
+  
   
   
   #Version Management
