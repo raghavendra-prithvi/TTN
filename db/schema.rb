@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141219004254) do
+ActiveRecord::Schema.define(version: 20141217224337) do
 
   create_table "actual_work_orders", force: true do |t|
     t.integer "work_order_id",        limit: 255, null: false
@@ -25,81 +25,81 @@ ActiveRecord::Schema.define(version: 20141219004254) do
   end
 
   create_table "archieved_projects", force: true do |t|
-    t.string   "name"
-    t.string   "category"
-    t.integer  "project_data_id", limit: 255
-    t.string   "acct_number"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string   "name",                        null: false
+    t.string   "category",                    null: false
+    t.integer  "project_data_id", limit: 255, null: false
+    t.string   "acct_number",                 null: false
+    t.integer  "user_id",                     null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   create_table "assigned_projects", force: true do |t|
-    t.integer  "project_data_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer  "project_data_id", null: false
+    t.integer  "user_id",         null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "attachments", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
     t.string   "about"
     t.string   "title"
-    t.string   "attachment"
-    t.integer  "work_order_id"
-    t.string   "avatar"
+    t.string   "attachment",    null: false
+    t.integer  "work_order_id", null: false
+    t.string   "avatar",        null: false
   end
 
   create_table "custom_roles", force: true do |t|
-    t.string  "role_name"
-    t.string  "description"
-    t.integer "ranking",     default: 0
+    t.string  "role_name",               null: false
+    t.string  "description",             null: false
+    t.integer "ranking",     default: 0, null: false
   end
 
   create_table "disabled_users", force: true do |t|
-    t.integer  "user_id"
-    t.string   "email"
-    t.string   "first_name"
-    t.string   "last_name"
-    t.string   "role"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer  "user_id",    null: false
+    t.string   "email",      null: false
+    t.string   "first_name", null: false
+    t.string   "last_name",  null: false
+    t.string   "role",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "identities", force: true do |t|
-    t.string   "name"
-    t.string   "email"
-    t.string   "password_digest"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "role"
+    t.string   "name",            null: false
+    t.string   "email",           null: false
+    t.string   "password_digest", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.string   "role",            null: false
   end
 
   create_table "internal_project_acct_numbers", force: true do |t|
-    t.integer  "project_data_id"
-    t.string   "acct_number"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer  "project_data_id", null: false
+    t.string   "acct_number",     null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "project_data", force: true do |t|
-    t.integer  "project_id",        default: 1
-    t.string   "name",              default: "t",  null: false
-    t.string   "project_type",      default: "t",  null: false
-    t.string   "description",       default: "t",  null: false
+    t.integer  "project_id"
+    t.string   "name",                             null: false
+    t.string   "project_type",                     null: false
+    t.string   "description",                      null: false
     t.boolean  "active",            default: true, null: false
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
-    t.boolean  "prev_month_locked", default: true, null: false
-    t.boolean  "locked",            default: true, null: false
+    t.boolean  "prev_month_locked",                null: false
+    t.boolean  "locked",                           null: false
   end
 
   create_table "project_managers", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "project_data_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer  "user_id",         null: false
+    t.integer  "project_data_id", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "projects", force: true do |t|
@@ -111,48 +111,49 @@ ActiveRecord::Schema.define(version: 20141219004254) do
     t.string   "secondary_acct_number"
   end
 
-  create_table "reporters", force: true do |t|
-    t.integer "reporter_id", limit: 255
-    t.integer "reported_id", limit: 255
-    t.boolean "submitted",   limit: 255, default: false
-    t.boolean "approved",    limit: 255, default: false
+  create_table "reporters", id: false, force: true do |t|
+    t.integer "id"
+    t.integer "reporter_id",                 null: false
+    t.integer "reported_id",                 null: false
+    t.boolean "submitted",   default: false, null: false
+    t.boolean "approved",    default: false, null: false
   end
 
   create_table "submitted_reports", force: true do |t|
-    t.string   "month"
-    t.integer  "report_for"
+    t.string   "month",                        null: false
+    t.integer  "report_for",                   null: false
     t.integer  "submitted_to"
     t.boolean  "approved",     default: false
     t.boolean  "rejected",     default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "visited",      default: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.boolean  "visited",      default: false, null: false
     t.string   "feedback"
   end
 
   create_table "time_modified_reports", force: true do |t|
-    t.integer "reporting_user"
-    t.integer "modified_manager"
-    t.integer "modified_hours"
-    t.text    "comments"
-    t.integer "project_data_id"
-    t.string  "month"
-    t.string  "year"
+    t.integer "reporting_user",   null: false
+    t.integer "modified_manager", null: false
+    t.integer "modified_hours",   null: false
+    t.text    "comments",         null: false
+    t.integer "project_data_id",  null: false
+    t.string  "month",            null: false
+    t.string  "year",             null: false
   end
 
   create_table "time_tables", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "project_data_id"
-    t.date     "date"
-    t.float    "hours"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "modified_hours"
+    t.integer  "user_id",         null: false
+    t.integer  "project_data_id", null: false
+    t.date     "date",            null: false
+    t.float    "hours",           null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "modified_hours",  null: false
   end
 
   create_table "ull_team_members", force: true do |t|
-    t.string  "name"
-    t.integer "work_order_id"
+    t.string  "name",          null: false
+    t.integer "work_order_id", null: false
   end
 
   create_table "user_custom_roles", force: true do |t|
@@ -161,55 +162,55 @@ ActiveRecord::Schema.define(version: 20141219004254) do
   end
 
   create_table "user_permissions", force: true do |t|
-    t.boolean "all_access"
-    t.boolean "activate_all_projects"
-    t.boolean "activate_managed_projects"
-    t.boolean "archive_all_projects"
-    t.boolean "archive_managed_projects"
-    t.boolean "assign_users_all_projects"
-    t.boolean "assign_users_managed_projects"
-    t.boolean "create_projects"
-    t.boolean "destroy_projects"
-    t.boolean "remove_users"
-    t.boolean "add_users"
-    t.boolean "edit_users"
-    t.boolean "edit_projects"
-    t.integer "custom_role_id"
+    t.boolean "all_access",                    null: false
+    t.boolean "activate_all_projects",         null: false
+    t.boolean "activate_managed_projects",     null: false
+    t.boolean "archive_all_projects",          null: false
+    t.boolean "archive_managed_projects",      null: false
+    t.boolean "assign_users_all_projects",     null: false
+    t.boolean "assign_users_managed_projects", null: false
+    t.boolean "create_projects",               null: false
+    t.boolean "destroy_projects",              null: false
+    t.boolean "remove_users",                  null: false
+    t.boolean "add_users",                     null: false
+    t.boolean "edit_users",                    null: false
+    t.boolean "edit_projects",                 null: false
+    t.integer "custom_role_id",                null: false
   end
 
-  create_table "users", force: true do |t|
-    t.string   "name",                                default: "t"
-    t.string   "email",                               default: "t"
-    t.string   "role",                                default: "t"
-    t.datetime "created_at",              limit: 255
-    t.datetime "updated_at",              limit: 255
-    t.string   "password_digest",                     default: "t"
-    t.string   "remember_token",                      default: "t"
-    t.string   "avatars",                             default: "t"
-    t.string   "country",                             default: "t"
-    t.boolean  "admin",                   limit: 255, default: true
-    t.string   "confirmed",                           default: "t"
-    t.string   "signer",                              default: "t"
-    t.string   "shares",                              default: "t"
-    t.string   "provider",                            default: "t"
-    t.string   "uid",                                 default: "t"
-    t.boolean  "manager",                 limit: 255, default: true
-    t.integer  "reporter",                limit: 255, default: 1
-    t.integer  "reported_by",             limit: 255, default: 1
-    t.boolean  "updated",                 limit: 255, default: true
-    t.boolean  "active",                  limit: 255, default: true
-    t.string   "token",                               default: "t"
-    t.string   "first_name",                          default: "t"
-    t.string   "last_name",                           default: "t"
-    t.boolean  "time_sheet_manager",      limit: 255, default: true
-    t.boolean  "client",                  limit: 255, default: true
-    t.boolean  "work_order_admin",        limit: 255, default: true
-    t.boolean  "time_sheet_collaborator", limit: 255, default: true
-    t.boolean  "project_admin",           limit: 255, default: true
-    t.boolean  "locked",                  limit: 255, default: true
-    t.boolean  "prev_month_locked",       limit: 255, default: true
-    t.string   "password_reset_token",                default: "t"
-    t.datetime "password_reset_sent_at",  limit: 255
+  create_table "users", id: false, force: true do |t|
+    t.string   "name",                                                null: false
+    t.string   "email",                                               null: false
+    t.string   "role",                                                null: false
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.string   "password_digest",                                     null: false
+    t.string   "remember_token",                                      null: false
+    t.string   "avatars"
+    t.string   "country"
+    t.boolean  "admin",                               default: false, null: false
+    t.string   "confirmed",                                           null: false
+    t.string   "signer"
+    t.string   "shares"
+    t.string   "provider"
+    t.string   "uid",                                                 null: false
+    t.boolean  "manager",                             default: false, null: false
+    t.integer  "reporter"
+    t.integer  "reported_by"
+    t.boolean  "updated",                             default: false, null: false
+    t.boolean  "active",                              default: false
+    t.string   "token"
+    t.string   "first_name",                                          null: false
+    t.string   "last_name",                                           null: false
+    t.boolean  "time_sheet_manager",                  default: false, null: false
+    t.boolean  "client",                  limit: 255, default: false
+    t.boolean  "work_order_admin",                    default: false, null: false
+    t.boolean  "time_sheet_collaborator",             default: false, null: false
+    t.boolean  "project_admin",                       default: false, null: false
+    t.boolean  "locked",                              default: false, null: false
+    t.boolean  "prev_month_locked",                   default: true,  null: false
+    t.string   "password_reset_token"
+    t.datetime "password_reset_sent_at"
   end
 
   create_table "work_order_clients", force: true do |t|

@@ -10,54 +10,7 @@
     <%= csrf_meta_tags %>
     <%= render 'layouts/shim' %>    	
     <script src="/assets/jquery.jqGrid.src.js" ></script>
-    <script src="/assets/jquery.periodicalupdator.js" ></script>  
-    <script>
-        $(document).ready(function(){
-          $("#myModal").modal('hide');               
-        });
-        function loadHelpManual(){       
-                if(window.location.pathname == "/welcome/index"){
-                  manual_src = "/assets/time_input_of_Effort_Tracker.pdf";
-                }
-                else if(window.location.pathname == "/manager"){
-                  manual_src = "/assets/manager_home.pdf";
-                }
-                else if(window.location.pathname == "/admin/users"){
-                  manual_src = "/assets/admin_users.pdf";
-                }
-                else if(window.location.pathname == "/admin/projects"){
-                  manual_src = "/assets/Admin_projects.pdf";
-                }
-                else if(window.location.pathname == "/ProjectsPersonnel"){
-                  manual_src = "/assets/projects_personnel.pdf";
-                }
-                else if(window.location.pathname == "/TimeSummaries"){
-                  manual_src = "/assets/time_summaries.pdf";
-                }
-                else if(window.location.pathname == "/manageReports"){
-                  manual_src = "/assets/manager_verify_reports.pdf";
-                }
-                else if(window.location.pathname == "/tsmanageReports"){
-                  manual_src = "/assets/tsmanagermanagereports.pdf";
-                }
-                else if(window.location.pathname == "/time_sheet_reports"){
-                  manual_src = "/assets/tscollabtsreports.pdf";
-                }
-                else if(window.location.pathname == "/submit_report"){
-                  manual_src = "/assets/submit_reports.pdf";
-                }
-                else if(window.location.pathname == "/work_order_admin"){
-                  manual_src = "/assets/wo_admin.pdf";
-                }
-                else if(window.location.pathname == "/WorkOrderTracking"){
-                  manual_src = "/assets/woadmin_wotracking.pdf";
-                }
-          
-                  
-                $("#help_manual_frame").attr("src",manual_src);
-                $("#myModal").modal('show');
-         }      
-    </script>  
+    <script src="/assets/jquery.periodicalupdator.js" ></script>     
 	</head>
 <body>
 <div id="myModal" class="modal fade">
@@ -89,9 +42,7 @@
       <% if !@current_user.client%>
       <div class="row nav-pill-container">
         <div class='col-xs-12 col-md-5'>
-        
             <ul class="nav nav-pills">
-        
                 <li class="<%= is_active?('/welcome/index') %>" > <a class="navPill" href="/welcome/index">Time Input</a>
                 </li>
                 <li class="<%= is_active?('/TimeSummaries') %>"><a class="navPill" href="/TimeSummaries">Time Summaries</a></li>
@@ -106,8 +57,6 @@
                     <%submitClass=''%>
                   <%end%>
                   <%if show_submit_report? && !new_employee_month?(session[:user_id])%>
-              
-                                
                   <li class="<%= is_active?('/submit_report') %>"><a class="<%=submitClass%> navPill" href="/submit_report">Submit Reports</a></li>
                   <%end%>
                   <%if @current_user.time_sheet_collaborator == true %>
@@ -118,9 +67,8 @@
                   <% end %>
              </ul>
          </div>
-     
-        
-         <div class='col-xs-12 col-md-7'>
+    
+    <div class='col-xs-12 col-md-7'>
      <ul class="nav nav-pills">
        <li class="pull-right">
                 <!--  <% if @current_user.admin == true%>
@@ -230,5 +178,4 @@
 </div>
 </body>
 <%= render partial: 'layouts/footer'%>
-
 </html>

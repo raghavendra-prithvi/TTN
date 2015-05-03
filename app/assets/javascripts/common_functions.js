@@ -156,7 +156,7 @@ var alertObject = {};
 	  
    var data = [[48803, "DSK1", "", "02200220", "OPEN"], [48769, "APPR", "", "77733337", "ENTERED"]];
 
-    $("#grid").jqGrid({
+    /*$("#grid").jqGrid({
         datatype: "local",
         height: 250,
         colNames: ['Inv No', 'Thingy', 'Blank', 'Number', 'Status'],
@@ -205,7 +205,7 @@ for (var i = 0; i <= mydata.length; i++) {
 
 
 $("#grid").jqGrid('setGridParam', {ondblClickRow: function(rowid,iRow,iCol,e){alert('double clicked');}});
-
+*/
   
   $("document").ready(function(){
     $("a#help_link").click(function(){
@@ -281,3 +281,52 @@ $("#grid").jqGrid('setGridParam', {ondblClickRow: function(rowid,iRow,iCol,e){al
  });
  
     		});
+
+/* Help Manual Setup */
+$(document).ready(function(){
+          $("#myModal").modal('hide');               
+        });
+        function loadHelpManual(){       
+                if(window.location.pathname == "/welcome/index"){
+                  manual_src = "/assets/time_input_of_Effort_Tracker.pdf";
+                }
+                else if(window.location.pathname == "/manager"){
+                  manual_src = "/assets/manager_home.pdf";
+                }
+                else if(window.location.pathname == "/admin/users"){
+                  manual_src = "/assets/admin_users.pdf";
+                }
+                else if(window.location.pathname == "/admin/projects"){
+                  manual_src = "/assets/Admin_projects.pdf";
+                }
+                else if(window.location.pathname == "/ProjectsPersonnel"){
+                  manual_src = "/assets/projects_personnel.pdf";
+                }
+                else if(window.location.pathname == "/TimeSummaries"){
+                  manual_src = "/assets/time_summaries.pdf";
+                }
+                else if(window.location.pathname == "/manageReports"){
+                  manual_src = "/assets/manager_verify_reports.pdf";
+                }
+                else if(window.location.pathname == "/tsmanageReports"){
+                  manual_src = "/assets/tsmanagermanagereports.pdf";
+                }
+                else if(window.location.pathname == "/time_sheet_reports"){
+                  manual_src = "/assets/tscollabtsreports.pdf";
+                }
+                else if(window.location.pathname == "/submit_report"){
+                  manual_src = "/assets/submit_reports.pdf";
+                }
+                else if(window.location.pathname == "/work_order_admin"){
+                  manual_src = "/assets/wo_admin.pdf";
+                }
+                else if(window.location.pathname == "/WorkOrderTracking"){
+                  manual_src = "/assets/woadmin_wotracking.pdf";
+                }
+          
+                  
+                $("#help_manual_frame").attr("src",manual_src);
+                $("#myModal").modal('show');
+         }    
+
+

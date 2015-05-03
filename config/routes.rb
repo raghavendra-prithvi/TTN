@@ -66,8 +66,7 @@ MusicFeedApp::Application.routes.draw do
   	match '/deleteDayTimesheets', :to => 'welcome#deleteDayTimesheets', via: [:get, :post]
    	get '/UserGuide', :to => 'welcome#user_guide'
    	get '/ProjectsPersonnel', :to => 'projects#project_page'
-    get '/searchUsers', :to => 'admin#searchUsers'
-  get '/getUsersList', :to => 'admin#getUsersList'
+    
 
   #Report Data
     get "/project_colors", to: 'report#project_colors'
@@ -82,8 +81,8 @@ MusicFeedApp::Application.routes.draw do
     get '/submit_report', to: 'welcome#submit_report'
     get '/verify_report', to: 'welcome#verify_report'
     get '/approve_report', to: 'welcome#approve_report'
-  get '/reject_report', to: 'welcome#reject_report'
-  post '/rejectReport', to: 'welcome#reject_report'
+    get '/reject_report', to: 'welcome#reject_report'
+    post '/rejectReport', to: 'welcome#reject_report'
     get '/weeklyTimeView', to: 'welcome#weekly_time_view'
     get '/checkPrevWeekHours', to: 'welcome#check_prev_week_hours'
 
@@ -118,9 +117,7 @@ MusicFeedApp::Application.routes.draw do
     get "/admin", to: 'admin#index'
     get "/admin/users", to: 'admin#users'
     post "/updateUser", to: 'admin#updateUser'
-    get "/reportingusers", to: "admin#assign_users" 
-    post "/assignProjects", to: "admin#assignProjects"
-  post "/removeProjects", to: "admin#removeProjects"
+    get "/reportingusers", to: "admin#assign_users"   
     post "/activateProject", to: "projects#activate"
     post "/deactivateProject", to: "projects#deactivate"
   get "/archived_projects", to: "projects#archived"
@@ -146,14 +143,20 @@ MusicFeedApp::Application.routes.draw do
   get'/reload_assigned_users', to: 'projects#reload_assigned_users'
 
   
- #Manager 
+  #Manager Home : Project Manager
+  get "/manager", to: "manager#manager"
+  post "/assignProjects", to: "manager#assignProjects"
+  post "/removeProjects", to: "manager#removeProjects"
+  get '/searchUsers', :to => 'manager#searchUsers'
+  get '/getUsersList', :to => 'manager#getUsersList'
+  
+  #Time Sheet Repoer Manager 
       get '/verify_report', to: 'welcome#verify_report'
-    get '/approve_report', to: 'welcome#approve_report'
-    get "/manager", to: "admin#manager"
-  get "/manageReports", to: "admin#manageReports"
-  get "/tsmanageReports", to: "admin#manageReports"
-  get "/ts_manager_csvReport", to: "admin#ts_manager_csvReport"
-  get '/renderUserData', to: 'admin#render_user_data'
+      get '/approve_report', to: 'welcome#approve_report'      
+      get "/manageReports", to: "admin#manageReports"
+      get "/tsmanageReports", to: "admin#manageReports"
+      get "/ts_manager_csvReport", to: "admin#ts_manager_csvReport"
+      get '/renderUserData', to: 'admin#render_user_data'
   
   
   #timesheet Managers
