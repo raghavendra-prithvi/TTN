@@ -23,7 +23,7 @@ class ProjectsController < ApplicationController
   	  	@time_sheet_lock = false
   	  end
   end
-  
+
 
 
   # GET /projects/1
@@ -42,12 +42,12 @@ class ProjectsController < ApplicationController
 	@user = User.find(session[:user_id])
     @project= ProjectData.new
 
- 	@managers = User.where(:manager => true).alpha 
+ 	@managers = User.where(:manager => true).alpha
  	@employees = User.where(:role => 'Classified').alpha
  	@employees += User.where(:role => 'Unclassified').alpha
  #	@employees = @employees - @managers
  	@gas = User.where(:role => 'GA').alpha
-	
+
 	@internalAcct = {};
 	InternalProjectAcctNumber.all.each do |i|
 		@internalAcct[i.id] = i.acct_number
@@ -85,40 +85,40 @@ class ProjectsController < ApplicationController
   			end
   		end
  	end
- 	
 
- 	@managers = User.where(:manager => true).alpha 
+
+ 	@managers = User.where(:manager => true).alpha
  	@employees = User.where(:role => 'Classified').alpha
  	@employees += User.where(:role => 'Unclassified').alpha
  #	@employees = @employees - @managers
  	@gas = User.where(:role => 'GA').alpha
- 	
- 
-	
+
+
+
 	@user = User.find(session[:user_id])
-	
+
 	if @user.project_admin
 		@allow = true
 	else
 		@allow = false
 	end
-	
+
 	@acct_number = @project.getAcctNumber
-	
+
 	if !@project.project.nil?
 		@internal = false
 	elsif !@project.internal_project_acct_number.nil?
 		@internal = true
 	end
-	
+
 	@internalAcct = {};
 	InternalProjectAcctNumber.all.each do |i|
 		@internalAcct[i.id] = i.acct_number
 	end
-	
-  	
+
+
   end
-  
+
    def reload_assigned_users
  	@project = ProjectData.find(params[:id])
 
@@ -128,7 +128,7 @@ class ProjectsController < ApplicationController
   			@projectManagers << pm.user_id
   		end
  	end
- 	
+
  	@projectEmployees = []
  	@projectGas = []
    	if !@project.assigned_projects.blank?
@@ -143,20 +143,20 @@ class ProjectsController < ApplicationController
   			end
   		end
  	end
- 	
 
- 	@managers = User.where(:manager => true).alpha 
+
+ 	@managers = User.where(:manager => true).alpha
  	@employees = User.where(:role => 'Classified').alpha
  	@employees += User.where(:role => 'Unclassified').alpha
  #	@employees = @employees - @managers
  	@gas = User.where(:role => 'GA').alpha
- 	
- 
-	
+
+
+
 	@user = User.find(session[:user_id])
 	render :html => "reload_assigned_users", :layout => false
  	end
-  
+
 
 
   def activate
@@ -165,14 +165,14 @@ class ProjectsController < ApplicationController
     @project.save
     render :text => "success"
   end
-  
+
   def deactivate
     @project = ProjectData.find(params[:id])
     @project.active = false
     @project.save
     render :text => "success"
   end
-  
+
   # POST /projects
   def create
     if project_params[:name].nil?
@@ -186,7 +186,7 @@ class ProjectsController < ApplicationController
     end
   end
 # PATCH/PUT /projects/1
-  def update  
+  def update
     puts params
     @project=ProjectData.find(params[:id])
     @project.name = params[:project][:name]
@@ -236,7 +236,7 @@ class ProjectsController < ApplicationController
     	render :json => data
     end
   end
-  
+
   def create_report
     @user = User.find(session[:user_id])
     respond_to do |format|
@@ -246,17 +246,17 @@ class ProjectsController < ApplicationController
         :save_to_file => Rails.root.join('pdfs', "#{@user.name}.pdf")
       end
     end
-  end 
+  end
 
   def assign
     @usr = User.find(params[:id])
     @projects = ProjectData.where(:active => true)
   end
-  
+
   def archived
-    @aps = ArchievedProject.all    
+    @aps = ArchievedProject.all
   end
-  
+
   def archivedProjectDetails
     @p = ArchievedProject.find(params[:projectId])
     @assi_prj = AssignedProject.where(:project_data_id => @p.project_data_id)
@@ -268,11 +268,11 @@ class ProjectsController < ApplicationController
     end
     render :html => "archivedProjectDetails", :layout => false
   end
-  
-  def save_project  	
+
+  def save_project
       managers = params[:managers]
       employees = params[:employees]
-      gas = params[:gas]  	
+      gas = params[:gas]
   	  descript = params[:descript]
       project = ProjectData.find(params[:project_data_id])
       if project.project_type != 'wo'
@@ -287,14 +287,14 @@ class ProjectsController < ApplicationController
               pm.each do |pmx|
                 pmx.destroy
               end
-          end  	
+          end
           ap = project.assigned_projects
           if !ap.blank?
             ap.each do |apx|
               apx.destroy
             end
-          end  	
-          if !managers.blank?	
+          end
+          if !managers.blank?
             managers.each do |m|
               pm = project.project_managers.build
               pm.user_id = m
@@ -303,7 +303,7 @@ class ProjectsController < ApplicationController
           end
           puts 'check employees'
           puts employees
-          if !employees.blank?	
+          if !employees.blank?
             employees.each do |e|
               ap = project.assigned_projects.build
               ap.user_id = e
@@ -316,7 +316,7 @@ class ProjectsController < ApplicationController
                 ap.user_id = g
                 ap.save
               end
-          end  	
+          end
           project.description = descript
           if params[:acct] != ''
               puts 'made it here'
@@ -348,7 +348,7 @@ class ProjectsController < ApplicationController
           render :text => project.errors.full_messages
       end
  	 end
-  
+
 
   def create_project
     managers = params[:managers]
@@ -363,7 +363,7 @@ class ProjectsController < ApplicationController
       project.name = params[:name]
     end
     if project.valid?
-          if !managers.blank?	
+          if !managers.blank?
             managers.each do |m|
               pm = project.project_managers.build
               pm.user_id = m
@@ -374,7 +374,7 @@ class ProjectsController < ApplicationController
 
           puts employees
 
-          if !employees.blank?	
+          if !employees.blank?
             employees.each do |e|
               ap = project.assigned_projects.build
               ap.user_id = e
@@ -401,7 +401,7 @@ class ProjectsController < ApplicationController
                     i.project_data_id = project.id
                     i.acct_number = params[:acct]
                     i.save
-              elsif (params[:internal] == 'true') && (params[:new] == 'false')        
+              elsif (params[:internal] == 'true') && (params[:new] == 'false')
                     project.save
                     i = InternalProjectAcctNumber.find(params[:acct])
                     if i.project_data_id != project.id
@@ -409,9 +409,9 @@ class ProjectsController < ApplicationController
                         i2.project_data_id = project_id
                         i2.acct_number = i.acct_number
                         i2.save
-                    end       
+                    end
                end
-            else      
+            else
                 project.save
             end
           render :text=> 'success'
@@ -419,9 +419,9 @@ class ProjectsController < ApplicationController
         render  :text => project.errors.full_messages
       end
  	 end
- 	 
 
- 	 
+
+
  	 def project_page
         roleAllows = session[:roleAllows]
         permissions = session[:permissions]
@@ -433,11 +433,11 @@ class ProjectsController < ApplicationController
 		puts permissions
 		if permissions['edit_projects']
 			@privs = true
-		else 
+		else
 			@privs = false
 		end
- 
-		if @user.role != "GA" 
+
+		if @user.role != "GA"
 			@showAll = true
 			@all_active_projects = TimeTable.where(:date => Date.today.beginning_of_month..Date.today.end_of_month).group_by(&:project_data_id)
 		else
@@ -447,13 +447,13 @@ class ProjectsController < ApplicationController
 		@aps = @user.assigned_projects
 		@managed_projects = @user.project_managers
 		@user_active_projects = TimeTable.where(:date => Date.today.beginning_of_month..Date.today.end_of_month, :user_id => @user.id).alpha.group_by(&:project_data_id)
-		
+
 		@currentProjects = []
     	@archivedProjects = []
     	@managedProjects = []
     	@userActiveProjects = []
     	@allActiveProjects = []
-    	
+
     if !@aps.blank?
     	@aps.each do |a|
     		if !is_archived(a.project_data_id)
@@ -461,7 +461,7 @@ class ProjectsController < ApplicationController
    			end
   		end
   	end
-  	
+
     if !@managed_projects.nil?
     	@managed_projects.each do |mp|
     		if !is_archived(mp.project_data_id) && !mp.project_data.nil?
@@ -469,7 +469,7 @@ class ProjectsController < ApplicationController
    			end
   		end
   	end
-  	
+
     if !@user_active_projects.nil?
     	@user_active_projects.each do |key, value|
     		pid = key.to_i
@@ -479,7 +479,7 @@ class ProjectsController < ApplicationController
    			end
   		end
   	end
-    
+
     if !@all_active_projects.nil?
     	@all_active_projects.each do |key, value|
     	    pid = key.to_i
@@ -498,7 +498,7 @@ class ProjectsController < ApplicationController
     @allActiveProjects.sort_by! {|a| a[0].downcase}
 	@userActiveProjects.sort_by! {|a| a[0].downcase}
 	end
-  
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_project

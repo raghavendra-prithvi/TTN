@@ -27,8 +27,7 @@ MusicFeedApp::Application.routes.draw do
       end
     end
   end
-
-    
+     
   resources :project_datas do
     member do
        get 'project_managers'
@@ -67,15 +66,6 @@ MusicFeedApp::Application.routes.draw do
   get '/send_mail', to: 'time_sheets#send_mail'
   get '/activate_user', to: "time_sheets#activate_user"
   get '/time_sheet_reports', to: "time_sheets#time_sheet_reports"
-  
-  
-  
-  
-    
-
-  
-    
-    
 
   #Report Data
     get "/project_colors", to: 'report#project_colors'
@@ -155,7 +145,7 @@ MusicFeedApp::Application.routes.draw do
   get '/searchUsers', :to => 'manager#searchUsers'
   get '/getUsersList', :to => 'manager#getUsersList'
   
-  #Time Sheet Repoer Manager 
+  #Time Sheet Report Manager
   get '/verify_report', to: 'time_sheets#verify_report'
   get '/approve_report', to: 'time_sheets#approve_report'
   get '/reject_report', to: 'time_sheets#reject_report'

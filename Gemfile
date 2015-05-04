@@ -48,11 +48,7 @@ gem 'auto-session-timeout'
 
 gem 'stripe'
 gem 'omniauth'
-gem 'omniauth-twitter'
-gem 'omniauth-facebook'
-gem 'omniauth-google'
 gem 'omniauth-identity'
-gem 'omniauth-instagram'
 
 #File Uploads
 gem 'dropzonejs-rails'

@@ -102,14 +102,9 @@ end
 		puts "total"
 		puts totalHours
 		hourTotals << totalHours
-	timeRowArray << {dates: dateSections.map(&method(:standJTime))}
-	timeRowArray << timeInfo		
-	timeRowArray << {totals: hourTotals}
-	
-		
-			puts "Time Array"
-			puts timeRowArray
-		
+    timeRowArray << {dates: dateSections.map(&method(:standJTime))}
+    timeRowArray << timeInfo
+    timeRowArray << {totals: hourTotals}	
 	render :json => timeRowArray.to_json
 		
 	end	
